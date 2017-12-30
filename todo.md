@@ -5,33 +5,39 @@ Change the seed
 Move content (monster, items, spells, etc...) definitions out of code?
 
 ### Dungeon
-Generate more levels
+Dungeon should instead be caves for a dragon. Maybe we have multiple customers, some go to caves, some dungeons, etc...
 Spawn random monsters
 
 ### Monsters
-Drop loot?
+Drop loot
 
-### Game Loop
-Maybe move more of the game loop into World.Update, specifically the input (Not sure?)
-
-### Equipment
-More slots, armour, rings, etc...
+### Items/Equipment
+- Player
+  - Shoes
+  - Distraction Items (Flashlight?)
+  - Smoke Bombs?
+- Monsters/Creatures
+  - Armour
+  - Clubs/Swords
+  - Natural Weapons (Teeth/Claws)
+- Consumables
+  - Heat packs (Warm the pizza)
+  - Lost adventuring gear (wands/potions?)
 
 ### Player
-Add attributes/stats
+Superb Delivery Person, not a real fighter
+- Focus on mobility, evasion, distraction tactics.
+- Stamina for sprinting and performing evasive maneuvers instead of MP?
 
 ### Combat
 Do when the player has more stuff, armour, stats, etc... integrate this into combat
 
 ### Magic
-Base system in place. Need to figure out how to implement different spell behaviors
+Some creatures may have magic but the player might not exactly. Maybe some player choices could have some magic abilities? Maybe all delivery people are not mundane.
 
 ### Interface
 Inspect mode should either move the camera or not go beyond the bounds of the cameraa
 
-# THE GAME
-
-Dragon Pizza Delivery (name pending)
 
 You're trying to delivery pizza (maybe other foods?) to a dragon in cave.
 
