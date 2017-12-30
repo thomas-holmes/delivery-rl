@@ -1,3 +1,4 @@
+
 # Gopkg.toml example
 #
 # Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
@@ -18,16 +19,10 @@
 # [[override]]
 #  name = "github.com/x/y"
 #  version = "2.4.0"
-
+[[constraint]]
+  name = "github.com/veandco/go-sdl2"
+  version = "0.2.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/MichaelTJones/pcg"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/thomas-holmes/gterm"
-
-[[constraint]]
-  name = "github.com/veandco/go-sdl2"
-  version = "0.2.0"

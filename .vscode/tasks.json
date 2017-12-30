@@ -8,13 +8,13 @@
             "identifier": "runMuncher",
             "type": "process",
             "windows": {
-                "command": "${workspaceFolder}/example/muncher/muncher.exe",
+                "command": "${workspaceFolder}/run_dir/deliveryrl.exe"
             },
             "linux": {
-                "command": "${workspaceFolder}/example/muncher/muncher",
+                "command": "${workspaceFolder}/run_dir/deliveryrl",
             },
             "options": {
-                "cwd": "${workspaceFolder}/example/muncher"
+                "cwd": "${workspaceFolder}/run_dir"
             },
             "args": [
                 "-no-vsync"
@@ -28,25 +28,26 @@
             "identifier": "buildMuncher",
             "type": "process",
             "windows": {
-                "command": "powershell.exe",
+                "command": "go.exe",
                 "args": [
-                    "$out",
-                    "=",
-                    "Measure-Command",
-                    "{go build -v github.com/thomas-holmes/gterm/example/muncher};",
-                    "Write-Host",
-                    "\"Built in $($out.TotalMilliseconds)ms\""
+                    "build",
+                    "-v",
+                    "-o",
+                    "deliveryrl.exe",
+                    "github.com/thomas-holmes/delivery-rl/game",
                 ],
             },
             "linux": {
                 "command": "go",
                 "args": [
                     "build",
-                    "github.com/thomas-holmes/gterm/example/muncher"
+                    "-o",
+                    "deliveryrl",
+                    "github.com/thomas-holmes/delivery-rl/game"
                 ],
             },
             "options": {
-                "cwd": "${workspaceFolder}/example/muncher"
+                "cwd": "${workspaceFolder}/run_dir"
             },
             "group": {
                 "kind": "build",
@@ -66,11 +67,11 @@
                 "command": "go",
             },
             "options": {
-                "cwd": "${workspaceFolder}/example/muncher"
+                "cwd": "${workspaceFolder}/run_dir"
             },
             "args": [
                 "test",
-                "github.com/thomas-holmes/gterm/example/muncher"
+                "github.com/thomas-holmes/delivery-rl/game"
             ],
             "group": {
                 "kind": "test",

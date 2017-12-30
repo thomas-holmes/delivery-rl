@@ -8,12 +8,6 @@
   revision = "2ebcd54841cef0e771d248b1dcd1cb681867b108"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/thomas-holmes/gterm"
-  packages = ["."]
-  revision = "3fe75a7c16587971d7f80cf4c1cc8595325f253e"
-
-[[projects]]
   name = "github.com/veandco/go-sdl2"
   packages = ["sdl","ttf"]
   revision = "30f30965227962032c13bd0b12a89e6a5107c768"
@@ -22,6 +16,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "72fe3fa7bf6a0f22c1e655e495aee891a246f67627c14f9a0dfe7e2195756c3b"
+  inputs-digest = "c2472608e6c969b9bd9510951f990c4aaddc0b6d5043e52947a57e0c5b1ea3a2"
   solver-name = "gps-cdcl"
   solver-version = 1

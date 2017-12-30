@@ -3,5 +3,4 @@
 *.out
 .vscode/
 debug
-deliveryrl.exe
-run_dir/deliveryrl$
+example/muncher/muncher*
