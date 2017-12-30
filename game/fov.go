@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 )
 
 type Visibility int
@@ -36,7 +35,6 @@ func (vision VisionMap) lastSeenAt(x int, y int) int64 {
 }
 
 func (vision *VisionMap) UpdateVision(viewDistance int, world *World) {
-	defer timeMe(time.Now(), "VisionMap.UpdateVision")
 	playerX := world.Player.X
 	playerY := world.Player.Y
 

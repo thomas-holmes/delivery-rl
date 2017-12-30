@@ -2,7 +2,6 @@ package main
 
 import (
 	"sort"
-	"time"
 )
 
 type ScentMap struct {
@@ -45,8 +44,6 @@ func (scentMap ScentMap) track(turn uint64, xPos int, yPos int) []TrackCandidate
 }
 
 func (scentMap *ScentMap) UpdateScents(world *World) {
-	defer timeMe(time.Now(), "ScentMap.UpdateScents")
-
 	vision := world.CurrentLevel.VisionMap
 	player := world.Player
 	for y := 0; y < scentMap.rows; y++ {

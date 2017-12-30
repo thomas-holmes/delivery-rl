@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/thomas-holmes/gterm"
 )
@@ -83,33 +82,63 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 	}
 }
 
-func (hud *HUD) renderPlayerMagic(world *World) {
-	mpColor := Red
-	pct := hud.Player.MP.Percentage()
+func (hud *HUD) renderPlayerStamina(world *World) {
+	stColor := Red
+	pct := hud.Player.ST.Percentage()
 	switch {
 	case pct >= 0.8:
-		mpColor = Green
+		stColor = Green
 	case pct >= 0.6:
-		mpColor = Yellow
+		stColor = Yellow
 	case pct >= 0.4:
-		mpColor = Orange
+		stColor = Orange
 	default:
-		mpColor = Red
+		stColor = Red
 	}
 
-	label := "Magic:"
-	mp := fmt.Sprintf("%v/%v", hud.Player.MP.Current, hud.Player.MP.Max)
+	label := "Stamina:"
+	st := fmt.Sprintf("%v/%v", hud.Player.ST.Current, hud.Player.ST.Max)
 	if hud.Player.HP.Current == 0 {
-		mp += " *DEAD*"
+		st += " *DEAD*"
 	}
 
 	row := hud.GetNextRow()
 	if err := world.Window.PutString(hud.XPos, row, label, Yellow); err != nil {
-		log.Fatalln("Couldn't write HUD mp label", err)
+		log.Fatalln("Couldn't write HUD st label", err)
 	}
 
-	if err := world.Window.PutString(hud.XPos+len(label)+1, row, mp, mpColor); err != nil {
-		log.Fatalln("Couldn't write HUD mp", err)
+	if err := world.Window.PutString(hud.XPos+len(label)+1, row, st, stColor); err != nil {
+		log.Fatalln("Couldn't write HUD st", err)
+	}
+}
+
+func (hud *HUD) renderPlayerHeat(world *World) {
+	htColor := Red
+	pct := hud.Player.HT.Percentage()
+	switch {
+	case pct >= 0.8:
+		htColor = Green
+	case pct >= 0.6:
+		htColor = Yellow
+	case pct >= 0.4:
+		htColor = Orange
+	default:
+		htColor = Red
+	}
+
+	label := "Heat:"
+	ht := fmt.Sprintf("%v/%v", hud.Player.HT.Current, hud.Player.HT.Max)
+	if hud.Player.HP.Current == 0 {
+		ht += " *DEAD*"
+	}
+
+	row := hud.GetNextRow()
+	if err := world.Window.PutString(hud.XPos, row, label, Yellow); err != nil {
+		log.Fatalln("Couldn't write HUD ht label", err)
+	}
+
+	if err := world.Window.PutString(hud.XPos+len(label)+1, row, ht, htColor); err != nil {
+		log.Fatalln("Couldn't write HUD ht", err)
 	}
 }
 
@@ -163,11 +192,11 @@ func (hud *HUD) renderItemDisplay(world *World) {
 
 func (hud *HUD) Render(world *World) {
 	hud.nextFreeRow = 0
-	defer timeMe(time.Now(), "HUD.Render")
 	hud.renderPlayerName(world)
 	hud.renderPlayerPosition(world)
 	hud.renderPlayerHealth(world)
-	hud.renderPlayerMagic(world)
+	hud.renderPlayerStamina(world)
+	hud.renderPlayerHeat(world)
 	hud.renderPlayerLevel(world)
 	hud.renderTurnCount(world)
 	hud.renderEquippedWeapon(world)

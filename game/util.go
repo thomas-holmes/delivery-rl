@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"strings"
-	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
 
@@ -64,12 +63,6 @@ func abs(a int) int {
 		return a
 	}
 	return -1 * a
-}
-
-func timeMe(start time.Time, name string) {
-	// elapsed := time.Since(start)
-	// log.Printf("%v %s", name, elapsed)
-
 }
 
 func squareDistance(x0 int, y0 int, x1 int, y1 int) int {

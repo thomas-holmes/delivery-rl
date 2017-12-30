@@ -5,7 +5,6 @@ import (
 	"log"
 	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/MichaelTJones/pcg"
 
@@ -315,7 +314,6 @@ func (world *World) UpdateCamera() {
 // Render redrwas everything!
 func (world *World) Render() {
 	world.UpdateCamera()
-	defer timeMe(time.Now(), "World.Render.TileLoop")
 	var minX, minY, maxX, maxY int
 	if world.CameraCentered {
 		minY, maxY = max(0, world.CameraY-(world.CameraHeight/2)), min(world.CurrentLevel.Rows, world.CameraY+(world.CameraHeight/2))
@@ -448,7 +446,6 @@ func (world *World) MoveEntity(message MoveEntityMessage) {
 // but I wanted ordered traversal, which you don't get with maps in go.
 // Keep an eye on the performance of this.
 func (world *World) GetEntity(id int) (Entity, bool) {
-	defer timeMe(time.Now(), "GetEntity")
 	for _, e := range world.CurrentLevel.Entities {
 		if e.Identity() == id {
 			return e, true

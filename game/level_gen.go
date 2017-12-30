@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/MichaelTJones/pcg"
 )
 
@@ -265,7 +263,6 @@ const (
 )
 
 func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *CandidateLevel {
-	defer timeMe(time.Now(), "GenLevel")
 	subX := rng.Bounded(uint64(maxX / 4))
 	subY := rng.Bounded(uint64(maxY / 4))
 
