@@ -28,6 +28,7 @@ Drop loot
 Superb Delivery Person, not a real fighter
 - Focus on mobility, evasion, distraction tactics.
 - Stamina for sprinting and performing evasive maneuvers instead of MP?
+- Maybe some characters are of races/species that have some magic abilities?
 
 ### Combat
 Do when the player has more stuff, armour, stats, etc... integrate this into combat
@@ -38,14 +39,13 @@ Some creatures may have magic but the player might not exactly. Maybe some playe
 ### Interface
 Inspect mode should either move the camera or not go beyond the bounds of the cameraa
 
-
 You're trying to delivery pizza (maybe other foods?) to a dragon in cave.
 
 You have to get it past the various challenges that are in the dragon's cave. Probably:
-* Bandits
-* Goblins/Goblins/Trolls/Ogres
-* Wild Animals
-* Unscrupulous Adventurers
+- Bandits
+- Goblins/Goblins/Trolls/Ogres
+- Wild Animals
+- Unscrupulous Adventurers
 
 Food clock would be the temperature of the food item to be delivered. Find ways to warm/chill the item to extend hunger clock.
 
