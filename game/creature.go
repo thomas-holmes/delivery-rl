@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log" // Replace w/ PCG deterministic random
-	"math"
 	"strconv"
 
 	"github.com/thomas-holmes/gterm"
@@ -18,27 +17,11 @@ const (
 	MonsterTeam
 )
 
-type Resource struct {
-	RegenRate float64
-
-	Current int
-	Max     int
-
-	regenPartial float64
-}
-
-func (resource *Resource) Regen() {
-	resource.regenPartial += resource.RegenRate
-
-	if math.Floor(resource.regenPartial) >= 1 {
-		resource.Current = min(int(math.Floor(resource.regenPartial))+resource.Current, resource.Max)
-		resource.regenPartial -= math.Floor(resource.regenPartial)
-	}
-}
-
 func (creature *Creature) Regen() {
-	creature.HP.Regen()
-	creature.MP.Regen()
+	creature.HP.Tick()
+	creature.ST.Tick()
+
+	creature.HT.Tick()
 }
 
 type Creature struct {
@@ -69,8 +52,10 @@ type Creature struct {
 
 	Equipment
 
-	HP Resource
-	MP Resource
+	HP Resource // health
+	ST Resource // stamina
+
+	HT Resource // heat
 
 	Spells []Spell
 
@@ -133,7 +118,7 @@ func NewCreature(level int, maxHP int) Creature {
 			maxEnergy:     100,
 		},
 		HP:        Resource{Current: 5, Max: 5, RegenRate: 0.25},
-		MP:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
+		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
 		Equipment: NewEquipment(),
 	}
 }
@@ -146,6 +131,7 @@ func NewPlayer() Creature {
 	player.IsPlayer = true
 	player.Spells = DefaultSpells
 	player.VisionDistance = 12
+	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.5}
 
 	return player
 }
@@ -167,8 +153,8 @@ func (player *Creature) LevelUp() {
 	player.Level++
 	player.HP.Max = player.HP.Max + max(1, int(float64(player.HP.Max)*0.1))
 	player.HP.Current = player.HP.Max
-	player.MP.Max = player.MP.Max + max(1, int(float64(player.MP.Max)*0.1))
-	player.MP.Current = player.MP.Max
+	player.ST.Max = player.ST.Max + max(1, int(float64(player.ST.Max)*0.1))
+	player.ST.Current = player.ST.Max
 	player.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{fmt.Sprintf("You are now level %v", player.Level)}})
 }
 
@@ -230,7 +216,7 @@ func (creature *Creature) TargetSpell(spell Spell, world *World) {
 }
 
 func (creature *Creature) CanCast(spell Spell) bool {
-	if spell.Cost <= creature.MP.Current {
+	if spell.Cost <= creature.ST.Current {
 		return true
 	}
 	return false
@@ -239,7 +225,7 @@ func (creature *Creature) CanCast(spell Spell) bool {
 func (creature *Creature) CastSpell(spell Spell, world *World, targetX int, targetY int) {
 	fmt.Printf("Firing at (%v,%v) with %+v", targetX, targetY, spell)
 	creature.CompletedExternalAction = true
-	creature.MP.Current -= spell.Cost
+	creature.ST.Current -= spell.Cost
 	// Can attack self. Do we care?
 	world.Broadcast(SpellLaunch, SpellLaunchMessage{Caster: creature, Spell: spell, X: targetX, Y: targetY})
 }
