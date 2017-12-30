@@ -63,7 +63,7 @@ func main() {
 		log.Fatalln("Failed to Init() window", err)
 	}
 
-	window.SetTitle("Muncher")
+	window.SetTitle("DeliveryRL")
 
 	window.SetBackgroundColor(gterm.NoColor)
 
