@@ -117,7 +117,7 @@ func NewCreature(level int, maxHP int) Creature {
 			currentEnergy: 100,
 			maxEnergy:     100,
 		},
-		HP:        Resource{Current: 5, Max: 5, RegenRate: 0.25},
+		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.25},
 		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
 		Equipment: NewEquipment(),
 	}

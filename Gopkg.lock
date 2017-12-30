@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/MichaelTJones/pcg"
   packages = ["."]
@@ -22,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "72fe3fa7bf6a0f22c1e655e495aee891a246f67627c14f9a0dfe7e2195756c3b"
+  inputs-digest = "104e2cf27cfa359648499eda82cb3f52dfb3fffd34a0530161008f8ed633d613"
   solver-name = "gps-cdcl"
   solver-version = 1

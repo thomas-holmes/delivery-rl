@@ -1,0 +1,31 @@
+[[Monster]]
+Name = "Goblin"
+Description = "A hungry little goblin."
+Glyph = "g"
+Color = [0, 255, 0] 
+Level = 1
+HP = 5
+
+[[Monster]]
+Name = "Orc"
+Description = "A furious orc."
+Glyph = "o"
+Color = [25, 225, 10] 
+Level = 2
+HP = 10
+
+[[Monster]]
+Name = "Wolf"
+Description = "A starving wolf."
+Glyph = "w"
+Color = [55, 55, 55]
+Level = 1
+HP = 4
+
+[[Monster]]
+Name = "Troll"
+Description = "A huge lumbering troll."
+Glyph = "T"
+Color = [0, 255, 0]
+Level = 5
+HP = 44

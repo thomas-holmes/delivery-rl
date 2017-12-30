@@ -90,11 +90,6 @@ func main() {
 
 	world.AddEntityToCurrentLevel(&player)
 
-	// WARNING: Fix Monsters need to be added after level creation now
-	for i := 0; i < 10; i++ {
-		spawnRandomMonster(world)
-	}
-
 	hud := NewHud(&player, world, 60, 0)
 
 	for !quit && !world.QuitGame {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
+	"path"
 	"strconv"
 
 	"github.com/MichaelTJones/pcg"
@@ -89,14 +89,19 @@ func (world *World) SetCurrentLevel(index int) {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
+	monsters := loadMonsterDefinitions(path.Join("assets", "definitions", "monsters.toml"))
+
 	for tries := 0; tries < level.MonsterDensity; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))
 		y := int(world.rng.Bounded(uint64(level.Rows)))
 
 		if level.CanStandOnTile(x, y) {
-			creatureLevel := rand.Intn(8) + 1
-			monster := NewMonster(x, y, creatureLevel, creatureLevel)
-			monster.Name = fmt.Sprintf("A Scary Number %v", creatureLevel)
+			index := rand.Intn(len(monsters.Monsters))
+			def := monsters.Monsters[index]
+			monster := NewMonster(x, y, def.Level, def.HP)
+			monster.Name = def.Name
+			monster.RenderGlyph = []rune(def.Glyph)[0]
+			monster.RenderColor = sdl.Color{R: uint8(def.Color[0]), G: uint8(def.Color[1]), B: uint8(def.Color[2]), A: 255}
 			world.AddEntity(&monster, level)
 		}
 	}
