@@ -1,4 +1,12 @@
 [[Monster]]
+Name = "Rat"
+Description = "A large rat. It is trying not to be seen."
+Glyph = "r"
+Color = [255, 255, 0]
+Level = 1
+HP = 2
+
+[[Monster]]
 Name = "Goblin"
 Description = "A hungry little goblin."
 Glyph = "g"
@@ -11,8 +19,8 @@ Name = "Orc"
 Description = "A furious orc."
 Glyph = "o"
 Color = [25, 225, 10] 
-Level = 2
-HP = 10
+Level = 3
+HP =  14
 
 [[Monster]]
 Name = "Wolf"
@@ -20,7 +28,7 @@ Description = "A starving wolf."
 Glyph = "w"
 Color = [55, 55, 55]
 Level = 1
-HP = 4
+HP = 7
 
 [[Monster]]
 Name = "Troll"
