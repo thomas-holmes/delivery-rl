@@ -8,6 +8,7 @@ import (
 
 	"github.com/MichaelTJones/pcg"
 
+	"github.com/thomas-holmes/delivery-rl/game/monsters"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -89,15 +90,15 @@ func (world *World) SetCurrentLevel(index int) {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
-	monsters := loadMonsterDefinitions(path.Join("assets", "definitions", "monsters.toml"))
+	monsters := monsters.LoadDefinitions(path.Join("assets", "definitions", "monsters.toml"))
 
 	for tries := 0; tries < level.MonsterDensity; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))
 		y := int(world.rng.Bounded(uint64(level.Rows)))
 
 		if level.CanStandOnTile(x, y) {
-			index := rand.Intn(len(monsters.Monsters))
-			def := monsters.Monsters[index]
+			index := rand.Intn(len(monsters))
+			def := monsters[index]
 			monster := NewMonster(x, y, def.Level, def.HP)
 			monster.Name = def.Name
 			monster.RenderGlyph = []rune(def.Glyph)[0]

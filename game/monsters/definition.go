@@ -1,4 +1,4 @@
-package main
+package monsters
 
 import (
 	"log"
@@ -6,11 +6,11 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type MonsterDefinitions struct {
-	Monsters []MonsterDefinition `toml:"Monster"`
+type definitions struct {
+	Monsters []Definition `toml:"Monster"`
 }
 
-type MonsterDefinition struct {
+type Definition struct {
 	Name        string
 	Description string
 	Glyph       string
@@ -20,12 +20,12 @@ type MonsterDefinition struct {
 	HP    int
 }
 
-func loadMonsterDefinitions(path string) MonsterDefinitions {
-	defs := MonsterDefinitions{}
+func LoadDefinitions(path string) []Definition {
+	defs := definitions{}
 	_, err := toml.DecodeFile(path, &defs)
 	if err != nil {
 		log.Panicf("Could not load monster definitions from %v. Error %+v", path, err)
 	}
 
-	return defs
+	return defs.Monsters
 }
