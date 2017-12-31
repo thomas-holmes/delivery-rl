@@ -269,15 +269,15 @@ func (world *World) Update(input InputEvent) {
 			world.CurrentLevel.NextEnergy = 0
 			world.CurrentLevel.NextEntity = 0
 			log.Printf("Restarting loop after changing level")
-			return
+			return // Is this the right thing to do? Or could we just break?
 		}
 	}
+
 	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
 		log.Printf("Looping around")
 		world.CurrentLevel.NextEntity = 0
 		world.CurrentLevel.NextEnergy = 0
 	}
-	return
 }
 
 func (world *World) UpdateCamera() {
