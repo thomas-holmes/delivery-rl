@@ -1,0 +1,46 @@
+[[Item]]
+Name = "Apple"
+Description = "A delicious green apple"
+Glyph = "a"
+Color = [0, 255, 0]
+Equippable = false
+
+[[Item]]
+Name = "Dagger"
+Description = "A plain dagger."
+Glyph = ")"
+Color = [255, 0, 0]
+Power = 2
+Equippable = true
+
+[[Item]]
+Name = "Rapier"
+Description = "A slender weapon, perfect for thursting."
+Glyph = ')'
+Color = [0, 255, 0]
+Power = 4
+Equippable = true
+
+[[Item]]
+Name = "Warhammer"
+Description = "A greusome warhammer. Few problems can't be solved by crushing"
+Glyph = ')'
+Color = [255, 255, 0]
+Power = 6
+Equippable = true
+
+[[Item]]
+Name = "Shortsword named Sting"
+Description = "This shortsword glows blue when orcs are nearby. It is razor sharp."
+Glyph = ')'
+Color = [0, 0, 255]
+Power = 8
+Equippable = true
+
+[[Item]]
+Name = "Thunderfury, Blessed Blade of the Windseeker"
+Description = "A two-pronged blade that courses with electrical power. You feel unstoppable while holding this weapon."
+Glyph = ')'
+Color = [255, 0, 255]
+Power = 10
+Equippable = true

@@ -1,7 +1,6 @@
 package monsters
 
 import (
-	"log"
 	"testing"
 
 	"github.com/BurntSushi/toml"
@@ -16,16 +15,16 @@ Color = [0, 255, 0]
 Level = 1
 HP = 5
 `
-	monster := MonsterDefinition{}
+	monster := Definition{}
 	_, err := toml.Decode(goblinTOML, &monster)
 	if err != nil {
 		t.Errorf("Failed to parse goblin TOML, %+v", err)
 	}
-	log.Printf("Monster: %+v", monster)
 
 	if monster.Name != "Goblin" {
 		t.Errorf("Expected name (Goblin) got (%v)", monster.Name)
 	}
+
 	if monster.Description != "A hungry little goblin." {
 		t.Errorf("Expected description (A hungry littel goblin.) got (%v)", monster.Description)
 	}
@@ -49,7 +48,7 @@ Color = [25, 225, 10]
 Level = 2
 HP = 10
 `
-	monsters := MonsterDefinitions{}
+	monsters := definitions{}
 	_, err := toml.Decode(goblinTOML, &monsters)
 	if err != nil {
 		t.Errorf("Failed to parse goblin TOML, %+v", err)
