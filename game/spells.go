@@ -64,21 +64,18 @@ func (pop *SpellPop) castSpell(index int) {
 	}
 }
 
-func (pop *SpellPop) Update(input InputEvent) bool {
+func (pop *SpellPop) Update(input InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
 		case k == sdl.K_ESCAPE:
 			pop.done = true
-			return true
 		case k >= sdl.K_a && k <= sdl.K_z:
 			pop.castSpell(int(k - sdl.K_a))
 		}
 
 	}
-
-	return true
 }
 
 func (pop SpellPop) renderItem(index int, row int, window *gterm.Window) int {
@@ -165,7 +162,7 @@ func (pop *SpellTargeting) setInitialState() {
 	}
 }
 
-func (pop *SpellTargeting) Update(input InputEvent) bool {
+func (pop *SpellTargeting) Update(input InputEvent) {
 	player := pop.World.Player
 	pop.setInitialState()
 	newX, newY := pop.TargetX, pop.TargetY
@@ -226,8 +223,6 @@ func (pop *SpellTargeting) Update(input InputEvent) bool {
 		pop.cursorColor = Yellow
 		pop.lineColor = White
 	}
-
-	return false
 }
 
 func (pop SpellTargeting) renderSquareCursor() {

@@ -18,7 +18,7 @@ func (pop PopMenu) Done() bool {
 }
 
 type Menu interface {
-	Update(InputEvent) bool
+	Update(InputEvent)
 	Render(window *gterm.Window)
 	Done() bool
 }

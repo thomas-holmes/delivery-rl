@@ -15,17 +15,15 @@ type FullGameLog struct {
 	ScrollPosition int
 }
 
-func (pop *FullGameLog) Update(input InputEvent) bool {
+func (pop *FullGameLog) Update(input InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
 		case k == sdl.K_ESCAPE:
 			pop.done = true
-			return true
 		}
 	}
-	return false
 }
 
 func (pop *FullGameLog) Render(window *gterm.Window) {

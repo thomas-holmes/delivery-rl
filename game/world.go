@@ -461,7 +461,6 @@ func (world *World) AddAnimation(a Animation) {
 
 func (world *World) ShowEndGameMenu() {
 	pop := NewEndGameMenu(10, 5, 40, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
-	world.GameOver = true
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }
 
@@ -499,7 +498,7 @@ func (world *World) Notify(message Message, data interface{}) {
 			if n, ok := d.Menu.(Notifier); ok {
 				n.SetMessageBus(world.messageBus)
 			}
-			d.Menu.Update(InputEvent{})
+			d.Menu.Update(world.PopInput())
 			world.MenuStack = append(world.MenuStack, d.Menu)
 		}
 	}

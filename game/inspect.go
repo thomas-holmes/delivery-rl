@@ -16,14 +16,13 @@ type InspectionPop struct {
 	InspectY int
 }
 
-func (pop *InspectionPop) Update(input InputEvent) bool {
+func (pop *InspectionPop) Update(input InputEvent) {
 	newX, newY := pop.InspectX, pop.InspectY
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_ESCAPE:
 			pop.done = true
-			return true
 		case sdl.K_h:
 			newX = pop.InspectX - 1
 		case sdl.K_j:
@@ -49,11 +48,7 @@ func (pop *InspectionPop) Update(input InputEvent) bool {
 		// Guard against level boundaries
 		pop.InspectX = newX
 		pop.InspectY = newY
-
-		return true
 	}
-
-	return false
 }
 
 func (pop *InspectionPop) RenderTileDescription(tile *Tile) {

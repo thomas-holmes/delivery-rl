@@ -28,17 +28,14 @@ type ItemDetails struct {
 	PopMenu
 }
 
-func (pop *ItemDetails) Update(input InputEvent) bool {
+func (pop *ItemDetails) Update(input InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_ESCAPE:
 			pop.done = true
-			return true
 		}
 	}
-
-	return false
 }
 
 func (pop *ItemDetails) renderShortDescription(row int, window *gterm.Window) int {

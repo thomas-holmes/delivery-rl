@@ -36,7 +36,7 @@ func (pop *EquipmentPop) equipItem(index int) {
 	}
 }
 
-func (pop *EquipmentPop) Update(input InputEvent) bool {
+func (pop *EquipmentPop) Update(input InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
@@ -48,8 +48,6 @@ func (pop *EquipmentPop) Update(input InputEvent) bool {
 		}
 
 	}
-
-	return false
 }
 
 func (pop *EquipmentPop) Render(window *gterm.Window) {

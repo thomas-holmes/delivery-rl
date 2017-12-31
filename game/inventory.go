@@ -29,21 +29,18 @@ func (pop *InventoryPop) tryShowItem(index int) {
 	}
 }
 
-func (pop *InventoryPop) Update(input InputEvent) bool {
+func (pop *InventoryPop) Update(input InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
 		case k == sdl.K_ESCAPE:
 			pop.done = true
-			return true
 		case k >= sdl.K_a && k <= sdl.K_z:
 			pop.tryShowItem(int(k - sdl.K_a))
 		}
 
 	}
-
-	return false
 }
 
 func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) int {

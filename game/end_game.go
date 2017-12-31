@@ -14,8 +14,16 @@ type EndGameMenu struct {
 	PopMenu
 }
 
-func (pop *EndGameMenu) Update(input InputEvent) bool {
-	return false
+func (pop *EndGameMenu) Update(input InputEvent) {
+	switch e := input.Event.(type) {
+	case *sdl.KeyDownEvent:
+		k := e.Keysym.Sym
+		switch {
+		case k == sdl.K_ESCAPE:
+			pop.done = true
+			pop.world.GameOver = true
+		}
+	}
 }
 
 func (pop *EndGameMenu) RenderBorder(window *gterm.Window) {
