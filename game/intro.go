@@ -21,6 +21,7 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	content := "DeliveryRL"
 	x, y := (window.Columns-len(content))/2, window.Rows/2
 	window.PutString(x, y, "DeliveryRL", LightBlue)
+
 	content = "Press any key to begin..."
 	x, y = (window.Columns-len(content))/2, window.Rows/2+1
 	window.PutString(x, y, "Press any key to begin...", Grey)
