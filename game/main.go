@@ -16,14 +16,14 @@ import (
 
 var quit = false
 
-func eventActionable(input InputEvent) bool {
+func filterActionableEvents(input InputEvent) InputEvent {
 	switch input.Event.(type) {
 	case *sdl.KeyDownEvent:
-		return true
+		return input
 	case *sdl.QuitEvent:
-		return true
+		return input
 	}
-	return false
+	return EmptyInput
 }
 
 func handleInput(input InputEvent, world *World) {
@@ -97,25 +97,24 @@ func main() {
 
 		inputEvent := InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
 		window.ClearWindow()
-		if world.turnCount == 0 || eventActionable(inputEvent) {
-			if !intro.Done() {
-				intro.Update(inputEvent)
-				intro.Render(window)
-				window.Refresh()
-				continue
-			}
-
-			handleInput(inputEvent, world)
-
-			// TODO: Consider moving this into the world update loop?
-			world.AddInput(inputEvent)
-
-			updateLoops := 0
-			for !world.Update() && !world.GameOver {
-				updateLoops++
-			}
-			log.Printf("Ran %v update loops", updateLoops)
+		inputEvent = filterActionableEvents(inputEvent)
+		if !intro.Done() {
+			intro.Update(inputEvent)
+			intro.Render(window)
+			window.Refresh()
+			continue
 		}
+
+		handleInput(inputEvent, world)
+
+		// TODO: Consider moving this into the world update loop?
+		world.AddInput(inputEvent)
+
+		updateLoops := 0
+		for !world.Update(inputEvent) && !world.GameOver {
+			updateLoops++
+		}
+
 		if world.Animating() {
 			world.UpdateAnimations()
 		}

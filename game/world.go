@@ -48,15 +48,13 @@ type World struct {
 
 	showScentOverlay bool
 
-	InputBuffer []InputEvent
+	bufferedInput InputEvent
 
 	MenuStack  []Menu
 	Animations []Animation
 
 	GameOver bool
 	QuitGame bool
-
-	needInput bool
 
 	*GameLog
 	Messaging
@@ -68,20 +66,20 @@ func (world *World) GetNextID() int {
 	return world.nextID
 }
 
-// PopInput get a queued input if there is one.
-func (world *World) PopInput() (InputEvent, bool) {
-	if len(world.InputBuffer) > 0 {
-		input := world.InputBuffer[0]
-		world.InputBuffer = world.InputBuffer[1:]
-		return input, true
-	}
+// EmptyInput Just an empty InputEvent
+var EmptyInput = InputEvent{}
 
-	return InputEvent{}, false
+// PopInput get a queued input if there is one.
+func (world *World) PopInput() InputEvent {
+	input := world.bufferedInput
+	world.bufferedInput = EmptyInput
+
+	return input
 }
 
 // AddInput queue an input for the game loop
 func (world *World) AddInput(input InputEvent) {
-	world.InputBuffer = append(world.InputBuffer, input)
+	world.bufferedInput = input
 }
 
 // SetCurrentLevel update the worlds inner CurrentLevel pointer
@@ -218,7 +216,8 @@ func (world *World) tidyMenus() bool {
 	return len(world.MenuStack) > 0
 }
 
-func (world *World) Update() bool {
+func (world *World) Update(input InputEvent) bool {
+	world.AddInput(input)
 	// log.Printf("Updating turn [%v]", world.turnCount)
 	currentTicks := sdl.GetTicks()
 	world.CurrentTickDelta = currentTicks - world.CurrentUpdateTicks
@@ -226,29 +225,15 @@ func (world *World) Update() bool {
 
 	if world.tidyMenus() {
 		currentMenu := world.MenuStack[len(world.MenuStack)-1]
-		if input, ok := world.PopInput(); ok {
-			world.needInput = currentMenu.Update(input)
-			world.tidyMenus()
-		} else {
-			world.needInput = true
-		}
-		return world.needInput
+		currentMenu.Update(world.PopInput())
 	}
 
 	if world.tidyAnimations() {
 		for _, a := range world.Animations {
 			a.Update(world.CurrentTickDelta)
 		}
-		world.needInput = false
-		return true
 	}
 
-	if world.CurrentLevel.NextEntity == 0 && world.CurrentLevel.NextEnergy == 0 {
-		world.turnCount++
-	}
-	turn := world.turnCount
-
-	world.needInput = false
 	// log.Printf("nextEntity (%v), nextEnergy(%v) entityCount(%v)", world.CurrentLevel.NextEntity, world.CurrentLevel.NextEnergy, len(world.CurrentLevel.Entities))
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
@@ -259,29 +244,21 @@ func (world *World) Update() bool {
 			world.CurrentLevel.NextEnergy = i + 1
 		}
 
-		// TODO: Still some more optimization to do here, I think but this
-		// is a lot better than it was.
-		if a, ok := e.(Actor); ok {
-			if a.CanAct() {
-				if a.NeedsInput() {
-					input, ok := world.PopInput()
-					if !ok || !a.Update(turn, input, world) {
-						// log.Printf("[%v] Bailed out of update, due to !ok || !a.Update", e.Identity())
-						world.needInput = true
-						break
-					}
-				} else {
-					// log.Printf("[%v] Didn't need input", e.Identity())
-					a.Update(turn, InputEvent{}, world)
-					break
-				}
-			} else {
-				// log.Printf("[%v] Couldn't act", e.Identity())
-				world.CurrentLevel.NextEntity = i + 1
+		a, ok := e.(Actor)
+		if !ok {
+			continue
+		}
+
+		if a.CanAct() {
+			if !a.Update(world.turnCount, world.PopInput(), world) {
+				break
 			}
 		}
 
+		world.CurrentLevel.NextEntity = i + 1
+
 		if c, ok := e.(*Creature); ok && c.IsPlayer {
+			world.turnCount++
 			world.CurrentLevel.VisionMap.UpdateVision(world.Player.VisionDistance, world)
 			world.CurrentLevel.ScentMap.UpdateScents(world)
 		}
@@ -300,7 +277,7 @@ func (world *World) Update() bool {
 		world.CurrentLevel.NextEntity = 0
 		world.CurrentLevel.NextEnergy = 0
 	}
-	return world.needInput
+	return true // why?
 }
 
 func (world *World) UpdateCamera() {
@@ -473,7 +450,6 @@ func (world *World) UpdateAnimations() {
 		for _, a := range world.Animations {
 			a.Update(world.CurrentTickDelta)
 		}
-		world.needInput = false
 	}
 
 }

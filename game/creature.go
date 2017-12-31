@@ -386,10 +386,6 @@ func (creature *Creature) Notify(message Message, data interface{}) {
 	}
 }
 
-func (c *Creature) NeedsInput() bool {
-	return c.IsPlayer && !c.CompletedExternalAction
-}
-
 // SetColor updates the render color of the player
 func (player *Creature) SetColor(color sdl.Color) {
 	player.RenderColor = color
