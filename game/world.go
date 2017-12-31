@@ -216,7 +216,7 @@ func (world *World) tidyMenus() bool {
 	return len(world.MenuStack) > 0
 }
 
-func (world *World) Update(input InputEvent) bool {
+func (world *World) Update(input InputEvent) {
 	world.AddInput(input)
 	// log.Printf("Updating turn [%v]", world.turnCount)
 	currentTicks := sdl.GetTicks()
@@ -269,7 +269,7 @@ func (world *World) Update(input InputEvent) bool {
 			world.CurrentLevel.NextEnergy = 0
 			world.CurrentLevel.NextEntity = 0
 			log.Printf("Restarting loop after changing level")
-			return true
+			return
 		}
 	}
 	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
@@ -277,7 +277,7 @@ func (world *World) Update(input InputEvent) bool {
 		world.CurrentLevel.NextEntity = 0
 		world.CurrentLevel.NextEnergy = 0
 	}
-	return true // why?
+	return
 }
 
 func (world *World) UpdateCamera() {

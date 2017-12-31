@@ -105,14 +105,16 @@ func main() {
 			continue
 		}
 
+		// Probably don't do this either
 		handleInput(inputEvent, world)
 
-		// TODO: Consider moving this into the world update loop?
 		world.AddInput(inputEvent)
 
-		updateLoops := 0
-		for !world.Update(inputEvent) && !world.GameOver {
-			updateLoops++
+		world.Update(inputEvent)
+
+		if world.GameOver {
+			log.Printf("Game over, man!")
+			break
 		}
 
 		if world.Animating() {
