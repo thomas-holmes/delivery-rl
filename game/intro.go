@@ -72,5 +72,5 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 
 	content = "Press any key to begin..."
 	x, y = (window.Columns-len(content))/2, y+1
-	window.PutString(x, y, "Press any key to begin...", Grey)
+	window.PutString(x, y, "Press any key to begin...", LightGrey)
 }

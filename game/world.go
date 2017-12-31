@@ -234,7 +234,6 @@ func (world *World) Update(input InputEvent) {
 		}
 	}
 
-	// log.Printf("nextEntity (%v), nextEnergy(%v) entityCount(%v)", world.CurrentLevel.NextEntity, world.CurrentLevel.NextEnergy, len(world.CurrentLevel.Entities))
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
 
