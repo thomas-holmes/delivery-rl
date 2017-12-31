@@ -92,11 +92,18 @@ func main() {
 
 	hud := NewHud(&player, world, 60, 0)
 
+	intro := IntroScreen{}
 	for !quit && !world.QuitGame {
 
 		inputEvent := InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
 		window.ClearWindow()
 		if world.turnCount == 0 || eventActionable(inputEvent) {
+			if !intro.Done() {
+				intro.Update(inputEvent)
+				intro.Render(window)
+				window.Refresh()
+				continue
+			}
 
 			handleInput(inputEvent, world)
 
