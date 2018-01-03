@@ -23,7 +23,7 @@ func filterActionableEvents(input InputEvent) InputEvent {
 	case *sdl.QuitEvent:
 		return input
 	}
-	return EmptyInput
+	return InputEvent{}
 }
 
 func handleInput(input InputEvent, world *World) {
@@ -111,11 +111,6 @@ func main() {
 		world.AddInput(inputEvent)
 
 		world.Update(inputEvent)
-
-		if world.GameOver {
-			log.Printf("Game over, man!")
-			break
-		}
 
 		if world.Animating() {
 			world.UpdateAnimations()

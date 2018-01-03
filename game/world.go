@@ -66,13 +66,10 @@ func (world *World) GetNextID() int {
 	return world.nextID
 }
 
-// EmptyInput Just an empty InputEvent
-var EmptyInput = InputEvent{}
-
 // PopInput get a queued input if there is one.
 func (world *World) PopInput() InputEvent {
 	input := world.bufferedInput
-	world.bufferedInput = EmptyInput
+	world.bufferedInput = InputEvent{}
 
 	return input
 }
@@ -234,6 +231,10 @@ func (world *World) Update(input InputEvent) {
 		}
 	}
 
+	if world.GameOver {
+		return
+	}
+
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
 
@@ -273,7 +274,6 @@ func (world *World) Update(input InputEvent) {
 	}
 
 	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
-		log.Printf("Looping around")
 		world.CurrentLevel.NextEntity = 0
 	}
 }
@@ -458,6 +458,7 @@ func (world *World) AddAnimation(a Animation) {
 }
 
 func (world *World) ShowEndGameMenu() {
+	world.GameOver = true
 	pop := NewEndGameMenu(10, 5, 40, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }

@@ -21,7 +21,7 @@ func (pop *EndGameMenu) Update(input InputEvent) {
 		switch {
 		case k == sdl.K_ESCAPE:
 			pop.done = true
-			pop.world.GameOver = true
+			pop.world.QuitGame = true
 		}
 	}
 }
