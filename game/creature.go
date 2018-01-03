@@ -46,11 +46,14 @@ type Creature struct {
 	X int
 	Y int
 
+	CurrentlyActing bool
 	Energy
 
 	Inventory
 
 	Equipment
+
+	Speed int
 
 	HP Resource // health
 	ST Resource // stamina
@@ -66,8 +69,19 @@ type Creature struct {
 	Messaging
 }
 
+func (c *Creature) StartTurn() {
+	if c.currentEnergy >= 100 {
+		c.CurrentlyActing = true
+	}
+}
+
+func (c *Creature) EndTurn() {
+	c.CurrentlyActing = false
+	c.Regen()
+}
+
 func (c Creature) CanAct() bool {
-	return c.currentEnergy >= 100
+	return c.currentEnergy >= 100 || (c.CurrentlyActing && c.currentEnergy >= c.Speed)
 }
 
 func (c Creature) XPos() int {
@@ -119,6 +133,7 @@ func NewCreature(level int, maxHP int) Creature {
 		},
 		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.25},
 		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
+		Speed:     100,
 		Equipment: NewEquipment(),
 	}
 }
@@ -132,6 +147,7 @@ func NewPlayer() Creature {
 	player.Spells = DefaultSpells
 	player.VisionDistance = 12
 	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.5}
+	player.Speed = 50
 
 	return player
 }
@@ -144,6 +160,7 @@ func NewMonster(xPos int, yPos int, level int, hp int) Creature {
 	monster.Team = MonsterTeam
 	monster.RenderColor = Green
 	monster.RenderGlyph = []rune(strconv.Itoa(monster.Level))[0]
+	monster.Speed = 25
 
 	return monster
 }
@@ -202,8 +219,7 @@ func (creature *Creature) Update(turn uint64, input InputEvent, world *World) bo
 	}
 
 	if success {
-		creature.currentEnergy -= 100
-		creature.Regen()
+		creature.currentEnergy -= creature.Speed
 		return true
 	}
 

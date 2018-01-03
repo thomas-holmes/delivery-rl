@@ -248,13 +248,19 @@ func (world *World) Update(input InputEvent) {
 			continue
 		}
 
+		a.StartTurn()
+
 		if a.CanAct() {
 			if !a.Update(world.turnCount, world.PopInput(), world) {
 				break
 			}
 		}
 
-		world.CurrentLevel.NextEntity = i + 1
+		// We've finished, so it is safe to advance
+		if !a.CanAct() {
+			a.EndTurn()
+			world.CurrentLevel.NextEntity = i + 1
+		}
 
 		if c, ok := e.(*Creature); ok && c.IsPlayer {
 			world.turnCount++
