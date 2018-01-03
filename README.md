@@ -1,6 +1,6 @@
 # DeliveryRL
 
-The ancient dragon is hungry and you're short on time. You have better deliver that pizza quickly!
+The ancient dragon is hungry and you're short on time. You had better deliver that pizza quickly!
 
 ## Compilation
 
