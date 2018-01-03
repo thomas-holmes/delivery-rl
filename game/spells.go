@@ -280,7 +280,6 @@ func conePositions(pX, pY, x0, y0, size int) []Position {
 
 	}
 
-	log.Printf("%+v", conePositions)
 	return conePositions
 }
 
