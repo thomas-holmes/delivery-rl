@@ -269,6 +269,7 @@ func (world *World) Update(input InputEvent) {
 		}
 
 		if world.LevelChanged {
+			a.EndTurn()
 			world.LevelChanged = false
 			// Reset these or the player can end up in a spot where they have no energy but need input
 			world.CurrentLevel.NextEnergy = 0
