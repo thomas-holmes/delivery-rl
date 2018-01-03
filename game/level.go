@@ -89,7 +89,6 @@ type Level struct {
 	Depth int
 
 	NextEntity int
-	NextEnergy int
 	Entities   []Entity
 }
 

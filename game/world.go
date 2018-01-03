@@ -237,12 +237,6 @@ func (world *World) Update(input InputEvent) {
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
 
-		energized, isEnergized := e.(Energized)
-		if isEnergized && world.CurrentLevel.NextEnergy == i {
-			energized.AddEnergy(100)
-			world.CurrentLevel.NextEnergy = i + 1
-		}
-
 		a, ok := e.(Actor)
 		if !ok {
 			continue
@@ -272,7 +266,6 @@ func (world *World) Update(input InputEvent) {
 			a.EndTurn()
 			world.LevelChanged = false
 			// Reset these or the player can end up in a spot where they have no energy but need input
-			world.CurrentLevel.NextEnergy = 0
 			world.CurrentLevel.NextEntity = 0
 			log.Printf("Restarting loop after changing level")
 			return // Is this the right thing to do? Or could we just break?
@@ -282,7 +275,6 @@ func (world *World) Update(input InputEvent) {
 	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
 		log.Printf("Looping around")
 		world.CurrentLevel.NextEntity = 0
-		world.CurrentLevel.NextEnergy = 0
 	}
 }
 

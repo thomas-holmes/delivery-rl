@@ -47,6 +47,7 @@ type Creature struct {
 	Y int
 
 	CurrentlyActing bool
+	GainedEnergy    bool
 	Energy
 
 	Inventory
@@ -70,18 +71,24 @@ type Creature struct {
 }
 
 func (c *Creature) StartTurn() {
-	if c.currentEnergy >= 100 {
+	if !c.GainedEnergy {
+		c.Energy.AddEnergy(100)
+		c.GainedEnergy = true
+	}
+
+	if c.Energy.Current >= 100 {
 		c.CurrentlyActing = true
 	}
 }
 
 func (c *Creature) EndTurn() {
 	c.CurrentlyActing = false
+	c.GainedEnergy = false
 	c.Regen()
 }
 
 func (c Creature) CanAct() bool {
-	return c.currentEnergy >= 100 || (c.CurrentlyActing && c.currentEnergy >= c.Speed)
+	return c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed)
 }
 
 func (c Creature) XPos() int {
@@ -128,8 +135,8 @@ func NewCreature(level int, maxHP int) Creature {
 		Level: level,
 		Team:  NeutralTeam,
 		Energy: Energy{
-			currentEnergy: 100,
-			maxEnergy:     100,
+			Current: 100,
+			Max:     100,
 		},
 		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.25},
 		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
@@ -217,7 +224,7 @@ func (creature *Creature) Update(turn uint64, input InputEvent, world *World) bo
 	}
 
 	if success {
-		creature.currentEnergy -= creature.Speed
+		creature.Energy.Current -= creature.Speed
 		return true
 	}
 
