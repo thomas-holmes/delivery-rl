@@ -2,6 +2,7 @@ package monsters
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -27,6 +28,7 @@ type Definition struct {
 	HP    int
 }
 
+// Feels a bit error prone, but I think it'll be ok.
 func (c *color) UnmarshalTOML(data interface{}) error {
 	colors, ok := data.([]interface{})
 	if !ok {
@@ -36,9 +38,18 @@ func (c *color) UnmarshalTOML(data interface{}) error {
 	if len(colors) != 3 {
 		return errors.New("Expected colors array of format [R, G, B]")
 	}
-	r := colors[0].(int64)
-	g := colors[1].(int64)
-	b := colors[2].(int64)
+	r, ok := colors[0].(int64)
+	if !ok {
+		return fmt.Errorf("R %v was not an int64 but %T instead, failed", colors[0], colors[0])
+	}
+	g, ok := colors[1].(int64)
+	if !ok {
+		return fmt.Errorf("G %v was not an int64 but %T instead, failed", colors[1], colors[1])
+	}
+	b, ok := colors[2].(int64)
+	if !ok {
+		return fmt.Errorf("B %v was not an int64 but %T instead, failed", colors[2], colors[2])
+	}
 
 	c.R = uint8(r)
 	c.G = uint8(g)
