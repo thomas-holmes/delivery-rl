@@ -147,7 +147,6 @@ func NewPlayer() Creature {
 	player.Spells = DefaultSpells
 	player.VisionDistance = 12
 	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.5}
-	player.Speed = 50
 
 	return player
 }
@@ -160,7 +159,6 @@ func NewMonster(xPos int, yPos int, level int, hp int) Creature {
 	monster.Team = MonsterTeam
 	monster.RenderColor = Green
 	monster.RenderGlyph = []rune(strconv.Itoa(monster.Level))[0]
-	monster.Speed = 25
 
 	return monster
 }
