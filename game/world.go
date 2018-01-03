@@ -100,7 +100,7 @@ func (world *World) addInitialMonsters(level *Level) {
 			monster := NewMonster(x, y, def.Level, def.HP)
 			monster.Name = def.Name
 			monster.RenderGlyph = []rune(def.Glyph)[0]
-			monster.RenderColor = sdl.Color{R: uint8(def.Color[0]), G: uint8(def.Color[1]), B: uint8(def.Color[2]), A: 255}
+			monster.RenderColor = def.Color.Color
 			world.AddEntity(&monster, level)
 		}
 	}

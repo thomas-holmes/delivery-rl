@@ -11,7 +11,7 @@ func TestMonsterParsing(t *testing.T) {
 Name = "Goblin"
 Description = "A hungry little goblin."
 Glyph = "g"
-Color = [0, 255, 0] 
+NewColor = [100, 150, 200]
 Level = 1
 HP = 5
 `
@@ -27,6 +27,10 @@ HP = 5
 
 	if monster.Description != "A hungry little goblin." {
 		t.Errorf("Expected description (A hungry littel goblin.) got (%v)", monster.Description)
+	}
+
+	if monster.Color.R != 100 {
+		t.Errorf("Expected monster color R to be 100, got (%v)", monster.Color.R)
 	}
 }
 
