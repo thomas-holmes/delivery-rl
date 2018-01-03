@@ -62,7 +62,7 @@ func (gameLog *GameLog) Notify(message Message, data interface{}) {
 			gameLog.appendMessages(d.Messages)
 		}
 	case ShowFullGameLog:
-		menu := &FullGameLog{PopMenu: PopMenu{X: 5, Y: 0, W: 80, H: gameLog.world.Window.Rows - 2}, GameLog: gameLog}
+		menu := &FullGameLog{PopMenu: PopMenu{X: 0, Y: 0, W: 80, H: gameLog.world.Window.Rows}, GameLog: gameLog}
 		gameLog.Broadcast(ShowMenu, ShowMenuMessage{menu})
 	}
 }
