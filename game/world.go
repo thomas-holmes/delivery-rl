@@ -526,7 +526,6 @@ func (world *World) BuildLevels() {
 }
 
 func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
-
 	world := &World{
 		Window:         window,
 		CameraCentered: centered,
