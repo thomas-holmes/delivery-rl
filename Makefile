@@ -11,4 +11,4 @@ build:
 	$(GOBUILD) -o run_dir/$(BINARY) github.com/thomas-holmes/delivery-rl/game
 
 run: build
-	cd ./run_dir && ./delivery-rl
+	cd ./run_dir && ./delivery-rl -no-vsync
