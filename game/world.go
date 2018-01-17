@@ -271,10 +271,11 @@ func (world *World) Update(input InputEvent) {
 			log.Printf("Restarting loop after changing level")
 			return // Is this the right thing to do? Or could we just break?
 		}
-	}
 
-	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
-		world.CurrentLevel.NextEntity = 0
+		if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
+			world.CurrentLevel.NextEntity = 0
+			i = 0
+		}
 	}
 }
 
