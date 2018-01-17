@@ -1,4 +1,5 @@
-CC=go
+GO_BIN?=go
+CC=$(GO_BIN)
 GOBUILD=$(CC) build
 GOPKG='github.com/thomas-holmes/delivery-rl/game'
 MKFILE_PATH=$(abspath $(lastword $(MAKEFILE_LIST)))
