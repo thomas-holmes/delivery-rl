@@ -12,3 +12,7 @@ build:
 
 run: build
 	cd ./run_dir && ./delivery-rl -no-vsync
+
+runv: build
+	cd ./run_dir && ./delivery-rl
+
