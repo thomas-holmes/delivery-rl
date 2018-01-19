@@ -1,0 +1,41 @@
+---
+  - name: "Apple"
+    description: "A delicious green apple"
+    glyph: "a"
+    color: [0, 255, 0]
+    equippable: false
+
+  - name: "Dagger"
+    description: "A plain dagger."
+    glyph: ")"
+    color: [255, 0, 0]
+    power: 2
+    equippable: true
+
+  - name: "Rapier"
+    description: "A slender weapon, perfect for thursting."
+    glyph: ')'
+    color: [0, 255, 0]
+    power: 4
+    equippable: true
+
+  - name: "Warhammer"
+    description: "A greusome warhammer. Few problems can't be solved by crushing"
+    glyph: ')'
+    color: [255, 255, 0]
+    power: 6
+    equippable: true
+
+  - name: "Shortsword named Sting"
+    description: "This shortsword glows blue when orcs are nearby. It is razor sharp."
+    glyph: ')'
+    color: [0, 0, 255]
+    power: 8
+    equippable: true
+
+  - name: "Thunderfury, Blessed Blade of the Windseeker"
+    description: "A two-pronged blade that courses with electrical power. You feel unstoppable while holding this weapon."
+    glyph: ')'
+    color: [255, 0, 255]
+    power: 10
+    equippable: true

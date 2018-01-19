@@ -1,14 +1,11 @@
 package items
 
 import (
+	"io/ioutil"
 	"log"
 
-	"github.com/BurntSushi/toml"
+	yaml "gopkg.in/yaml.v2"
 )
-
-type definitions struct {
-	Items []Definition `toml:"Item"`
-}
 
 type Definition struct {
 	Name        string
@@ -20,11 +17,14 @@ type Definition struct {
 }
 
 func LoadDefinitions(path string) []Definition {
-	defs := definitions{}
-	_, err := toml.DecodeFile(path, &defs)
+	var defs []Definition
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Panicf("Could not load item definitions from %v. Error %+v", path, err)
 	}
-
-	return defs.Items
+	err = yaml.Unmarshal(bytes, &defs)
+	if err != nil {
+		log.Panicf("Could not parse item definitions from %v. Error %+v", path, err)
+	}
+	return defs
 }

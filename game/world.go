@@ -85,7 +85,7 @@ func (world *World) SetCurrentLevel(index int) {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
-	monsters := monsters.LoadDefinitions(path.Join("assets", "definitions", "monsters.toml"))
+	monsters := monsters.LoadDefinitions(path.Join("assets", "definitions", "monsters.yaml"))
 
 	for tries := 0; tries < level.MonsterDensity; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))

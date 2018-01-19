@@ -3,21 +3,21 @@ package items
 import (
 	"testing"
 
-	"github.com/BurntSushi/toml"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func TestItemParsing(t *testing.T) {
-	appleTOML := `
-Name = "Apple"
-Description = "A delicious green apple"
-Glyph = "a"
-Color = [0, 255, 0]
-Equippable = false
+	appleYAML := `
+name: "Apple"
+description: "A delicious green apple"
+glyph: "a"
+color: [0, 255, 0]
+equippable: false
 `
 
 	item := Definition{}
 
-	_, err := toml.Decode(appleTOML, &item)
+	err := yaml.Unmarshal([]byte(appleYAML), &item)
 	if err != nil {
 		t.Errorf("Failed to decode apple %v", err)
 	}
@@ -28,31 +28,27 @@ Equippable = false
 }
 
 func TestParseMultipleItems(t *testing.T) {
-	itemsTOML := `
-[[Item]]
-Glyph = ")"
-Color = [255, 0, 0]
-Name = "Dagger"
-Description = "A plain dagger."
-Power = 2
-Equippable = true
-
-[[Item]]
-Name = "Rapier"
-Description = "A slender weapon, perfect for thursting."
-Glyph = ')'
-Color = [0, 255, 0]
-Power = 4
-Equippable = true
+	itemsYAML := `---
+  - name: "Dagger"
+    description: "A plain dagger."
+    glyph: ")"
+    color: [255, 0, 0]
+    power: 2
+    equippable: true
+  - name: "Rapier"
+    description: "A slender weapon, perfect for thursting."
+    glyph: ')'
+    color: [0, 255, 0]
+    power: 4
+    equippable: true
 `
 
-	defs := definitions{}
-	_, err := toml.Decode(itemsTOML, &defs)
+	var items []Definition
+	err := yaml.Unmarshal([]byte(itemsYAML), &items)
 	if err != nil {
 		t.Errorf("Failed to decode items %v", err)
 	}
 
-	items := defs.Items
 	if len(items) != 2 {
 		t.Errorf("Expected item length (2) but got (%v)", len(items))
 	}

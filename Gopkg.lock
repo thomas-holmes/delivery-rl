@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/BurntSushi/toml"
-  packages = ["."]
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
-  version = "v0.3.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/MichaelTJones/pcg"
   packages = ["."]
@@ -21,13 +15,22 @@
 
 [[projects]]
   name = "github.com/veandco/go-sdl2"
-  packages = ["sdl","ttf"]
+  packages = [
+    "sdl",
+    "ttf"
+  ]
   revision = "30f30965227962032c13bd0b12a89e6a5107c768"
   version = "v0.2"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "104e2cf27cfa359648499eda82cb3f52dfb3fffd34a0530161008f8ed633d613"
+  inputs-digest = "8dfead9cd67d229f9a7b945f3388230fba97bea76960b493b96706d5c64a9e0f"
   solver-name = "gps-cdcl"
   solver-version = 1
