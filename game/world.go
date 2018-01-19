@@ -235,8 +235,15 @@ func (world *World) Update(input InputEvent) {
 		return
 	}
 
+	// Attempt at a hack
+	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
+		world.CurrentLevel.NextEntity = 0
+	}
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
+		if !e.Enabled() {
+			continue
+		}
 
 		a, ok := e.(Actor)
 		if !ok {
@@ -397,7 +404,6 @@ func (world *World) OverlayScentMap() {
 }
 
 func (world *World) RemoveEntity(entity Entity) {
-	log.Printf("Removing entity")
 	foundIndex := -1
 	var foundEntity Entity
 	for i, e := range world.CurrentLevel.Entities {
@@ -408,9 +414,12 @@ func (world *World) RemoveEntity(entity Entity) {
 		}
 	}
 
-	if foundIndex > -1 {
-		world.CurrentLevel.Entities = append(world.CurrentLevel.Entities[:foundIndex], world.CurrentLevel.Entities[foundIndex+1:]...)
-	}
+	/*
+		if foundIndex > -1 {
+			world.CurrentLevel.Entities = append(world.CurrentLevel.Entities[:foundIndex], world.CurrentLevel.Entities[foundIndex+1:]...)
+		}
+	*/
+	world.CurrentLevel.Entities[foundIndex].Disable()
 
 	if creature, ok := foundEntity.(*Creature); ok {
 		world.CurrentLevel.GetTile(creature.X, creature.Y).Creature = nil

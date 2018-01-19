@@ -25,7 +25,7 @@ func (creature *Creature) Regen() {
 }
 
 type Creature struct {
-	Identifiable
+	BasicEntity
 
 	CompletedExternalAction bool
 

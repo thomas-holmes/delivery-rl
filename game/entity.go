@@ -1,22 +1,34 @@
 package main
 
-type Identifiable struct {
-	ID int
+type BasicEntity struct {
+	ID       int
+	disabled bool
 }
 
-func (e *Identifiable) SetIdentity(id int) {
+func (a BasicEntity) Enabled() bool {
+	return !a.disabled
+}
+
+func (a *BasicEntity) Disable() {
+	a.disabled = true
+}
+
+func (a *BasicEntity) Enable() {
+	a.disabled = false
+}
+
+func (e *BasicEntity) SetIdentity(id int) {
 	e.ID = id
 }
 
-func (e Identifiable) Identity() int {
+func (e BasicEntity) Identity() int {
 	return e.ID
 }
 
 type Entity interface {
 	Identity() int
 	SetIdentity(int)
-}
-
-func foo(entity Entity) {
-
+	Enabled() bool
+	Disable()
+	Enable()
 }
