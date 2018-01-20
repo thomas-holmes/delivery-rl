@@ -241,9 +241,6 @@ func (world *World) Update(input InputEvent) {
 	}
 	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
 		e := world.CurrentLevel.Entities[i]
-		if !e.Enabled() {
-			continue
-		}
 
 		a, ok := e.(Actor)
 		if !ok {
@@ -275,13 +272,12 @@ func (world *World) Update(input InputEvent) {
 			world.LevelChanged = false
 			// Reset these or the player can end up in a spot where they have no energy but need input
 			world.CurrentLevel.NextEntity = 0
-			log.Printf("Restarting loop after changing level")
 			return // Is this the right thing to do? Or could we just break?
 		}
 
 		if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
 			world.CurrentLevel.NextEntity = 0
-			i = 0
+			i = -1
 		}
 	}
 }
@@ -414,13 +410,12 @@ func (world *World) RemoveEntity(entity Entity) {
 		}
 	}
 
-	/*
-		if foundIndex > -1 {
-			world.CurrentLevel.Entities = append(world.CurrentLevel.Entities[:foundIndex], world.CurrentLevel.Entities[foundIndex+1:]...)
-		}
-	*/
-	world.CurrentLevel.Entities[foundIndex].Disable()
-
+	// This creates a but in some cases where a monster at the end of the entity list is killed.
+	// This causes the game to kind of weirdly freeze forever. We need to fix how entities are removed
+	// to fix it.
+	if foundIndex > -1 {
+		world.CurrentLevel.Entities = append(world.CurrentLevel.Entities[:foundIndex], world.CurrentLevel.Entities[foundIndex+1:]...)
+	}
 	if creature, ok := foundEntity.(*Creature); ok {
 		world.CurrentLevel.GetTile(creature.X, creature.Y).Creature = nil
 	}

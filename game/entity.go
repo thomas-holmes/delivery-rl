@@ -1,20 +1,7 @@
 package main
 
 type BasicEntity struct {
-	ID       int
-	disabled bool
-}
-
-func (a BasicEntity) Enabled() bool {
-	return !a.disabled
-}
-
-func (a *BasicEntity) Disable() {
-	a.disabled = true
-}
-
-func (a *BasicEntity) Enable() {
-	a.disabled = false
+	ID int
 }
 
 func (e *BasicEntity) SetIdentity(id int) {
@@ -28,7 +15,4 @@ func (e BasicEntity) Identity() int {
 type Entity interface {
 	Identity() int
 	SetIdentity(int)
-	Enabled() bool
-	Disable()
-	Enable()
 }
