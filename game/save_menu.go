@@ -1,6 +1,12 @@
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"bytes"
+	"log"
+
+	"github.com/thomas-holmes/gterm"
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 type SaveMenu struct {
 	World *World
@@ -9,7 +15,16 @@ type SaveMenu struct {
 }
 
 func (s SaveMenu) saveGame() {
-	s.World.SaveGame()
+	log.Printf("OMGOMGOMG SAVING")
+	save := NewSaveV0()
+
+	save.SaveWorld(s.World)
+
+	buf := new(bytes.Buffer)
+
+	save.Encode(buf)
+
+	log.Printf("[%v] %v", buf.Len(), buf)
 }
 
 func (pop *SaveMenu) Update(input InputEvent) {
@@ -25,4 +40,9 @@ func (pop *SaveMenu) Update(input InputEvent) {
 		}
 
 	}
+}
+
+func (pop SaveMenu) Render(window *gterm.Window) {
+	window.ClearRegion(pop.X, pop.Y, pop.W, pop.H)
+	window.PutString(pop.X, pop.Y, "Save? Y/N", White)
 }

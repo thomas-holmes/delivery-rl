@@ -542,6 +542,7 @@ func (w *World) getLevelById(id int) *Level {
 }
 
 func (w *World) SaveGame() {
+	w.Broadcast(ShowMenu, ShowMenuMessage{Menu: &SaveMenu{World: w, PopMenu: PopMenu{X: 0, Y: w.Window.Rows - 3, W: w.Window.Columns, H: w.Window.Rows}}})
 	w.Broadcast(SaveGame, SaveGameMessage{World: w})
 }
 

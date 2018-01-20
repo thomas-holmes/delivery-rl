@@ -25,7 +25,7 @@ type SaveV0 struct {
 	MaxDepth  int8      // World. Down-Convert to int8
 
 	// Perhaps we store RNG state for level generation and regenerate? Need versioned level gen code then :(
-	Levels []Level
+	Levels []ExportedLevelV0
 
 	NextID int64
 
@@ -118,7 +118,7 @@ func exportTiles(tiles []Tile) []ExportedTileV0 {
 	return eTiles
 }
 
-func ExportLevel(l *Level) ExportedLevelV0 {
+func exportLevel(l *Level) ExportedLevelV0 {
 	return ExportedLevelV0{
 		Columns:   l.Columns,
 		Rows:      l.Rows,
@@ -139,6 +139,16 @@ func ExportLevel(l *Level) ExportedLevelV0 {
 		Entities   []Entity
 		*/
 	}
+}
+
+func exportLevels(ls []*Level) []ExportedLevelV0 {
+	levels := make([]ExportedLevelV0, 0, len(ls))
+
+	for _, l := range ls {
+		levels = append(levels, exportLevel(l))
+	}
+
+	return levels
 }
 
 func (s *ExportedLevelV0) Encode(w io.Writer) error {
@@ -209,8 +219,8 @@ func (s *ExportedCreatureV0) Decode(r io.Reader) error {
 }
 
 func (s *SaveV0) Encode(w io.Writer) error {
-
-	return nil
+	e := gob.NewEncoder(w)
+	return e.Encode(s)
 }
 
 func (s *SaveV0) SaveWorld(world *World) {
@@ -219,7 +229,7 @@ func (s *SaveV0) SaveWorld(world *World) {
 	s.TurnCount = world.turnCount
 	s.MaxDepth = int8(world.MaxDepth)
 
-	// Levels
+	s.Levels = exportLevels(world.Levels)
 
 	s.NextID = int64(world.nextID)
 	s.GameLog = world.GameLog.Messages
@@ -228,6 +238,7 @@ func (s *SaveV0) SaveWorld(world *World) {
 }
 
 func init() {
+	gob.Register(SaveV0{})
 	gob.Register(ExportedCreatureV0{})
 	gob.Register(ExportedLevelV0{})
 }
