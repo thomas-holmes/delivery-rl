@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"log"
 
+	"io/ioutil"
+
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -24,7 +26,12 @@ func (s SaveMenu) saveGame() {
 
 	save.Encode(buf)
 
+	// TODO: Do something with this serialized buffer
+
+	ioutil.WriteFile("/tmp/save.dat", buf.Bytes(), 0666)
+
 	log.Printf("[%v] %v", buf.Len(), buf)
+
 }
 
 func (pop *SaveMenu) Update(input InputEvent) {

@@ -17,12 +17,11 @@ type IntroScreen struct {
 	pizza []string
 }
 
-func (intro *IntroScreen) Update(input InputEvent) bool {
+func (intro *IntroScreen) Update(input InputEvent) {
 	switch input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		intro.done = true
 	}
-	return true
 }
 
 func (intro *IntroScreen) maybeLoadPizza() {
