@@ -55,20 +55,7 @@ func spawnRandomMonster(world *World) {
 	}
 }
 
-func main() {
-	// Disable FPS limit, generally, so I can monitor performance.
-	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "DejaVuSansMono.ttf"), 24, !NoVSync)
-
-	if err := window.Init(); err != nil {
-		log.Fatalln("Failed to Init() window", err)
-	}
-
-	window.SetTitle("DeliveryRL")
-
-	window.SetBackgroundColor(gterm.NoColor)
-
-	window.ShouldRenderFps(true)
-
+func MakeNweWorld(window *gterm.Window) *World {
 	world := NewWorld(window, true, 99)
 	{
 		// TODO: Roll this up into some kind of registering a system function on the world
@@ -90,7 +77,25 @@ func main() {
 
 	world.AddEntityToCurrentLevel(&player)
 
-	hud := NewHud(&player, world, 60, 0)
+	return world
+}
+
+func main() {
+	// Disable FPS limit, generally, so I can monitor performance.
+	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "DejaVuSansMono.ttf"), 24, !NoVSync)
+
+	if err := window.Init(); err != nil {
+		log.Fatalln("Failed to Init() window", err)
+	}
+
+	window.SetTitle("DeliveryRL")
+
+	window.SetBackgroundColor(gterm.NoColor)
+
+	window.ShouldRenderFps(true)
+	world := MakeNweWorld(window)
+
+	hud := NewHud(world.Player, world, 60, 0)
 
 	intro := IntroScreen{}
 	resume := ResumeScreen{}

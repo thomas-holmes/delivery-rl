@@ -112,10 +112,53 @@ type ExportedLevelV0 struct {
 	*/
 }
 
+func exportTile(tile Tile) ExportedTileV0 {
+	et := ExportedTileV0{}
+
+	et.X = tile.X
+	et.Y = tile.Y
+
+	et.Color = tile.Color
+
+	et.Item = tile.Item
+
+	et.TileGlyph = tile.TileGlyph
+	et.TileKind = tile.TileKind
+
+	return et
+}
+
 func exportTiles(tiles []Tile) []ExportedTileV0 {
 	eTiles := make([]ExportedTileV0, 0, len(tiles))
 
 	return eTiles
+}
+
+func importTile(et ExportedTileV0) Tile {
+	t := Tile{}
+
+	t.X = et.X
+	t.Y = et.Y
+
+	t.Color = et.Color
+
+	t.Item = et.Item
+
+	t.TileGlyph = et.TileGlyph
+	t.TileKind = et.TileKind
+
+	return t
+
+}
+
+func importTiles(ets []ExportedTileV0) []Tile {
+	tiles := make([]Tile, 0, len(ets))
+
+	for _, et := range ets {
+		tiles = append(tiles, importTile(et))
+	}
+
+	return tiles
 }
 
 func exportLevel(l *Level) ExportedLevelV0 {
@@ -148,6 +191,36 @@ func exportLevels(ls []*Level) []ExportedLevelV0 {
 		levels = append(levels, exportLevel(l))
 	}
 
+	return levels
+}
+
+func importLevel(el ExportedLevelV0) *Level {
+	l := Level{}
+
+	l.Columns = el.Columns
+	l.Rows = el.Rows
+	l.VisionMap = &el.VisionMap
+	l.ScentMap = &el.ScentMap
+
+	// l.tiles = importTiles(el.Tiles)
+
+	l.stairs = el.Stairs
+
+	l.MonsterDensity = el.MonsterDensity
+
+	l.Depth = el.Depth
+
+	l.NextEntity = el.NextEntity
+
+	return &l
+}
+
+func importLevels(els []ExportedLevelV0) []*Level {
+	levels := make([]*Level, 0, len(els))
+
+	for _, l := range els {
+		levels = append(levels, importLevel(l))
+	}
 	return levels
 }
 
@@ -235,6 +308,71 @@ func (s *SaveV0) SaveWorld(world *World) {
 	s.GameLog = world.GameLog.Messages
 
 	s.Player = ExportCreature(world.Player)
+}
+
+func (s *SaveV0) Restore(w *World) {
+	w.turnCount = s.TurnCount
+	w.rng = &s.Rng
+	w.MaxDepth = int(s.MaxDepth)
+
+	w.Levels = importLevels(s.Levels)
+
+	w.nextID = int(s.NextID)
+
+	w.GameLog = NewGameLog(0, w.Window.Rows-4, 56, 3, w, w.messageBus)
+	w.GameLog.Messages = s.GameLog
+
+	w.Player = importCreature(s.Player)
+}
+
+// \t\(.*\):\s+\(.*\),/\2 = e.\1
+
+func importCreature(e ExportedCreatureV0) *Creature {
+	c := Creature{}
+
+	c.BasicEntity = e.BasicEntity
+
+	c.IsPlayer = e.IsPlayer
+	c.VisionDistance = e.VisionDistance
+
+	c.Experience = e.Experience
+
+	c.RenderGlyph = e.RenderGlyph
+	c.RenderColor = e.RenderColor
+
+	c.Depth = e.Depth
+
+	c.Team = e.Team
+
+	c.State = e.State
+
+	c.X = e.X
+	c.Y = e.Y
+
+	c.Energy = e.Energy
+
+	inventory := Inventory{
+		Items: e.Inventory,
+	}
+
+	c.Inventory = inventory
+
+	c.Equipment = e.Equipment
+
+	c.Speed = e.Speed
+
+	c.HP = e.HP
+	c.ST = e.ST
+
+	c.HT = e.HT
+
+	c.Spells = e.Spells
+
+	c.Level = e.Level
+
+	c.Name = e.Name
+
+	return &c
 }
 
 func init() {
