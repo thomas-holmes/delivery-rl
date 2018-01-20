@@ -10,7 +10,7 @@ import (
 )
 
 type Inventory struct {
-	Items []*Item
+	Items []Item
 }
 
 type InventoryPop struct {

@@ -23,7 +23,7 @@ type Item struct {
 }
 
 type ItemDetails struct {
-	*Item
+	Item
 
 	PopMenu
 }

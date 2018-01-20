@@ -20,7 +20,7 @@ type Room struct {
 
 type CandidateTile struct {
 	TileKind TileKind
-	Item     *Item
+	Item     Item
 }
 
 type CandidateLevel struct {
@@ -238,7 +238,7 @@ func (level *CandidateLevel) addItems() {
 
 		tileIndex := level.rng.Bounded(uint64(len(level.tiles)))
 		if level.tiles[tileIndex].TileKind == Floor {
-			level.tiles[tileIndex].Item = &randomItem
+			level.tiles[tileIndex].Item = randomItem
 		}
 	}
 }
@@ -255,7 +255,7 @@ func (level *CandidateLevel) encodeAsString() string {
 				levelStr += string(WallGlyph)
 			case Floor:
 				item := level.tiles[y*level.W+x].Item
-				if item != nil {
+				if item != (Item{}) {
 					levelStr += string(item.Symbol)
 				} else {
 					levelStr += string(FloorGlyph)

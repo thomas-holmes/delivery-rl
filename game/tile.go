@@ -32,6 +32,7 @@ func TileKindToGlyph(kind TileKind) rune {
 	case DownStair:
 		return DownStairGlyph
 	}
+	// **************** BE RIGHT BACK **************************************
 
 	return WallGlyph // Default to a wall for now, I guess.
 }
@@ -51,7 +52,7 @@ type Tile struct {
 	Color sdl.Color
 
 	Creature *Creature
-	Item     *Item
+	Item     Item
 
 	TileGlyph rune
 	TileKind
@@ -77,7 +78,7 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 	var glyph rune
 	var color sdl.Color
 
-	if tile.Item != nil {
+	if tile.Item.Symbol != 0 {
 		glyph = tile.Item.Symbol
 		color = tile.Item.Color
 	} else {

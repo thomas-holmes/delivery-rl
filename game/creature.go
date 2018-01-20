@@ -205,12 +205,13 @@ func (player *Creature) Heal(amount int) {
 
 func (player *Creature) PickupItem(world *World) bool {
 	tile := world.CurrentLevel.GetTile(player.X, player.Y)
-	if tile.Item == nil {
+	a := Item{}
+	if tile.Item == a {
 		return false
 	}
 
 	player.Items = append(player.Items, tile.Item)
-	tile.Item = nil
+	tile.Item = Item{}
 	return true
 }
 

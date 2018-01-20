@@ -80,16 +80,26 @@ type ExportedCreatureV0 struct {
 	Name string
 }
 
+type ExportedTileV0 struct {
+	X int
+	Y int
+
+	Color sdl.Color
+
+	Item Item
+
+	TileGlyph rune
+	TileKind
+}
+
 type ExportedLevelV0 struct {
 	Columns   int
 	Rows      int
 	VisionMap VisionMap
 	ScentMap  ScentMap
 
-	/* These are both busted
-	tiles     []Tile
-	stairs    []Stair
-	*/
+	Tiles  []ExportedTileV0
+	Stairs []Stair
 
 	MonsterDensity int
 
@@ -102,6 +112,12 @@ type ExportedLevelV0 struct {
 	*/
 }
 
+func exportTiles(tiles []Tile) []ExportedTileV0 {
+	eTiles := make([]ExportedTileV0, 0, len(tiles))
+
+	return eTiles
+}
+
 func ExportLevel(l *Level) ExportedLevelV0 {
 	return ExportedLevelV0{
 		Columns:   l.Columns,
@@ -109,10 +125,9 @@ func ExportLevel(l *Level) ExportedLevelV0 {
 		VisionMap: *l.VisionMap,
 		ScentMap:  *l.ScentMap,
 
-		/* These are both busted
-		tiles     []Tile
-		stairs    []Stair
-		*/
+		Tiles: exportTiles(l.tiles),
+
+		Stairs: l.stairs,
 
 		MonsterDensity: l.MonsterDensity,
 
@@ -139,7 +154,7 @@ func (s *ExportedLevelV0) Decode(r io.Reader) error {
 func ExportCreature(c *Creature) ExportedCreatureV0 {
 	items := make([]Item, 0, len(c.Items))
 	for _, i := range c.Items {
-		items = append(items, *i)
+		items = append(items, i)
 	}
 
 	return ExportedCreatureV0{

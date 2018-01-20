@@ -66,7 +66,7 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 
 		yOffset++
 	}
-	if i := tile.Item; i != nil {
+	if i := tile.Item; i != (Item{}) {
 		xOffset := 0
 		pop.World.Window.PutRune(pop.X+xOffset, pop.Y+yOffset, i.Symbol, i.Color, gterm.NoColor)
 

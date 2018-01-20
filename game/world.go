@@ -541,6 +541,10 @@ func (w *World) getLevelById(id int) *Level {
 	return nil
 }
 
+func (w *World) SaveGame() {
+	w.Broadcast(SaveGame, SaveGameMessage{World: w})
+}
+
 func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 	world := &World{
 		Window:         window,

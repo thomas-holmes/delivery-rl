@@ -169,12 +169,12 @@ func (hud *HUD) renderItemDisplay(world *World) {
 	offsetY := hud.GetNextRow()
 	offsetX := hud.XPos
 
-	items := make([]*Item, 0)
+	items := make([]Item, 0)
 	for y := 0; y < world.CurrentLevel.Rows; y++ {
 		for x := 0; x < world.CurrentLevel.Columns; x++ {
 			if world.CurrentLevel.VisionMap.VisibilityAt(x, y) == Visible {
 				tile := world.CurrentLevel.GetTile(x, y)
-				if tile.Item != nil {
+				if tile.Item != (Item{}) {
 					items = append(items, tile.Item)
 				}
 			}

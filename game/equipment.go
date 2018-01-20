@@ -31,7 +31,7 @@ func (pop *EquipmentPop) equipItem(index int) {
 	if index < len(pop.Player.Inventory.Items) {
 		item := pop.Player.Inventory.Items[index]
 		log.Printf("Equipping item %+v", item)
-		pop.Broadcast(EquipItem, EquipItemMessage{*item})
+		pop.Broadcast(EquipItem, EquipItemMessage{item})
 		pop.done = true
 	}
 }

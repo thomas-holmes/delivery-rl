@@ -17,6 +17,7 @@ const (
 	EquipItem
 	GameLogAppend
 	ShowFullGameLog
+	SaveGame
 )
 
 type ClearRegionMessage struct {
@@ -73,6 +74,10 @@ type EquipItemMessage struct {
 
 type GameLogAppendMessage struct {
 	Messages []string
+}
+
+type SaveGameMessage struct {
+	World *World
 }
 
 type Notifier interface {
