@@ -44,7 +44,8 @@ type World struct {
 	CameraX        int
 	CameraY        int
 
-	nextID int
+	nextID      int
+	nextLevelID int
 
 	showScentOverlay bool
 
@@ -105,7 +106,8 @@ func (world *World) addInitialMonsters(level *Level) {
 
 // AddLevelFromCandidate constructs a real level from an intermediate level representation
 func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
-	loadedLevel := LoadCandidateLevel(level)
+	loadedLevel := LoadCandidateLevel(world.nextLevelID, level)
+	world.nextLevelID++
 	loadedLevel.Depth = len(world.Levels)
 
 	world.Levels = append(world.Levels, &loadedLevel)
@@ -492,7 +494,7 @@ func (world *World) Notify(message Message, data interface{}) {
 			world.RemoveEntity(world.Player)
 			world.Player.X = d.DestX
 			world.Player.Y = d.DestY
-			world.CurrentLevel = d.DestLevel
+			world.CurrentLevel = world.getLevelById(d.DestLevelID)
 			world.LevelChanged = true
 			world.AddEntityToCurrentLevel(world.Player)
 		}
@@ -528,6 +530,15 @@ func (world *World) BuildLevels() {
 		world.AddLevelFromCandidate(level)
 	}
 	world.SetCurrentLevel(0)
+}
+
+func (w *World) getLevelById(id int) *Level {
+	for _, l := range w.Levels {
+		if l.ID == id {
+			return l
+		}
+	}
+	return nil
 }
 
 func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {

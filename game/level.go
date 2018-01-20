@@ -70,13 +70,15 @@ type Stair struct {
 	X    int
 	Y    int
 
-	Connected bool
-	DestX     int
-	DestY     int
-	DestLevel *Level
+	Connected   bool
+	DestX       int
+	DestY       int
+	DestLevelID int
 }
 
 type Level struct {
+	ID int
+
 	Columns   int
 	Rows      int
 	VisionMap *VisionMap
@@ -105,12 +107,12 @@ func connectTwoLevels(upper *Level, lower *Level) {
 				continue
 			}
 
-			upper.stairs[i].DestLevel = lower
+			upper.stairs[i].DestLevelID = lower.ID
 			upper.stairs[i].DestX = upStair.X
 			upper.stairs[i].DestY = upStair.Y
 			upper.stairs[i].Connected = true
 
-			lower.stairs[j].DestLevel = upper
+			lower.stairs[j].DestLevelID = upper.ID
 			lower.stairs[j].DestX = downStair.X
 			lower.stairs[j].DestY = downStair.Y
 			lower.stairs[j].Connected = true
@@ -120,8 +122,8 @@ func connectTwoLevels(upper *Level, lower *Level) {
 	}
 }
 
-func LoadCandidateLevel(candidate *CandidateLevel) Level {
-	level := Level{}
+func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
+	level := Level{ID: id}
 
 	tiles := make([]Tile, 0, len(candidate.tiles))
 
