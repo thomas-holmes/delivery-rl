@@ -17,3 +17,5 @@ run: build
 runv: build
 	cd ./run_dir && ./delivery-rl
 
+test:
+	$(GO_BIN) test ./...
