@@ -112,11 +112,11 @@ func (c *Creature) Damage(damage int) {
 }
 
 func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interface{}) {
-	if world.CurrentLevel.CanStandOnTile(newX, newY) {
+	if world.CurrentLevel().CanStandOnTile(newX, newY) {
 		return MoveIsSuccess, nil
 	}
 
-	if defender, ok := world.CurrentLevel.GetCreatureAtTile(newX, newY); ok {
+	if defender, ok := world.CurrentLevel().GetCreatureAtTile(newX, newY); ok {
 		log.Printf("Got a creature in TryMove, %+v", *defender)
 		if c.Team != defender.Team {
 			a, aOk := world.GetEntity(c.ID)
@@ -204,7 +204,7 @@ func (player *Creature) Heal(amount int) {
 }
 
 func (player *Creature) PickupItem(world *World) bool {
-	tile := world.CurrentLevel.GetTile(player.X, player.Y)
+	tile := world.CurrentLevel().GetTile(player.X, player.Y)
 	a := Item{}
 	if tile.Item == a {
 		return false
@@ -267,9 +267,9 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 		switch e.Keysym.Sym {
 		case sdl.K_COMMA:
 			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				tile := world.CurrentLevel.GetTile(player.X, player.Y)
+				tile := world.CurrentLevel().GetTile(player.X, player.Y)
 				if tile.TileKind == UpStair {
-					if stair, ok := world.CurrentLevel.getStair(player.X, player.Y); ok {
+					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
 						player.Broadcast(PlayerFloorChange, PlayerFloorChangeMessage{
 							Stair: stair,
 						})
@@ -281,9 +281,9 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 			return false
 		case sdl.K_PERIOD:
 			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				tile := world.CurrentLevel.GetTile(player.X, player.Y)
+				tile := world.CurrentLevel().GetTile(player.X, player.Y)
 				if tile.TileKind == DownStair {
-					if stair, ok := world.CurrentLevel.getStair(player.X, player.Y); ok {
+					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
 						player.Broadcast(PlayerFloorChange, PlayerFloorChangeMessage{
 							Stair: stair,
 						})
@@ -428,7 +428,7 @@ func (creature *Creature) Render(world *World) {
 }
 
 func (monster *Creature) Pursue(turn uint64, world *World) bool {
-	if world.CurrentLevel.VisionMap.VisibilityAt(monster.X, monster.Y) == Visible {
+	if world.CurrentLevel().VisionMap.VisibilityAt(monster.X, monster.Y) == Visible {
 		monster.State = Pursuing
 	}
 
@@ -436,7 +436,7 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 		return true
 	}
 
-	scent := world.CurrentLevel.ScentMap
+	scent := world.CurrentLevel().ScentMap
 
 	// TODO: Maybe short circuit tracking here and just attack the player instead
 	// if in range?

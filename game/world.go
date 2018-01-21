@@ -27,10 +27,11 @@ type World struct {
 
 	Player *Creature
 
-	CurrentLevel *Level
+	CurrentLevelID    int
+	CurrentLevelIndex int
 
 	MaxDepth     int
-	Levels       []*Level
+	Levels       []Level
 	LevelChanged bool
 
 	CurrentUpdateTicks uint32
@@ -61,6 +62,11 @@ type World struct {
 	Messaging
 }
 
+// CurrentLevel returns a pointer to the current level. Don't store this pointer!
+func (world *World) CurrentLevel() *Level {
+	return &world.Levels[world.CurrentLevelIndex]
+}
+
 // GetNextID Generates a monotonically increasing Entity ID
 func (world *World) GetNextID() int {
 	world.nextID++
@@ -81,8 +87,14 @@ func (world *World) AddInput(input InputEvent) {
 }
 
 // SetCurrentLevel update the worlds inner CurrentLevel pointer
-func (world *World) SetCurrentLevel(index int) {
-	world.CurrentLevel = world.Levels[index]
+func (world *World) SetCurrentLevel(id int) {
+	for i := range world.Levels {
+		if world.Levels[i].ID == id {
+			world.CurrentLevelIndex = i
+			world.CurrentLevelID = id
+			return
+		}
+	}
 }
 
 func (world *World) addInitialMonsters(level *Level) {
@@ -99,7 +111,7 @@ func (world *World) addInitialMonsters(level *Level) {
 			monster.Name = def.Name
 			monster.RenderGlyph = []rune(def.Glyph)[0]
 			monster.RenderColor = def.Color.Color
-			world.AddEntity(&monster, level)
+			world.AddEntity(&monster, level.ID)
 		}
 	}
 }
@@ -110,14 +122,14 @@ func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
 	world.nextLevelID++
 	loadedLevel.Depth = len(world.Levels)
 
-	world.Levels = append(world.Levels, &loadedLevel)
+	world.Levels = append(world.Levels, loadedLevel)
 
 	levels := len(world.Levels)
 
 	if levels > 1 {
-		connectTwoLevels(world.Levels[levels-2], world.Levels[levels-1])
+		connectTwoLevels(&world.Levels[levels-2], &world.Levels[levels-1])
 	}
-	world.addInitialMonsters(&loadedLevel)
+	world.addInitialMonsters(&world.Levels[len(world.Levels)-1])
 }
 
 func (world *World) addPlayer(player *Creature, level *Level) {
@@ -154,10 +166,12 @@ func (world *World) addCreature(creature *Creature, level *Level) {
 }
 
 func (world *World) AddEntityToCurrentLevel(e Entity) {
-	world.AddEntity(e, world.CurrentLevel)
+	log.Printf("Adding an entity (%v) to (%v)", e.Identity(), world.CurrentLevelID)
+	world.AddEntity(e, world.CurrentLevelID)
 }
 
-func (world *World) AddEntity(e Entity, level *Level) {
+func (world *World) AddEntity(e Entity, levelID int) {
+	level := world.LevelByID(levelID)
 	e.SetIdentity(world.GetNextID())
 	log.Printf("Adding entity %+v", e)
 
@@ -238,11 +252,12 @@ func (world *World) Update(input InputEvent) {
 	}
 
 	// Attempt at a hack
-	if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
-		world.CurrentLevel.NextEntity = 0
+	if world.CurrentLevel().NextEntity >= len(world.CurrentLevel().Entities) {
+		world.CurrentLevel().NextEntity = 0
 	}
-	for i := world.CurrentLevel.NextEntity; i < len(world.CurrentLevel.Entities); i++ {
-		e := world.CurrentLevel.Entities[i]
+	// log.Printf("next (%v), len(%v)", world.CurrentLevel().NextEntity, len(world.CurrentLevel().Entities))
+	for i := world.CurrentLevel().NextEntity; i < len(world.CurrentLevel().Entities); i++ {
+		e := world.CurrentLevel().Entities[i]
 
 		a, ok := e.(Actor)
 		if !ok {
@@ -260,25 +275,25 @@ func (world *World) Update(input InputEvent) {
 		// We've finished, so it is safe to advance
 		if !a.CanAct() {
 			a.EndTurn()
-			world.CurrentLevel.NextEntity = i + 1
+			world.CurrentLevel().NextEntity = i + 1
 		}
 
 		if c, ok := e.(*Creature); ok && c.IsPlayer {
 			world.turnCount++
-			world.CurrentLevel.VisionMap.UpdateVision(world.Player.VisionDistance, world)
-			world.CurrentLevel.ScentMap.UpdateScents(world)
+			world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
+			world.CurrentLevel().ScentMap.UpdateScents(world)
 		}
 
 		if world.LevelChanged {
 			a.EndTurn()
 			world.LevelChanged = false
 			// Reset these or the player can end up in a spot where they have no energy but need input
-			world.CurrentLevel.NextEntity = 0
+			world.CurrentLevel().NextEntity = 0
 			return // Is this the right thing to do? Or could we just break?
 		}
 
-		if world.CurrentLevel.NextEntity >= len(world.CurrentLevel.Entities) {
-			world.CurrentLevel.NextEntity = 0
+		if world.CurrentLevel().NextEntity >= len(world.CurrentLevel().Entities) {
+			world.CurrentLevel().NextEntity = 0
 			i = -1
 		}
 	}
@@ -303,17 +318,17 @@ func (world *World) Render() {
 	world.UpdateCamera()
 	var minX, minY, maxX, maxY int
 	if world.CameraCentered {
-		minY, maxY = max(0, world.CameraY-(world.CameraHeight/2)), min(world.CurrentLevel.Rows, world.CameraY+(world.CameraHeight/2))
-		minX, maxX = max(0, world.CameraX-(world.CameraWidth/2)), min(world.CurrentLevel.Columns, world.CameraX+(world.CameraWidth/2))
+		minY, maxY = max(0, world.CameraY-(world.CameraHeight/2)), min(world.CurrentLevel().Rows, world.CameraY+(world.CameraHeight/2))
+		minX, maxX = max(0, world.CameraX-(world.CameraWidth/2)), min(world.CurrentLevel().Columns, world.CameraX+(world.CameraWidth/2))
 	} else {
-		minY, maxY = 0, world.CurrentLevel.Rows
-		minX, maxX = 0, world.CurrentLevel.Columns
+		minY, maxY = 0, world.CurrentLevel().Rows
+		minX, maxX = 0, world.CurrentLevel().Columns
 	}
 	for row := minY; row < maxY; row++ {
 		for col := minX; col < maxX; col++ {
-			tile := world.CurrentLevel.GetTile(col, row)
+			tile := world.CurrentLevel().GetTile(col, row)
 
-			visibility := world.CurrentLevel.VisionMap.VisibilityAt(col, row)
+			visibility := world.CurrentLevel().VisionMap.VisibilityAt(col, row)
 			tile.Render(world, visibility)
 		}
 	}
@@ -335,9 +350,9 @@ func (world *World) Render() {
 }
 
 func (world *World) OverlayVisionMap() {
-	for y := 0; y < world.CurrentLevel.Rows; y++ {
-		for x := 0; x < world.CurrentLevel.Columns; x++ {
-			world.RenderRuneAt(x, y, []rune(strconv.Itoa(int(world.CurrentLevel.VisionMap.Map[y*world.CurrentLevel.Columns+x])))[0], Blue, gterm.NoColor)
+	for y := 0; y < world.CurrentLevel().Rows; y++ {
+		for x := 0; x < world.CurrentLevel().Columns; x++ {
+			world.RenderRuneAt(x, y, []rune(strconv.Itoa(int(world.CurrentLevel().VisionMap.Map[y*world.CurrentLevel().Columns+x])))[0], Blue, gterm.NoColor)
 		}
 	}
 }
@@ -356,7 +371,7 @@ var ScentColors = []sdl.Color{
 }
 
 func (world *World) ToggleScentOverlay() {
-	log.Printf("Scent Map Toggle pointer: %p", world.CurrentLevel.ScentMap)
+	log.Printf("Scent Map Toggle pointer: %p", world.CurrentLevel().ScentMap)
 	world.showScentOverlay = !world.showScentOverlay
 }
 
@@ -368,9 +383,9 @@ func (world *World) OverlayScentMap() {
 	}
 
 	turn := world.turnCount
-	for y := 0; y < world.CurrentLevel.Rows; y++ {
-		for x := 0; x < world.CurrentLevel.Columns; x++ {
-			scent := world.CurrentLevel.ScentMap.getScent(x, y)
+	for y := 0; y < world.CurrentLevel().Rows; y++ {
+		for x := 0; x < world.CurrentLevel().Columns; x++ {
+			scent := world.CurrentLevel().ScentMap.getScent(x, y)
 
 			maxScent := float64((turn - 1) * 32)
 			recent := float64((turn - 10) * 32)
@@ -404,7 +419,7 @@ func (world *World) OverlayScentMap() {
 func (world *World) RemoveEntity(entity Entity) {
 	foundIndex := -1
 	var foundEntity Entity
-	for i, e := range world.CurrentLevel.Entities {
+	for i, e := range world.CurrentLevel().Entities {
 		if e.Identity() == entity.Identity() {
 			foundIndex = i
 			foundEntity = e
@@ -416,16 +431,16 @@ func (world *World) RemoveEntity(entity Entity) {
 	// This causes the game to kind of weirdly freeze forever. We need to fix how entities are removed
 	// to fix it.
 	if foundIndex > -1 {
-		world.CurrentLevel.Entities = append(world.CurrentLevel.Entities[:foundIndex], world.CurrentLevel.Entities[foundIndex+1:]...)
+		world.CurrentLevel().Entities = append(world.CurrentLevel().Entities[:foundIndex], world.CurrentLevel().Entities[foundIndex+1:]...)
 	}
 	if creature, ok := foundEntity.(*Creature); ok {
-		world.CurrentLevel.GetTile(creature.X, creature.Y).Creature = nil
+		world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
 	}
 }
 
 func (world *World) MoveEntity(message MoveEntityMessage) {
-	oldTile := world.CurrentLevel.GetTile(message.OldX, message.OldY)
-	newTile := world.CurrentLevel.GetTile(message.NewX, message.NewY)
+	oldTile := world.CurrentLevel().GetTile(message.OldX, message.OldY)
+	newTile := world.CurrentLevel().GetTile(message.NewX, message.NewY)
 	newTile.Creature = oldTile.Creature
 	oldTile.Creature = nil
 }
@@ -434,7 +449,7 @@ func (world *World) MoveEntity(message MoveEntityMessage) {
 // but I wanted ordered traversal, which you don't get with maps in go.
 // Keep an eye on the performance of this.
 func (world *World) GetEntity(id int) (Entity, bool) {
-	for _, e := range world.CurrentLevel.Entities {
+	for _, e := range world.CurrentLevel().Entities {
 		if e.Identity() == id {
 			return e, true
 		}
@@ -494,8 +509,8 @@ func (world *World) Notify(message Message, data interface{}) {
 			world.RemoveEntity(world.Player)
 			world.Player.X = d.DestX
 			world.Player.Y = d.DestY
-			world.CurrentLevel = world.getLevelById(d.DestLevelID)
 			world.LevelChanged = true
+			world.SetCurrentLevel(d.DestLevelID)
 			world.AddEntityToCurrentLevel(world.Player)
 		}
 	case ShowMenu:
@@ -532,10 +547,14 @@ func (world *World) BuildLevels() {
 	world.SetCurrentLevel(0)
 }
 
-func (w *World) getLevelById(id int) *Level {
-	for _, l := range w.Levels {
-		if l.ID == id {
-			return l
+// LevelById returns a pointer to a specific level. Do not save this pointer!
+func (w *World) LevelByID(id int) *Level {
+	if id == w.CurrentLevelID {
+		return &w.Levels[w.CurrentLevelIndex]
+	}
+	for i := range w.Levels {
+		if w.Levels[i].ID == id {
+			return &w.Levels[i]
 		}
 	}
 	return nil

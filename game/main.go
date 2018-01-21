@@ -42,10 +42,10 @@ func handleInput(input InputEvent, world *World) {
 
 func spawnRandomMonster(world *World) {
 	for tries := 0; tries < 100; tries++ {
-		x := rand.Intn(world.CurrentLevel.Columns)
-		y := rand.Intn(world.CurrentLevel.Rows)
+		x := rand.Intn(world.CurrentLevel().Columns)
+		y := rand.Intn(world.CurrentLevel().Rows)
 
-		if world.CurrentLevel.CanStandOnTile(x, y) {
+		if world.CurrentLevel().CanStandOnTile(x, y) {
 			level := rand.Intn(8) + 1
 			monster := NewMonster(x, y, level, level)
 			monster.Name = fmt.Sprintf("A Scary Number %v", level)
@@ -75,7 +75,9 @@ func MakeNweWorld(window *gterm.Window) *World {
 
 	player.Name = "Euclid"
 
+	log.Printf("Entities Before(%+v)", world.CurrentLevel().Entities)
 	world.AddEntityToCurrentLevel(&player)
+	log.Printf("Entities After(%+v)", world.CurrentLevel().Entities)
 
 	return world
 }

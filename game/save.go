@@ -161,7 +161,7 @@ func importTiles(ets []ExportedTileV0) []Tile {
 	return tiles
 }
 
-func exportLevel(l *Level) ExportedLevelV0 {
+func exportLevel(l Level) ExportedLevelV0 {
 	return ExportedLevelV0{
 		Columns:   l.Columns,
 		Rows:      l.Rows,
@@ -184,7 +184,7 @@ func exportLevel(l *Level) ExportedLevelV0 {
 	}
 }
 
-func exportLevels(ls []*Level) []ExportedLevelV0 {
+func exportLevels(ls []Level) []ExportedLevelV0 {
 	levels := make([]ExportedLevelV0, 0, len(ls))
 
 	for _, l := range ls {
@@ -194,7 +194,7 @@ func exportLevels(ls []*Level) []ExportedLevelV0 {
 	return levels
 }
 
-func importLevel(el ExportedLevelV0) *Level {
+func importLevel(el ExportedLevelV0) Level {
 	l := Level{}
 
 	l.Columns = el.Columns
@@ -212,11 +212,11 @@ func importLevel(el ExportedLevelV0) *Level {
 
 	l.NextEntity = el.NextEntity
 
-	return &l
+	return l
 }
 
-func importLevels(els []ExportedLevelV0) []*Level {
-	levels := make([]*Level, 0, len(els))
+func importLevels(els []ExportedLevelV0) []Level {
+	levels := make([]Level, 0, len(els))
 
 	for _, l := range els {
 		levels = append(levels, importLevel(l))

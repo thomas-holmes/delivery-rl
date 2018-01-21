@@ -79,7 +79,7 @@ func (vision *VisionMap) CheckVision(playerX int, playerY int, candidateX int, c
 		// Either a wall or on the way to a wall, so we can see it.
 		vision.Map[cell.Y*vision.Columns+cell.X] = vision.Current
 
-		tile := world.CurrentLevel.GetTile(cell.X, cell.Y)
+		tile := world.CurrentLevel().GetTile(cell.X, cell.Y)
 
 		if tile.IsWall() {
 			foundWall = true

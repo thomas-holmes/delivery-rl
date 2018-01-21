@@ -43,8 +43,8 @@ func (pop *InspectionPop) Update(input InputEvent) {
 	}
 
 	if (newX != pop.InspectX || newY != pop.InspectY) &&
-		(newX > 0 && newX < pop.World.CurrentLevel.Columns) &&
-		(newY > 0 && newY < pop.World.CurrentLevel.Rows) {
+		(newX > 0 && newX < pop.World.CurrentLevel().Columns) &&
+		(newY > 0 && newY < pop.World.CurrentLevel().Rows) {
 		// Guard against level boundaries
 		pop.InspectX = newX
 		pop.InspectY = newY
@@ -52,7 +52,7 @@ func (pop *InspectionPop) Update(input InputEvent) {
 }
 
 func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
-	if pop.World.CurrentLevel.VisionMap.VisibilityAt(tile.X, tile.Y) == Unseen {
+	if pop.World.CurrentLevel().VisionMap.VisibilityAt(tile.X, tile.Y) == Unseen {
 		return
 	}
 	yOffset := 0
@@ -92,7 +92,7 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		}
 	}
 	{
-		scentStrength := pop.World.CurrentLevel.ScentMap.getScent(pop.InspectX, pop.InspectY)
+		scentStrength := pop.World.CurrentLevel().ScentMap.getScent(pop.InspectX, pop.InspectY)
 		scentLine1 := fmt.Sprintf("Scent Strength: (%v)", scentStrength)
 		pop.World.Window.PutString(pop.X, pop.Y+yOffset, scentLine1, Yellow)
 	}
@@ -116,7 +116,7 @@ func (pop *InspectionPop) Render(window *gterm.Window) {
 
 	pop.RenderCursor(window)
 
-	tile := pop.World.CurrentLevel.GetTile(pop.InspectX, pop.InspectY)
+	tile := pop.World.CurrentLevel().GetTile(pop.InspectX, pop.InspectY)
 
 	pop.RenderTileDescription(tile)
 }

@@ -14,9 +14,9 @@ func makeTestPlayer() *Creature {
 	p.X = 4
 	p.Y = 19
 
-	p.Items = append(p.Items, &Item{Name: "TestItem", Power: 9})
-	p.Items = append(p.Items, &Item{Name: "Mallet", Power: 3})
-	p.Equipment.Weapon = *p.Items[1]
+	p.Items = append(p.Items, Item{Name: "TestItem", Power: 9})
+	p.Items = append(p.Items, Item{Name: "Mallet", Power: 3})
+	p.Equipment.Weapon = p.Items[1]
 	return &p
 }
 

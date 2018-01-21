@@ -32,7 +32,6 @@ func TileKindToGlyph(kind TileKind) rune {
 	case DownStair:
 		return DownStairGlyph
 	}
-	// **************** BE RIGHT BACK **************************************
 
 	return WallGlyph // Default to a wall for now, I guess.
 }

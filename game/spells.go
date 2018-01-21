@@ -141,7 +141,7 @@ type SpellTargeting struct {
 func (pop *SpellTargeting) setInitialState() {
 	if !pop.initialized {
 		player := pop.World.Player
-		pop.creatures = pop.World.CurrentLevel.GetVisibleCreatures(player.X, player.Y)
+		pop.creatures = pop.World.CurrentLevel().GetVisibleCreatures(player.X, player.Y)
 		pop.initialized = true
 		for i, c := range pop.creatures {
 			if c.Team != player.Team {
@@ -207,8 +207,8 @@ func (pop *SpellTargeting) Update(input InputEvent) {
 	}
 
 	if (newX != pop.TargetX || newY != pop.TargetY) &&
-		(newX > 0 && newX < pop.World.CurrentLevel.Columns) &&
-		(newY > 0 && newY < pop.World.CurrentLevel.Rows) {
+		(newX > 0 && newX < pop.World.CurrentLevel().Columns) &&
+		(newY > 0 && newY < pop.World.CurrentLevel().Rows) {
 		// Guard against level boundaries
 		pop.TargetX = newX
 		pop.TargetY = newY
@@ -231,10 +231,10 @@ func (pop SpellTargeting) renderSquareCursor() {
 	spell := pop.Spell
 
 	minX := max(pop.TargetX-spell.Size, 0)
-	maxX := min(pop.TargetX+spell.Size, pop.World.CurrentLevel.Columns)
+	maxX := min(pop.TargetX+spell.Size, pop.World.CurrentLevel().Columns)
 
 	minY := max(pop.TargetY-spell.Size, 0)
-	maxY := min(pop.TargetY+spell.Size, pop.World.CurrentLevel.Rows)
+	maxY := min(pop.TargetY+spell.Size, pop.World.CurrentLevel().Rows)
 
 	cursorColor.A = 125
 	for y := minY; y < maxY+1; y++ {

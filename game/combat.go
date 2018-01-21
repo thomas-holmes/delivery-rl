@@ -71,10 +71,10 @@ func (combat CombatSystem) zapCone(launch SpellLaunchMessage) {
 	spell := launch.Spell
 	player := combat.World.Player
 	for _, pos := range conePositions(player.X, player.Y, launch.X, launch.Y, spell.Size) {
-		if pos.X < 0 || pos.Y < 0 || pos.X >= combat.World.CurrentLevel.Columns || pos.Y >= combat.World.CurrentLevel.Rows {
+		if pos.X < 0 || pos.Y < 0 || pos.X >= combat.World.CurrentLevel().Columns || pos.Y >= combat.World.CurrentLevel().Rows {
 			continue
 		}
-		if c, ok := combat.World.CurrentLevel.GetCreatureAtTile(pos.X, pos.Y); ok {
+		if c, ok := combat.World.CurrentLevel().GetCreatureAtTile(pos.X, pos.Y); ok {
 			combat.zap(launch.Caster, c, spell)
 		}
 	}
@@ -83,14 +83,14 @@ func (combat CombatSystem) zapCone(launch SpellLaunchMessage) {
 func (combat CombatSystem) zapSquare(launch SpellLaunchMessage) {
 	spell := launch.Spell
 	minX := max(launch.X-spell.Size, 0)
-	maxX := min(launch.X+spell.Size, combat.World.CurrentLevel.Columns)
+	maxX := min(launch.X+spell.Size, combat.World.CurrentLevel().Columns)
 
 	minY := max(launch.Y-spell.Size, 0)
-	maxY := min(launch.Y+spell.Size, combat.World.CurrentLevel.Rows)
+	maxY := min(launch.Y+spell.Size, combat.World.CurrentLevel().Rows)
 
 	for y := minY; y < maxY+1; y++ {
 		for x := minX; x < maxX+1; x++ {
-			if c, ok := combat.World.CurrentLevel.GetCreatureAtTile(x, y); ok {
+			if c, ok := combat.World.CurrentLevel().GetCreatureAtTile(x, y); ok {
 				combat.zap(launch.Caster, c, spell)
 			}
 		}
