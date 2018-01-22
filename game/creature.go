@@ -336,10 +336,12 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 		case sdl.K_m:
 			player.Broadcast(ShowFullGameLog, nil)
 			return false
-		case sdl.K_ESCAPE:
-			world.GameOver = true
-			world.QuitGame = true
-			return true
+		case sdl.K_q:
+			if input.Keymod&sdl.KMOD_CTRL > 0 {
+				world.QuitGame = true
+				world.GameOver = true
+				return true
+			}
 		case sdl.K_s:
 			if input.Keymod&sdl.KMOD_SHIFT > 0 {
 				/*

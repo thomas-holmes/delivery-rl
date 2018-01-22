@@ -1,7 +1,9 @@
 package main
 
-import "github.com/thomas-holmes/gterm"
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"github.com/thomas-holmes/gterm"
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 type EndGameMenu struct {
 	world *World
