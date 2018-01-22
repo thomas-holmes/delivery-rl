@@ -349,7 +349,6 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 					player.Broadcast(SaveGame, SaveGameMessage{World: world})
 				*/
 				world.SaveGame()
-				return true
 			}
 			return false
 		default:

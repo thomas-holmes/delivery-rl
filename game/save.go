@@ -353,7 +353,6 @@ func (s *SaveV0) Restore(w *World) {
 
 	w.nextID = int(s.NextID)
 
-	w.GameLog = NewGameLog(0, w.Window.Rows-4, 56, 3, w, w.messageBus)
 	w.GameLog.Messages = s.GameLog
 
 	w.Player = importCreature(s.Player)
