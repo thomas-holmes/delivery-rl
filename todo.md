@@ -1,9 +1,6 @@
 ### Game
-FIX THE PLAYER GAME LOOP WHERE DUDES MOVE BEFORE NEXT PLAYER TURN
-Save the game & optionally resume
 Restart after death
 Change the seed
-Move content (monster, items, spells, etc...) definitions out of code?
 
 ### Monsters
 Drop loot
