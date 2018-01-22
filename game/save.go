@@ -9,6 +9,7 @@ import (
 )
 
 /*
+Maybe a bit different due to encoding/gob
 |-4 Bytes-||--ArbitraryBytes--||--ArbitraryBytes--||--ArbitraryBytes--|
 |--Magic--||----FieldBytes----||----FieldBytes----||----FieldBytes----|
 */
@@ -23,6 +24,9 @@ type SaveV0 struct {
 	TurnCount uint64    // World
 	Rng       pcg.PCG64 // World
 	MaxDepth  int8      // World. Down-Convert to int8
+
+	CurrentLevelIndex int
+	CurrentLevelID    int
 
 	// Perhaps we store RNG state for level generation and regenerate? Need versioned level gen code then :(
 	Levels []ExportedLevelV0
@@ -93,6 +97,8 @@ type ExportedTileV0 struct {
 }
 
 type ExportedLevelV0 struct {
+	ID int
+
 	Columns   int
 	Rows      int
 	VisionMap VisionMap
@@ -110,6 +116,8 @@ type ExportedLevelV0 struct {
 	/* Figure this out. Fortunately I think we only have Creatures here
 	Entities   []Entity
 	*/
+
+	Creatures []ExportedCreatureV0
 }
 
 func exportTile(tile Tile) ExportedTileV0 {
@@ -130,6 +138,9 @@ func exportTile(tile Tile) ExportedTileV0 {
 
 func exportTiles(tiles []Tile) []ExportedTileV0 {
 	eTiles := make([]ExportedTileV0, 0, len(tiles))
+	for _, t := range tiles {
+		eTiles = append(eTiles, exportTile(t))
+	}
 
 	return eTiles
 }
@@ -161,16 +172,29 @@ func importTiles(ets []ExportedTileV0) []Tile {
 	return tiles
 }
 
+func exportCreatures(entities []Entity) []ExportedCreatureV0 {
+	ecs := make([]ExportedCreatureV0, 0, len(entities))
+
+	for _, e := range entities {
+		if c, ok := e.(*Creature); ok {
+			ecs = append(ecs, ExportCreature(c))
+		}
+	}
+
+	return ecs
+}
+
 func exportLevel(l Level) ExportedLevelV0 {
 	return ExportedLevelV0{
+		ID:        l.ID,
 		Columns:   l.Columns,
 		Rows:      l.Rows,
 		VisionMap: *l.VisionMap,
 		ScentMap:  *l.ScentMap,
 
-		Tiles: exportTiles(l.tiles),
+		Tiles: exportTiles(l.Tiles),
 
-		Stairs: l.stairs,
+		Stairs: l.Stairs,
 
 		MonsterDensity: l.MonsterDensity,
 
@@ -178,9 +202,7 @@ func exportLevel(l Level) ExportedLevelV0 {
 
 		NextEntity: l.NextEntity,
 
-		/* Figure this out. Fortunately I think we only have Creatures here
-		Entities   []Entity
-		*/
+		Creatures: exportCreatures(l.Entities),
 	}
 }
 
@@ -197,14 +219,15 @@ func exportLevels(ls []Level) []ExportedLevelV0 {
 func importLevel(el ExportedLevelV0) Level {
 	l := Level{}
 
+	l.ID = el.ID
 	l.Columns = el.Columns
 	l.Rows = el.Rows
 	l.VisionMap = &el.VisionMap
 	l.ScentMap = &el.ScentMap
 
-	// l.tiles = importTiles(el.Tiles)
+	l.Tiles = importTiles(el.Tiles)
 
-	l.stairs = el.Stairs
+	l.Stairs = el.Stairs
 
 	l.MonsterDensity = el.MonsterDensity
 
@@ -221,6 +244,7 @@ func importLevels(els []ExportedLevelV0) []Level {
 	for _, l := range els {
 		levels = append(levels, importLevel(l))
 	}
+
 	return levels
 }
 
@@ -293,7 +317,12 @@ func (s *ExportedCreatureV0) Decode(r io.Reader) error {
 
 func (s *SaveV0) Encode(w io.Writer) error {
 	e := gob.NewEncoder(w)
-	return e.Encode(s)
+	return e.Encode(*s)
+}
+
+func (s *SaveV0) Decode(r io.Reader) error {
+	d := gob.NewDecoder(r)
+	return d.Decode(s)
 }
 
 func (s *SaveV0) SaveWorld(world *World) {
@@ -301,6 +330,9 @@ func (s *SaveV0) SaveWorld(world *World) {
 	s.Rng = *world.rng
 	s.TurnCount = world.turnCount
 	s.MaxDepth = int8(world.MaxDepth)
+
+	s.CurrentLevelIndex = world.CurrentLevelIndex
+	s.CurrentLevelID = world.CurrentLevelID
 
 	s.Levels = exportLevels(world.Levels)
 
@@ -316,6 +348,8 @@ func (s *SaveV0) Restore(w *World) {
 	w.MaxDepth = int(s.MaxDepth)
 
 	w.Levels = importLevels(s.Levels)
+	w.CurrentLevelIndex = s.CurrentLevelIndex
+	w.CurrentLevelID = s.CurrentLevelID
 
 	w.nextID = int(s.NextID)
 
@@ -323,9 +357,15 @@ func (s *SaveV0) Restore(w *World) {
 	w.GameLog.Messages = s.GameLog
 
 	w.Player = importCreature(s.Player)
-}
 
-// \t\(.*\):\s+\(.*\),/\2 = e.\1
+	for _, l := range s.Levels {
+		for _, c := range l.Creatures {
+			creature := importCreature(c)
+
+			w.AddEntity(creature, l.ID)
+		}
+	}
+}
 
 func importCreature(e ExportedCreatureV0) *Creature {
 	c := Creature{}
@@ -378,5 +418,9 @@ func importCreature(e ExportedCreatureV0) *Creature {
 func init() {
 	gob.Register(SaveV0{})
 	gob.Register(ExportedCreatureV0{})
+	gob.Register(Stair{})
+	gob.Register(ExportedTileV0{})
+	gob.Register(VisionMap{})
+	gob.Register(ScentMap{})
 	gob.Register(ExportedLevelV0{})
 }

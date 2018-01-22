@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"testing"
 )
 
@@ -55,5 +56,44 @@ func TestEncodeDecodeCreature(t *testing.T) {
 	}
 	if decoded.Equipment.Weapon != e.Equipment.Weapon {
 		t.Errorf("Expected equipped weapon (%+v) but instead got (%+v)", e.Equipment.Weapon, decoded.Equipment.Weapon)
+	}
+}
+
+func TestEncodeLevel(t *testing.T) {
+	l := Level{}
+	l.Columns = 9
+	l.Rows = 9
+	l.Depth = 1
+	l.VisionMap = &VisionMap{}
+	l.ScentMap = &ScentMap{}
+
+	buffer := new(bytes.Buffer)
+
+	el := exportLevel(l)
+
+	if err := el.Encode(buffer); err != nil {
+		t.Error(err)
+	}
+	log.Printf("%+v", el)
+
+	decoded := &ExportedLevelV0{}
+
+	serialized := buffer.Bytes()
+	log.Printf("%+v", serialized)
+
+	if err := decoded.Decode(bytes.NewReader(serialized)); err != nil {
+		t.Fatal(err)
+	}
+
+	if decoded.Columns != l.Columns {
+		t.Errorf("Exported columns (%v) but got (%v)", l.Columns, decoded.Columns)
+	}
+
+	if decoded.Rows != l.Rows {
+		t.Errorf("Exported rows (%v) but got (%v)", l.Rows, decoded.Rows)
+	}
+
+	if decoded.Depth != l.Depth {
+		t.Errorf("Exported depth (%v) but got (%v)", l.Depth, decoded.Depth)
 	}
 }

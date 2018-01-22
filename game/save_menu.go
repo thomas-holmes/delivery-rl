@@ -17,20 +17,18 @@ type SaveMenu struct {
 }
 
 func (s SaveMenu) saveGame() {
-	log.Printf("OMGOMGOMG SAVING")
 	save := NewSaveV0()
 
 	save.SaveWorld(s.World)
 
 	buf := new(bytes.Buffer)
 
-	save.Encode(buf)
+	if err := save.Encode(buf); err != nil {
+		log.Println("Failed to save properly", err)
+	}
 
 	// TODO: Do something with this serialized buffer
-
 	ioutil.WriteFile("/tmp/save.dat", buf.Bytes(), 0666)
-
-	log.Printf("[%v] %v", buf.Len(), buf)
 
 }
 

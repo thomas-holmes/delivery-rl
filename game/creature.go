@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log" // Replace w/ PCG deterministic random
+	"log"
 	"strconv"
 
 	"github.com/thomas-holmes/gterm"
@@ -117,7 +117,6 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	}
 
 	if defender, ok := world.CurrentLevel().GetCreatureAtTile(newX, newY); ok {
-		log.Printf("Got a creature in TryMove, %+v", *defender)
 		if c.Team != defender.Team {
 			a, aOk := world.GetEntity(c.ID)
 			d, dOk := world.GetEntity(defender.ID)

@@ -27,6 +27,8 @@ type World struct {
 
 	Player *Creature
 
+	HUD HUD
+
 	CurrentLevelID    int
 	CurrentLevelIndex int
 
@@ -64,6 +66,9 @@ type World struct {
 
 // CurrentLevel returns a pointer to the current level. Don't store this pointer!
 func (world *World) CurrentLevel() *Level {
+	if world.CurrentLevelIndex >= len(world.Levels) {
+		log.Panicf("Have level index out of bounds. Len (%v), index (%v)", len(world.Levels), world.CurrentLevelIndex)
+	}
 	return &world.Levels[world.CurrentLevelIndex]
 }
 
@@ -145,23 +150,12 @@ func (world *World) addPlayer(player *Creature, level *Level) {
 }
 
 func (world *World) addCreature(creature *Creature, level *Level) {
-	creature.Depth = level.Depth
-
-	if !level.CanStandOnTile(creature.X, creature.Y) {
-		for _, t := range level.tiles {
-			if !t.IsWall() && !(t.Creature != nil) {
-				creature.X = t.X
-				creature.Y = t.Y
-				log.Printf("Creature position adjusted to (%v,%v)", creature.X, creature.Y)
-				break
-			}
-		}
-	}
-
-	level.GetTile(creature.X, creature.Y).Creature = creature
+	level.AddCreature(creature)
 
 	if creature.IsPlayer {
+		log.Printf("Adding the player")
 		world.addPlayer(creature, level)
+		log.Printf("%+v", level.Entities)
 	}
 }
 
@@ -172,7 +166,10 @@ func (world *World) AddEntityToCurrentLevel(e Entity) {
 
 func (world *World) AddEntity(e Entity, levelID int) {
 	level := world.LevelByID(levelID)
-	e.SetIdentity(world.GetNextID())
+	if e.Identity() == 0 {
+		e.SetIdentity(world.GetNextID())
+		log.Printf("giving it an ID! %v", e.Identity())
+	}
 	log.Printf("Adding entity %+v", e)
 
 	if n, ok := e.(Notifier); ok {
@@ -182,8 +179,6 @@ func (world *World) AddEntity(e Entity, levelID int) {
 	if l, ok := e.(Listener); ok {
 		world.messageBus.Subscribe(l)
 	}
-
-	level.Entities = append(level.Entities, e)
 
 	if c, ok := e.(*Creature); ok {
 		world.addCreature(c, level)
@@ -566,6 +561,7 @@ func (w *World) SaveGame() {
 }
 
 func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
+	rng := pcg.NewPCG64()
 	world := &World{
 		Window:         window,
 		CameraCentered: centered,
@@ -576,7 +572,7 @@ func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 		CameraWidth:        56,
 		CameraHeight:       25,
 		CurrentUpdateTicks: sdl.GetTicks(),
-		rng:                pcg.NewPCG64(),
+		rng:                &rng,
 	}
 
 	world.rng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)

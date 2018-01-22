@@ -10,8 +10,27 @@ type DistanceCandidate struct {
 	Position
 }
 
+func (level *Level) AddCreature(c *Creature) {
+	c.Depth = level.Depth
+
+	if !level.CanStandOnTile(c.X, c.Y) {
+		for _, t := range level.Tiles {
+			if !t.IsWall() && !(t.Creature != nil) {
+				c.X = t.X
+				c.Y = t.Y
+				log.Printf("Creature position adjusted to (%v,%v)", c.X, c.Y)
+				break
+			}
+		}
+	}
+
+	level.Entities = append(level.Entities, c)
+
+	level.GetTile(c.X, c.Y).Creature = c
+}
+
 func (level Level) getStair(x int, y int) (Stair, bool) {
-	for _, s := range level.stairs {
+	for _, s := range level.Stairs {
 		if s.X == x && s.Y == y {
 			return s, true
 		}
@@ -20,7 +39,7 @@ func (level Level) getStair(x int, y int) (Stair, bool) {
 }
 
 func (level Level) GetTile(x int, y int) *Tile {
-	return &level.tiles[y*level.Columns+x]
+	return &level.Tiles[y*level.Columns+x]
 }
 
 func (level *Level) IsTileOccupied(x int, y int) bool {
@@ -83,8 +102,8 @@ type Level struct {
 	Rows      int
 	VisionMap *VisionMap
 	ScentMap  *ScentMap
-	tiles     []Tile
-	stairs    []Stair
+	Tiles     []Tile
+	Stairs    []Stair
 
 	MonsterDensity int
 
@@ -97,25 +116,25 @@ type Level struct {
 // connectTwoLevels connects multiple levels arbitrarily. If there is an uneven number
 // of stair cases you will end up with a dead stair.
 func connectTwoLevels(upper *Level, lower *Level) {
-	for i, downStair := range upper.stairs {
+	for i, downStair := range upper.Stairs {
 		if !downStair.Down || downStair.Connected {
 			continue
 		}
 
-		for j, upStair := range lower.stairs {
+		for j, upStair := range lower.Stairs {
 			if upStair.Down || upStair.Connected {
 				continue
 			}
 
-			upper.stairs[i].DestLevelID = lower.ID
-			upper.stairs[i].DestX = upStair.X
-			upper.stairs[i].DestY = upStair.Y
-			upper.stairs[i].Connected = true
+			upper.Stairs[i].DestLevelID = lower.ID
+			upper.Stairs[i].DestX = upStair.X
+			upper.Stairs[i].DestY = upStair.Y
+			upper.Stairs[i].Connected = true
 
-			lower.stairs[j].DestLevelID = upper.ID
-			lower.stairs[j].DestX = downStair.X
-			lower.stairs[j].DestY = downStair.Y
-			lower.stairs[j].Connected = true
+			lower.Stairs[j].DestLevelID = upper.ID
+			lower.Stairs[j].DestX = downStair.X
+			lower.Stairs[j].DestY = downStair.Y
+			lower.Stairs[j].Connected = true
 
 			break
 		}
@@ -158,8 +177,8 @@ func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
 
 	level.Columns = candidate.W
 	level.Rows = candidate.H
-	level.tiles = tiles
-	level.stairs = stairs
+	level.Tiles = tiles
+	level.Stairs = stairs
 	level.MonsterDensity = 50
 
 	level.VisionMap = NewVisionMap(level.Columns, level.Rows)
