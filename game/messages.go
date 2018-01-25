@@ -19,6 +19,7 @@ const (
 	ShowFullGameLog
 	SaveGame
 	GameWon
+	FoodSpoiled
 )
 
 type ClearRegionMessage struct {

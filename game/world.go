@@ -501,13 +501,19 @@ func (world *World) AddAnimation(a Animation) {
 
 func (world *World) ShowEndGameMenu() {
 	world.GameOver = true
-	pop := NewEndGameMenu(world, 10, 5, 40, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
+	pop := NewEndGameMenu(world, 5, 5, 50, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
+	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
+}
+
+func (world *World) ShowFoodSpoiledMenu() {
+	world.GameOver = true
+	pop := NewEndGameMenu(world, 5, 5, 50, 6, Red, "GAME OVER", "You let the food spoil!")
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }
 
 func (world *World) ShowGameWonMenu() {
 	world.GameOver = true
-	pop := NewEndGameMenu(world, 10, 5, 45, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered with %v heat remaning", world.Player.HT.Current))
+	pop := NewEndGameMenu(world, 5, 5, 50, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered with %v heat remaning", world.Player.HT.Current))
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }
 
@@ -529,6 +535,8 @@ func (world *World) Notify(message Message, data interface{}) {
 		world.ShowEndGameMenu()
 	case GameWon:
 		world.ShowGameWonMenu()
+	case FoodSpoiled:
+		world.ShowFoodSpoiledMenu()
 	case PlayerFloorChange:
 		if d, ok := data.(PlayerFloorChangeMessage); ok {
 			if !d.Connected {

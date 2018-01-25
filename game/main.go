@@ -56,7 +56,7 @@ func spawnRandomMonster(world *World) {
 }
 
 func MakeNweWorld(window *gterm.Window) *World {
-	world := NewWorld(window, true, 99)
+	world := NewWorld(window, true, 0xDEADBEEF)
 	{
 		// TODO: Roll this up into some kind of registering a system function on the world
 		combat := CombatSystem{World: world}

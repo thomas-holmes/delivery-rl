@@ -48,6 +48,7 @@ type ExportedCreatureV0 struct {
 	BasicEntity
 
 	IsPlayer       bool
+	IsDragon       bool
 	VisionDistance int
 
 	Experience int
@@ -268,6 +269,7 @@ func ExportCreature(c *Creature) ExportedCreatureV0 {
 		BasicEntity: c.BasicEntity,
 
 		IsPlayer:       c.IsPlayer,
+		IsDragon:       c.IsDragon,
 		VisionDistance: c.VisionDistance,
 
 		Experience: c.Experience,
@@ -372,6 +374,7 @@ func importCreature(e ExportedCreatureV0) *Creature {
 	c.BasicEntity = e.BasicEntity
 
 	c.IsPlayer = e.IsPlayer
+	c.IsDragon = e.IsDragon
 	c.VisionDistance = e.VisionDistance
 
 	c.Experience = e.Experience

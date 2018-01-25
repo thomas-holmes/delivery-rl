@@ -107,9 +107,7 @@ func (c Creature) IsDead() bool {
 }
 
 func (c Creature) CanAct() bool {
-	return !c.IsDragon &&
-		!c.IsDead() &&
-		(c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
+	return !c.IsDragon && !c.IsDead() && (c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
 }
 
 func (c Creature) XPos() int {
@@ -135,8 +133,7 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	}
 
 	if defender, ok := world.CurrentLevel().GetCreatureAtTile(newX, newY); ok {
-		if !c.IsPlayer && defender.IsDragon {
-			log.Printf("Not moving because I'm the dragon")
+		if c.IsPlayer && defender.IsDragon {
 			return MoveIsVictory, nil
 		}
 		if (c.Team != NeutralTeam) && (c.Team != defender.Team) {
@@ -237,10 +234,22 @@ func (player *Creature) PickupItem(world *World) bool {
 	return true
 }
 
+func (creature *Creature) IsFoodRuined() bool {
+	return creature.HT.Current <= 0
+}
+
+func (creature *Creature) EndGame() {
+	creature.Broadcast(FoodSpoiled, nil)
+}
+
 // Update returns true if an action that would constitute advancing the turn took place
 func (creature *Creature) Update(turn uint64, input InputEvent, world *World) bool {
 	success := false
 	if creature.IsPlayer {
+		if creature.IsFoodRuined() {
+			creature.EndGame()
+			return true
+		}
 		success = creature.HandleInput(input, world)
 	} else {
 		success = creature.Pursue(turn, world)
@@ -396,6 +405,8 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 						Defender: data.Defender,
 					})
 				}
+			case MoveIsVictory:
+				player.Broadcast(GameWon, nil)
 			}
 		}
 		return true
