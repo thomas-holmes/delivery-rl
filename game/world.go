@@ -13,6 +13,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+const MaxDepth int = 3
+
 type Position struct {
 	X int
 	Y int
@@ -102,6 +104,15 @@ func (world *World) SetCurrentLevel(id int) {
 	}
 }
 
+func buildMonsterFromDefinition(def monsters.Definition) Creature {
+	monster := NewMonster(0, 0, def.Level, def.HP)
+	monster.Name = def.Name
+	monster.RenderGlyph = []rune(def.Glyph)[0]
+	monster.RenderColor = def.Color.Color
+
+	return monster
+}
+
 func (world *World) addInitialMonsters(level *Level) {
 	monsters := monsters.LoadDefinitions(path.Join("assets", "definitions", "monsters.yaml"))
 
@@ -112,13 +123,19 @@ func (world *World) addInitialMonsters(level *Level) {
 		if level.CanStandOnTile(x, y) {
 			index := rand.Intn(len(monsters))
 			def := monsters[index]
-			monster := NewMonster(x, y, def.Level, def.HP)
-			monster.Name = def.Name
-			monster.RenderGlyph = []rune(def.Glyph)[0]
-			monster.RenderColor = def.Color.Color
+			monster := buildMonsterFromDefinition(def)
+			monster.X = x
+			monster.Y = y
 			world.AddEntity(&monster, level.ID)
 		}
 	}
+}
+
+func (world *World) addDragonToLevel(level *Level) {
+	dragon := buildMonsterFromDefinition(monsters.Dragon)
+	dragon.Team = NeutralTeam
+
+	world.AddEntity(&dragon, level.ID)
 }
 
 // AddLevelFromCandidate constructs a real level from an intermediate level representation
@@ -130,11 +147,17 @@ func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
 	world.Levels = append(world.Levels, loadedLevel)
 
 	levels := len(world.Levels)
+	levelIndex := levels - 1
 
 	if levels > 1 {
-		connectTwoLevels(&world.Levels[levels-2], &world.Levels[levels-1])
+		connectTwoLevels(&world.Levels[levelIndex-1], &world.Levels[levelIndex])
 	}
-	world.addInitialMonsters(&world.Levels[len(world.Levels)-1])
+	world.addInitialMonsters(&world.Levels[levelIndex])
+
+	if levels == world.MaxDepth {
+		world.addDragonToLevel(&world.Levels[levelIndex])
+	}
+
 }
 
 func (world *World) addPlayer(player *Creature, level *Level) {
@@ -536,7 +559,7 @@ func (world *World) BuildLevels() {
 			genFlags = GenDownStairs | GenUpStairs
 		}
 
-		level := GenLevel(world.rng, 100, 100, genFlags)
+		level := GenLevel(world.rng, 40, 40, genFlags)
 		world.AddLevelFromCandidate(level)
 	}
 	world.SetCurrentLevel(0)
@@ -565,7 +588,7 @@ func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 	world := &World{
 		Window:         window,
 		CameraCentered: centered,
-		MaxDepth:       15,
+		MaxDepth:       MaxDepth,
 		CameraX:        0,
 		CameraY:        0,
 		// TODO: Width/Height should probably be some function of the window dimensions

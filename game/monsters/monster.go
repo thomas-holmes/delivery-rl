@@ -10,6 +10,15 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+var Dragon Definition = Definition{
+	Name:        "Hungry Dragon",
+	Description: "Your best customer, a very hungry dragon. He can't wait to get his claws on some pizza!",
+	Glyph:       "D",
+	Color:       color{sdl.Color{R: 225, G: 25, B: 25, A: 255}},
+	Level:       99,
+	HP:          5000,
+}
+
 type color struct {
 	sdl.Color
 }

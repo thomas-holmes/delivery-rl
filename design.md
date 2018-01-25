@@ -1,6 +1,11 @@
 # Game Design
 Musing and recording various game design elements.
 
+### Reality
+Few levels, ~3
+"Dragon" randomly placed on bottom level.
+Reach the dragon to win the game
+
 ### Theme
 You're trying to delivery pizza (maybe other foods?) to a dragon in cave.
 

@@ -43,7 +43,7 @@ const (
 	MaxRoomWidth      = 20
 	MaxRoomHeight     = 20
 	MaxRoomIterations = 200
-	MaxItemPlacement  = 50 // Let's go overboard at first.
+	MaxItemPlacement  = 25 // Let's go overboard at first.
 )
 
 func (level *CandidateLevel) genNextRoomID() int {

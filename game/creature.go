@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -16,6 +17,19 @@ const (
 	PlayerTeam
 	MonsterTeam
 )
+
+func ParseTeam(t string) Team {
+	switch strings.ToLower(t) {
+	case "neutral":
+		return NeutralTeam
+	case "player":
+		return PlayerTeam
+	case "monster":
+		return MonsterTeam
+	}
+
+	return NeutralTeam
+}
 
 func (creature *Creature) Regen() {
 	creature.HP.Tick()
@@ -118,7 +132,7 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	}
 
 	if defender, ok := world.CurrentLevel().GetCreatureAtTile(newX, newY); ok {
-		if c.Team != defender.Team {
+		if (c.Team != NeutralTeam) && (c.Team != defender.Team) {
 			a, aOk := world.GetEntity(c.ID)
 			d, dOk := world.GetEntity(defender.ID)
 			if aOk && dOk {
