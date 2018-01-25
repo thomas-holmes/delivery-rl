@@ -59,7 +59,7 @@ func (pop *EndGameMenu) Render(window *gterm.Window) {
 	pop.RenderContents(window)
 }
 
-func NewEndGameMenu(x int, y int, w int, h int, color sdl.Color, contents ...string) EndGameMenu {
+func NewEndGameMenu(world *World, x int, y int, w int, h int, color sdl.Color, contents ...string) EndGameMenu {
 	contentLen := len(contents)
 	maxWidth := 0
 
@@ -74,6 +74,7 @@ func NewEndGameMenu(x int, y int, w int, h int, color sdl.Color, contents ...str
 	centeredYOffset := (h - contentLen) / 2
 
 	pop := EndGameMenu{
+		world: world,
 		PopMenu: PopMenu{
 			X: x,
 			Y: y,

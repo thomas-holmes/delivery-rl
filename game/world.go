@@ -251,7 +251,7 @@ func (world *World) Update(input InputEvent) {
 		world.CurrentLevel().NextEntity = 0
 	}
 	// log.Printf("next (%v), len(%v)", world.CurrentLevel().NextEntity, len(world.CurrentLevel().Entities))
-	for i := world.CurrentLevel().NextEntity; i < len(world.CurrentLevel().Entities); i++ {
+	for i := world.CurrentLevel().NextEntity; i < len(world.CurrentLevel().Entities) && !world.GameOver; i++ {
 		e := world.CurrentLevel().Entities[i]
 
 		a, ok := e.(Actor)
@@ -476,7 +476,7 @@ func (world *World) AddAnimation(a Animation) {
 
 func (world *World) ShowEndGameMenu() {
 	world.GameOver = true
-	pop := NewEndGameMenu(10, 5, 40, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
+	pop := NewEndGameMenu(world, 10, 5, 40, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }
 
@@ -510,7 +510,7 @@ func (world *World) Notify(message Message, data interface{}) {
 		}
 	case ShowMenu:
 		if d, ok := data.(ShowMenuMessage); ok {
-			log.Printf("%T %+v", d.Menu, d.Menu)
+			log.Printf("World: %T %+v", d.Menu, d.Menu)
 			if n, ok := d.Menu.(Notifier); ok {
 				n.SetMessageBus(world.messageBus)
 			}

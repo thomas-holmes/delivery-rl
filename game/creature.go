@@ -87,8 +87,12 @@ func (c *Creature) EndTurn() {
 	c.Regen()
 }
 
+func (c Creature) IsDead() bool {
+	return c.HP.Current <= 0
+}
+
 func (c Creature) CanAct() bool {
-	return c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed)
+	return !c.IsDead() && (c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
 }
 
 func (c Creature) XPos() int {
@@ -105,9 +109,6 @@ func (c *Creature) Damage(damage int) {
 
 	if c.IsPlayer {
 		c.Broadcast(PlayerUpdate, nil)
-		if c.HP.Current == 0 {
-			c.Broadcast(PlayerDead, nil)
-		}
 	}
 }
 
