@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"path"
@@ -134,6 +135,7 @@ func (world *World) addInitialMonsters(level *Level) {
 func (world *World) addDragonToLevel(level *Level) {
 	dragon := buildMonsterFromDefinition(monsters.Dragon)
 	dragon.Team = NeutralTeam
+	dragon.IsDragon = true
 
 	world.AddEntity(&dragon, level.ID)
 }
@@ -503,6 +505,12 @@ func (world *World) ShowEndGameMenu() {
 	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
 }
 
+func (world *World) ShowGameWonMenu() {
+	world.GameOver = true
+	pop := NewEndGameMenu(world, 10, 5, 45, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered with %v heat remaning", world.Player.HT.Current))
+	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
+}
+
 func (world *World) Notify(message Message, data interface{}) {
 	switch message {
 	case ClearRegion:
@@ -519,6 +527,8 @@ func (world *World) Notify(message Message, data interface{}) {
 		}
 	case PlayerDead:
 		world.ShowEndGameMenu()
+	case GameWon:
+		world.ShowGameWonMenu()
 	case PlayerFloorChange:
 		if d, ok := data.(PlayerFloorChangeMessage); ok {
 			if !d.Connected {

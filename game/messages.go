@@ -18,6 +18,7 @@ const (
 	GameLogAppend
 	ShowFullGameLog
 	SaveGame
+	GameWon
 )
 
 type ClearRegionMessage struct {
