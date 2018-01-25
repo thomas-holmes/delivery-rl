@@ -2,7 +2,6 @@
 Musing and recording various game design elements.
 
 ### Reality
-Few levels, ~3
 "Dragon" randomly placed on bottom level.
 Reach the dragon to win the game
 
@@ -25,8 +24,19 @@ Maybe have it be close to coffee break roguelike in duration 15~30 minutes expec
 
 Is the character an adventurer? Or just a really amazing, the best ever, delivery person. I'm leaning towards the latter with a bunch of delivery themed abilities, primarily no killing.
 
+Maybe some kind of meta progression or meta flavor?
+ - Regenerate seen levels w/ player ghosts
+ - Easter Eggs from previous runs. (Maybe a creature has stolen your gear and is using it?)
+ - In game text? Hinting at a previously seen level/past delivery characters when something happens.
+
+
 ### Dungeon
 Dungeon should instead be caves for a dragon. Maybe we have multiple customers, some go to caves, some dungeons, etc...
+
+Lots of small levels?
+Fewer big levels?
+Maybe a few big levels with lots of dead end levels?
+Maybe branches add complexity
 
 ### Items/Equipment
 - Player
