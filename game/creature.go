@@ -107,7 +107,9 @@ func (c Creature) IsDead() bool {
 }
 
 func (c Creature) CanAct() bool {
-	return !c.IsDragon && !c.IsDead() && (c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
+	return !c.IsDragon &&
+		!c.IsDead() &&
+		(c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
 }
 
 func (c Creature) XPos() int {
@@ -133,7 +135,8 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	}
 
 	if defender, ok := world.CurrentLevel().GetCreatureAtTile(newX, newY); ok {
-		if c.IsPlayer && defender.IsDragon {
+		if !c.IsPlayer && defender.IsDragon {
+			log.Printf("Not moving because I'm the dragon")
 			return MoveIsVictory, nil
 		}
 		if (c.Team != NeutralTeam) && (c.Team != defender.Team) {
@@ -393,8 +396,6 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 						Defender: data.Defender,
 					})
 				}
-			case MoveIsVictory:
-				player.Broadcast(GameWon, nil)
 			}
 		}
 		return true

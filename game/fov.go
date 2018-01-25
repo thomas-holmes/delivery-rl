@@ -58,8 +58,20 @@ func (vision *VisionMap) UpdateVision(viewDistance int, world *World) {
 
 			newVision := previousVision
 
-			if vision.CheckVision(playerX, playerY, x, y, world) {
+			if vision.CheckVision(playerX, playerY, x, y, world) ||
+				vision.CheckVision(x, y, playerX, playerY, world) {
 				newVision = current
+
+				wallMinY, wallMaxY := max(0, y-1), min(y+1, vision.Rows-1)
+				wallMinX, wallMaxX := max(0, x-1), min(x+1, vision.Columns-1)
+
+				for dy := wallMinY; dy <= wallMaxY; dy++ {
+					for dx := wallMinX; dx <= wallMaxX; dx++ {
+						if world.CurrentLevel().GetTile(dx, dy).IsWall() {
+							vision.Map[dy*vision.Columns+dx] = current
+						}
+					}
+				}
 			}
 
 			vision.Map[y*vision.Columns+x] = newVision
@@ -70,19 +82,11 @@ func (vision *VisionMap) UpdateVision(viewDistance int, world *World) {
 func (vision *VisionMap) CheckVision(playerX int, playerY int, candidateX int, candidateY int, world *World) bool {
 	cells := PlotLine(playerX, playerY, candidateX, candidateY)
 
-	foundWall := false
-
 	for _, cell := range cells {
-		if foundWall {
-			return false
-		}
-		// Either a wall or on the way to a wall, so we can see it.
-		vision.Map[cell.Y*vision.Columns+cell.X] = vision.Current
-
 		tile := world.CurrentLevel().GetTile(cell.X, cell.Y)
 
 		if tile.IsWall() {
-			foundWall = true
+			return false
 		}
 	}
 	return true
