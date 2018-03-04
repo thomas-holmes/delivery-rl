@@ -9,11 +9,12 @@ import (
 
 type Equipment struct {
 	Weapon Item
+	Shoes  Item
 }
 
 func NewEquipment() Equipment {
 	return Equipment{
-		Weapon: NoItem,
+		Weapon: BareHands,
 	}
 }
 

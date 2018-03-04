@@ -221,7 +221,7 @@ func (level *CandidateLevel) addStairs() {
 }
 
 func (level *CandidateLevel) addItems() {
-	items := items.LoadWeaponDefinitions(path.Join("assets", "definitions", "weapons.yaml"))
+	items := items.LoadItemDefinitions(path.Join("assets", "definitions", "weapons.yaml"))
 	for i := 0; i < MaxItemPlacement; i++ {
 		itemIndex := level.rng.Bounded(uint64(len(items)))
 		itemDef := items[itemIndex]
@@ -232,7 +232,6 @@ func (level *CandidateLevel) addItems() {
 			Symbol:      []rune(itemDef.Glyph)[0],
 			Name:        itemDef.Name,
 			Description: itemDef.Description,
-			Equippable:  itemDef.Equippable,
 			Power:       itemDef.Power,
 		}
 

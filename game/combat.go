@@ -23,7 +23,7 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 
 	log.Printf("Fighting with %+v", attacker.Equipment)
-	defender.Damage(attacker.Equipment.Weapon.Power)
+	defender.Damage(int(attacker.Equipment.Weapon.Power))
 	logString := fmt.Sprintf("%v hits %v for %v damage!", attacker.Name, defender.Name, attacker.Equipment.Weapon.Power)
 
 	combat.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{logString}})

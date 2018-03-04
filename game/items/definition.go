@@ -7,17 +7,32 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-type WeaponDefinition struct {
+type ItemKind int
+
+const (
+	Weapon ItemKind = iota
+)
+
+func parseKind(kind string) (ItemKind, bool) {
+	switch kind {
+	case "Weapon":
+		return Weapon, true
+	}
+
+	return -1, false
+}
+
+type ItemDefinition struct {
 	Name        string
 	Description string
 	Glyph       string
 	Color       []int
-	Power       int
+	Power       float64
 	Equippable  bool
 }
 
-func LoadWeaponDefinitions(path string) []WeaponDefinition {
-	var defs []WeaponDefinition
+func LoadItemDefinitions(path string) []ItemDefinition {
+	var defs []ItemDefinition
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Panicf("Could not load item definitions from %v. Error %+v", path, err)
