@@ -22,6 +22,18 @@ type Item struct {
 	Kind items.ItemKind
 }
 
+func produceItem(itemDef items.ItemDefinition) Item {
+	r, g, b := uint8(itemDef.Color[0]), uint8(itemDef.Color[1]), uint8(itemDef.Color[2])
+	return Item{
+		Color:       sdl.Color{R: r, G: g, B: b, A: 255},
+		Symbol:      []rune(itemDef.Glyph)[0],
+		Name:        itemDef.Name,
+		Description: itemDef.Description,
+		Power:       itemDef.Power,
+		Kind:        itemDef.Kind,
+	}
+}
+
 type ItemDetails struct {
 	Item
 

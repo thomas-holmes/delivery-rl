@@ -3,8 +3,6 @@ package main
 import (
 	"path"
 
-	"github.com/veandco/go-sdl2/sdl"
-
 	"github.com/MichaelTJones/pcg"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 )
@@ -226,14 +224,7 @@ func (level *CandidateLevel) addItems() {
 		itemIndex := level.rng.Bounded(uint64(len(items)))
 		itemDef := items[itemIndex]
 
-		r, g, b := uint8(itemDef.Color[0]), uint8(itemDef.Color[1]), uint8(itemDef.Color[2])
-		randomItem := Item{
-			Color:       sdl.Color{R: r, G: g, B: b, A: 255},
-			Symbol:      []rune(itemDef.Glyph)[0],
-			Name:        itemDef.Name,
-			Description: itemDef.Description,
-			Power:       itemDef.Power,
-		}
+		randomItem := produceItem(itemDef)
 
 		tileIndex := level.rng.Bounded(uint64(len(level.tiles)))
 		if level.tiles[tileIndex].TileKind == Floor {
