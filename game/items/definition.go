@@ -3,6 +3,7 @@ package items
 import (
 	"io/ioutil"
 	"log"
+	"strings"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -10,16 +11,35 @@ import (
 type ItemKind int
 
 const (
-	Weapon ItemKind = iota
+	Unknown ItemKind = iota
+	Consumeable
+	Weapon
 )
 
+func (i *ItemKind) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var kindStr string
+	if err := unmarshal(&kindStr); err != nil {
+		log.Println("Failed to unmarshal ItemKind", err)
+	}
+
+	k, ok := parseKind(kindStr)
+	if !ok {
+		log.Println("Failed to parse item kind")
+	}
+	*i = k
+
+	return nil
+}
+
 func parseKind(kind string) (ItemKind, bool) {
-	switch kind {
-	case "Weapon":
+	switch strings.ToLower(kind) {
+	case "consumeable":
+		return Consumeable, true
+	case "weapon":
 		return Weapon, true
 	}
 
-	return -1, false
+	return Unknown, false
 }
 
 type ItemDefinition struct {
@@ -28,7 +48,7 @@ type ItemDefinition struct {
 	Glyph       string
 	Color       []int
 	Power       float64
-	Equippable  bool
+	Kind        ItemKind
 }
 
 func LoadItemDefinitions(path string) []ItemDefinition {

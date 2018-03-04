@@ -13,6 +13,7 @@ description: "A delicious green apple"
 glyph: "a"
 color: [0, 255, 0]
 equippable: false
+kind: consumeable
 `
 
 	item := ItemDefinition{}
@@ -24,6 +25,10 @@ equippable: false
 
 	if item.Name != "Apple" {
 		t.Errorf("Expected name (Apple) but got (%v)", item.Name)
+	}
+
+	if item.Kind != Consumeable {
+		t.Errorf("Expected item to be Consumeable(%v) but instead got %v", Consumeable, item.Kind)
 	}
 }
 
