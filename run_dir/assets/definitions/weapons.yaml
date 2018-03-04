@@ -1,10 +1,4 @@
 ---
-  - name: "Apple"
-    description: "A delicious green apple"
-    glyph: "a"
-    color: [0, 255, 0]
-    kind: consumeable
-
   - name: "Dagger"
     description: "A plain dagger."
     glyph: ")"

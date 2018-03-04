@@ -1,0 +1,14 @@
+---
+  - name: "Sandals"
+    description: "A simple pair of sandals. Keeps your feet safe from sharp rocks but not much else."
+    glyph: "]"
+    color: [255, 0, 0]
+    power: 1
+    kind: shoe
+
+  - name: "Sneakers"
+    description: "These sneakers provide support and better protection from the environment. You feel like you could really run fast in these!"
+    glyph: "]"
+    color: [255, 255, 0]
+    power: 2
+    kind: shoe

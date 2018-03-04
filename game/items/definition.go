@@ -51,15 +51,15 @@ type ItemDefinition struct {
 	Kind        ItemKind
 }
 
-func LoadItemDefinitions(path string) []ItemDefinition {
+func LoadItemDefinitions(path string) ([]ItemDefinition, error) {
 	var defs []ItemDefinition
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Panicf("Could not load item definitions from %v. Error %+v", path, err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(bytes, &defs)
 	if err != nil {
-		log.Panicf("Could not parse item definitions from %v. Error %+v", path, err)
+		return nil, err
 	}
-	return defs
+	return defs, nil
 }

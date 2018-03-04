@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"path"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 
@@ -91,8 +92,11 @@ func main() {
 	}
 
 	window.SetTitle("DeliveryRL")
-
 	window.SetBackgroundColor(gterm.NoColor)
+
+	if err := items.Configure(path.Join("assets", "definitions")); err != nil {
+		log.Fatalln("Could not configure items repository", err)
+	}
 
 	window.ShouldRenderFps(true)
 	world := MakeNweWorld(window)

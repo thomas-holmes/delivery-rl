@@ -1,7 +1,7 @@
 package main
 
 import (
-	"path"
+	"log"
 
 	"github.com/MichaelTJones/pcg"
 	"github.com/thomas-holmes/delivery-rl/game/items"
@@ -219,7 +219,10 @@ func (level *CandidateLevel) addStairs() {
 }
 
 func (level *CandidateLevel) addItems() {
-	items := items.LoadItemDefinitions(path.Join("assets", "definitions", "items.yaml"))
+	items, err := items.GetCollection("weapons")
+	if err != nil {
+		log.Fatalln("Could not load weapons repository")
+	}
 	for i := 0; i < MaxItemPlacement; i++ {
 		itemIndex := level.rng.Bounded(uint64(len(items)))
 		itemDef := items[itemIndex]
