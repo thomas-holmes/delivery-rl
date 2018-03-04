@@ -7,7 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-type Definition struct {
+type WeaponDefinition struct {
 	Name        string
 	Description string
 	Glyph       string
@@ -16,8 +16,8 @@ type Definition struct {
 	Equippable  bool
 }
 
-func LoadDefinitions(path string) []Definition {
-	var defs []Definition
+func LoadWeaponDefinitions(path string) []WeaponDefinition {
+	var defs []WeaponDefinition
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Panicf("Could not load item definitions from %v. Error %+v", path, err)
