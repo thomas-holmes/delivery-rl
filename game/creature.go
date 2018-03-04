@@ -374,15 +374,6 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 				world.GameOver = true
 				return true
 			}
-		case sdl.K_s:
-			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				/*
-					log.Printf("Saving game")
-					player.Broadcast(SaveGame, SaveGameMessage{World: world})
-				*/
-				world.SaveGame()
-			}
-			return false
 		default:
 			return false
 		}

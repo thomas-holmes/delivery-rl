@@ -100,7 +100,6 @@ func main() {
 	hud := NewHud(world.Player, world, 60, 0)
 
 	intro := IntroScreen{}
-	resume := ResumeScreen{world: world}
 	for !quit && !world.QuitGame {
 
 		inputEvent := InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
@@ -110,13 +109,6 @@ func main() {
 			intro.Update(inputEvent)
 			intro.Render(window)
 			window.Refresh()
-			continue
-		}
-		if !resume.Done() {
-			resume.Update(inputEvent)
-			resume.Render(window)
-			window.Refresh()
-			hud.Player = world.Player
 			continue
 		}
 

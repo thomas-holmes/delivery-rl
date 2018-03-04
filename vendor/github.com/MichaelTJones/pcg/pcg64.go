@@ -6,12 +6,12 @@ package pcg
 // Ported to Go by Michael Jones <michael.jones@gmail.com>
 
 type PCG64 struct {
-	Lo PCG32
-	Hi PCG32
+	lo *PCG32
+	hi *PCG32
 }
 
-func NewPCG64() PCG64 {
-	return PCG64{NewPCG32(), NewPCG32()}
+func NewPCG64() *PCG64 {
+	return &PCG64{NewPCG32(), NewPCG32()}
 }
 
 func (p *PCG64) Seed(state1, state2, sequence1, sequence2 uint64) *PCG64 {
@@ -19,13 +19,13 @@ func (p *PCG64) Seed(state1, state2, sequence1, sequence2 uint64) *PCG64 {
 	if sequence1&mask == sequence2&mask {
 		sequence2 = ^sequence2
 	}
-	p.Lo.Seed(state1, sequence1)
-	p.Hi.Seed(state2, sequence2)
+	p.lo.Seed(state1, sequence1)
+	p.hi.Seed(state2, sequence2)
 	return p
 }
 
 func (p *PCG64) Random() uint64 {
-	return uint64(p.Hi.Random())<<32 | uint64(p.Lo.Random())
+	return uint64(p.hi.Random())<<32 | uint64(p.lo.Random())
 }
 
 func (p *PCG64) Bounded(bound uint64) uint64 {
@@ -42,8 +42,8 @@ func (p *PCG64) Bounded(bound uint64) uint64 {
 }
 
 func (p *PCG64) Advance(delta uint64) *PCG64 {
-	p.Lo.Advance(delta)
-	p.Hi.Advance(delta)
+	p.lo.Advance(delta)
+	p.hi.Advance(delta)
 	return p
 }
 

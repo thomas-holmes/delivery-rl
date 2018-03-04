@@ -596,11 +596,6 @@ func (w *World) LevelByID(id int) *Level {
 	return nil
 }
 
-func (w *World) SaveGame() {
-	w.Broadcast(ShowMenu, ShowMenuMessage{Menu: &SaveMenu{World: w, PopMenu: PopMenu{X: 0, Y: w.Window.Rows - 3, W: w.Window.Columns, H: w.Window.Rows}}})
-	w.Broadcast(SaveGame, SaveGameMessage{World: w})
-}
-
 func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 	rng := pcg.NewPCG64()
 	world := &World{
@@ -613,7 +608,7 @@ func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 		CameraWidth:        56,
 		CameraHeight:       25,
 		CurrentUpdateTicks: sdl.GetTicks(),
-		rng:                &rng,
+		rng:                rng,
 	}
 
 	world.rng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
