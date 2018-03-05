@@ -32,12 +32,19 @@ type Roller struct {
 	rng *pcg.PCG64
 }
 
+type Notation struct {
+	Num   int
+	Sides int
+}
+
 // Roll rolls n dice with y sides. To simulate a roll of 4d8 you
 // would call Roll(4, 8)
-func (r Roller) Roll(num int, sides int) int {
+func (r Roller) Roll(notation Notation) int {
 	if r.rng == nil {
 		panic("Can't roll dice without randomness")
 	}
+
+	num, sides := notation.Num, notation.Sides
 
 	total := 0
 	for rolls := 0; rolls < num; rolls++ {
@@ -47,22 +54,34 @@ func (r Roller) Roll(num int, sides int) int {
 	return total
 }
 
-func (r Roller) RollDice(diceNotation string) (int, error) {
-	parts := strings.Split(strings.TrimSpace(diceNotation), "d")
+func ParseNotation(notationStr string) (Notation, error) {
+	parts := strings.Split(strings.TrimSpace(notationStr), "d")
 	if len(parts) != 2 {
-		return 0, errors.New("Could not parse dice notation. Pass in form NdY")
+		return Notation{}, errors.New("Could not parse dice notation. Pass in form NdY")
 	}
 	numStr, sidesStr := parts[0], parts[1]
 	num, err := strconv.Atoi(numStr)
 	if err != nil {
-		return 0, err
+		return Notation{}, err
 	}
 	sides, err := strconv.Atoi(sidesStr)
+	if err != nil {
+		return Notation{}, err
+	}
+	return Notation{
+		Num:   num,
+		Sides: sides,
+	}, nil
+}
+
+// RollDice roll dice using dice notation
+func (r Roller) RollDice(diceNotation string) (int, error) {
+	notation, err := ParseNotation(diceNotation)
 	if err != nil {
 		return 0, err
 	}
 
-	return r.Roll(num, sides), nil
+	return r.Roll(notation), nil
 }
 
 // NewRoller constructs a roller with the provided PCG64 rng
@@ -76,10 +95,11 @@ func SetDefaultRandomness(rng *pcg.PCG64) {
 }
 
 // Roll roles dice using the default roller
-func Roll(num int, sides int) int {
-	return defaultRoller.Roll(num, sides)
+func Roll(notation Notation) int {
+	return defaultRoller.Roll(notation)
 }
 
+// RollDice rolls dice using the default roller
 func RollDice(diceNotation string) (int, error) {
 	return defaultRoller.RollDice(diceNotation)
 }
