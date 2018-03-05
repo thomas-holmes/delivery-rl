@@ -29,13 +29,9 @@
   name = "github.com/MichaelTJones/pcg"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/thomas-holmes/gterm"
+  version = "v0.2.1"
 
 [[constraint]]
   name = "github.com/veandco/go-sdl2"
   version = "0.2.0"
-
-[[constraint]]
-  name = "github.com/BurntSushi/toml"
-  version = "0.3.0"

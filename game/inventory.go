@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -70,10 +69,21 @@ func (pop *InventoryPop) Render(window *gterm.Window) {
 		nextRow = pop.renderItem(i, nextRow, window)
 	}
 
-	window.PutString(pop.X, pop.Y, strings.Repeat("%", pop.W), White)
-	for y := pop.Y + 1; y < pop.Y+pop.H-1; y++ {
-		window.PutRune(pop.X, y, '%', White, gterm.NoColor)
-		window.PutRune(pop.X+pop.W-1, y, '%', White, gterm.NoColor)
+	window.PutRune(pop.X, pop.Y, rune(0x250F), White, gterm.NoColor)
+	for x := pop.X + 1; x < pop.X+pop.W-1; x++ {
+		window.PutRune(x, pop.Y, rune(0x2501), White, gterm.NoColor)
 	}
-	window.PutString(pop.X, pop.Y+pop.H-1, strings.Repeat("%", pop.W), White)
+	window.PutRune(pop.X+pop.W-1, pop.Y, rune(0x2513), White, gterm.NoColor)
+
+	for y := pop.Y + 1; y < pop.Y+pop.H-1; y++ {
+		window.PutRune(pop.X, y, rune(0x2503), White, gterm.NoColor)
+
+		window.PutRune(pop.X+pop.W-1, y, rune(0x2503), White, gterm.NoColor)
+	}
+
+	window.PutRune(pop.X, pop.Y+pop.H-1, rune(0x2517), White, gterm.NoColor)
+	for x := pop.X + 1; x < pop.X+pop.W-1; x++ {
+		window.PutRune(x, pop.Y+pop.H-1, rune(0x2501), White, gterm.NoColor)
+	}
+	window.PutRune(pop.X+pop.W-1, pop.Y+pop.H-1, rune(0x251B), White, gterm.NoColor)
 }
