@@ -567,10 +567,6 @@ func (world *World) Notify(message Message, data interface{}) {
 	}
 }
 
-const (
-	DefaultSeq uint64 = iota * 1000
-)
-
 func (world *World) BuildLevels() {
 	var genFlags LevelGenFlag
 	for i := 0; i < world.MaxDepth; i++ {
@@ -602,8 +598,7 @@ func (w *World) LevelByID(id int) *Level {
 	return nil
 }
 
-func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
-	rng := pcg.NewPCG64()
+func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 	world := &World{
 		Window:         window,
 		CameraCentered: centered,
@@ -616,8 +611,6 @@ func NewWorld(window *gterm.Window, centered bool, seed uint64) *World {
 		CurrentUpdateTicks: sdl.GetTicks(),
 		rng:                rng,
 	}
-
-	world.rng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
 
 	world.messageBus = &MessageBus{}
 	world.messageBus.Subscribe(world)

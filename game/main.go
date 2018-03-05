@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"path"
 
+	"github.com/MichaelTJones/pcg"
+
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/delivery-rl/game/monsters"
 	"github.com/thomas-holmes/gterm"
@@ -57,8 +59,16 @@ func spawnRandomMonster(world *World) {
 	}
 }
 
-func MakeNweWorld(window *gterm.Window) *World {
-	world := NewWorld(window, true, 0xDEADBEEF)
+const (
+	DefaultSeq uint64 = iota * 1000
+)
+
+func MakeNewWorld(window *gterm.Window) *World {
+	pcgRng := pcg.NewPCG64()
+	seed := uint64(0xDEADBEEF)
+	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
+
+	world := NewWorld(window, true, pcgRng)
 	{
 		// TODO: Roll this up into some kind of registering a system function on the world
 		combat := CombatSystem{World: world}
@@ -102,7 +112,7 @@ func main() {
 	}
 
 	window.ShouldRenderFps(true)
-	world := MakeNweWorld(window)
+	world := MakeNewWorld(window)
 
 	hud := NewHud(world.Player, world, 60, 0)
 
