@@ -9,7 +9,7 @@ import (
 )
 
 func TestRepositoryConfigure(t *testing.T) {
-	repo := itemRepository{collections: make(map[string][]ItemDefinition)}
+	repo := NewRepository()
 
 	err := repo.Configure(path.Join("this", "is", "a", "fake", "path"))
 	if err == nil {
@@ -38,7 +38,7 @@ func TestRepositoryConfigure(t *testing.T) {
 }
 
 func TestRepositoryErrorBeforeConfigured(t *testing.T) {
-	repo := itemRepository{collections: make(map[string][]ItemDefinition)}
+	repo := NewRepository()
 
 	_, err := repo.Get("foo")
 
@@ -48,5 +48,41 @@ func TestRepositoryErrorBeforeConfigured(t *testing.T) {
 
 	if !strings.Contains(err.Error(), "Repository must be configured") {
 		t.Error("Returned error was incorrect. Expecting \"Repository must be configured...\", instead got", err)
+	}
+}
+
+func TestRepositoryLoadsDefinitions(t *testing.T) {
+	repo := NewRepository()
+
+	appleYAML := `---
+ - name: "Apple"
+   description: "A delicious green apple"
+   glyph: "a"
+   color: [0, 255, 0]
+   equippable: false
+   kind: consumeable
+`
+
+	tempDir, err := ioutil.TempDir("", "testYamlLoad")
+	if err != nil {
+		t.Fatal("Failed to create a tempdir", err)
+	}
+
+	if err := ioutil.WriteFile(path.Join(tempDir, "consumeables.yaml"), []byte(appleYAML), 0666); err != nil {
+		t.Fatal("Failed to write test file", err)
+	}
+	t.Log("Wrote file", path.Join(tempDir, "consumeables.yaml"))
+
+	if err := repo.Configure(tempDir); err != nil {
+		t.Fatal("Failed to configure repo", err)
+	}
+
+	collection, err := repo.Get("consumeables")
+	if err != nil {
+		t.Error("Failed to load consumeables collection", err)
+	}
+
+	if len(collection) != 1 {
+		t.Error("Expected size of collection to be 1, instead got", len(collection))
 	}
 }

@@ -14,7 +14,13 @@ type Repository interface {
 	Get(collectionName string) ([]ItemDefinition, error)
 }
 
-var defaultRepository = &itemRepository{collections: make(map[string][]ItemDefinition)}
+var defaultRepository = NewRepository()
+
+func NewRepository() Repository {
+	return &itemRepository{
+		collections: make(map[string][]ItemDefinition),
+	}
+}
 
 type itemRepository struct {
 	loadPath   string
