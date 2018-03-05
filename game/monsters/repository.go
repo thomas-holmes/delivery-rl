@@ -10,6 +10,8 @@ import (
 	"github.com/MichaelTJones/pcg"
 )
 
+// TODO: Maybe refactor this and use some reflection or something so it isn't doubly defined.
+
 type Collection struct {
 	definitions []Definition
 	nameMap     map[string]int
