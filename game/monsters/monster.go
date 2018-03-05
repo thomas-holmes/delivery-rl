@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
+
 	"github.com/veandco/go-sdl2/sdl"
 
 	yaml "gopkg.in/yaml.v2"
@@ -23,15 +25,36 @@ type color struct {
 	sdl.Color
 }
 
+type MonsterWeapon items.Definition
+
 type Definition struct {
 	Name        string
 	Description string
 	Glyph       string
 	Color       color
+	Weapon      MonsterWeapon
 
 	Level int
 	Power int
 	HP    int
+}
+
+func (m *MonsterWeapon) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var weaponName string
+	if err := unmarshal(&weaponName); err != nil {
+		return err
+	}
+	naturalWeapons, err := items.GetCollection("natural_weapons")
+	if err != nil {
+		return err
+	}
+	def, ok := naturalWeapons.GetByName(weaponName)
+	if !ok {
+		return errors.New("Could not lookup monster weapon")
+	}
+	*m = MonsterWeapon(def)
+
+	return nil
 }
 
 // Feels a bit error prone, but I think it'll be ok.

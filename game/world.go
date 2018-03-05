@@ -5,6 +5,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
+
 	"github.com/MichaelTJones/pcg"
 
 	"github.com/thomas-holmes/delivery-rl/game/monsters"
@@ -108,6 +110,10 @@ func buildMonsterFromDefinition(def monsters.Definition) Creature {
 	monster.Name = def.Name
 	monster.RenderGlyph = []rune(def.Glyph)[0]
 	monster.RenderColor = def.Color.Color
+
+	if def.Weapon.Name != "" {
+		monster.Equipment.Weapon = produceItem(items.Definition(def.Weapon))
+	}
 
 	return monster
 }

@@ -23,6 +23,10 @@ type Item struct {
 }
 
 func produceItem(itemDef items.Definition) Item {
+	if itemDef.Name == "" {
+		return Item{}
+	}
+
 	r, g, b := uint8(itemDef.Color[0]), uint8(itemDef.Color[1]), uint8(itemDef.Color[2])
 	return Item{
 		Color:       sdl.Color{R: r, G: g, B: b, A: 255},

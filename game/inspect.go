@@ -65,6 +65,12 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		pop.World.Window.PutString(pop.X+xOffset, pop.Y+yOffset, creatureLine1, Yellow)
 
 		yOffset++
+
+		creatureLine2 := fmt.Sprintf("Weapon: %s", c.Equipment.Weapon.Name)
+		pop.World.Window.PutString(pop.X+xOffset, pop.Y+yOffset, creatureLine2, Yellow)
+
+		yOffset++
+
 	}
 	if i := tile.Item; i != (Item{}) {
 		xOffset := 0

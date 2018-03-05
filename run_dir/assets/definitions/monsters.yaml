@@ -17,6 +17,7 @@
 
 - name: "Orc"
   description: "A furious orc."
+  weapon: orc fists
   glyph: "o"
   color: [25, 225, 10]
   level: 3
@@ -25,6 +26,7 @@
 
 - name: "Wolf"
   description: "A starving wolf."
+  weapon: wolf teeth
   glyph: "w"
   color: [200, 200, 200]
   level: 1
@@ -33,6 +35,7 @@
 
 - name: "Troll"
   description: "A huge lumbering troll."
+  weapon: troll claws
   glyph: "T"
   color: [0, 255, 0]
   level: 5
