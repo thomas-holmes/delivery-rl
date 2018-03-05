@@ -5,6 +5,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/dice"
+
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -47,7 +49,7 @@ type Definition struct {
 	Description string
 	Glyph       string
 	Color       []int
-	Power       string
+	Power       dice.Notation
 	Kind        ItemKind
 }
 

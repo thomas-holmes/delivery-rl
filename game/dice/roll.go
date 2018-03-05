@@ -2,6 +2,7 @@ package dice
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -35,6 +36,10 @@ type Roller struct {
 type Notation struct {
 	Num   int
 	Sides int
+}
+
+func (n Notation) String() string {
+	return fmt.Sprintf("%dd%d", n.Num, n.Sides)
 }
 
 // Roll rolls n dice with y sides. To simulate a roll of 4d8 you
@@ -102,4 +107,20 @@ func Roll(notation Notation) int {
 // RollDice rolls dice using the default roller
 func RollDice(diceNotation string) (int, error) {
 	return defaultRoller.RollDice(diceNotation)
+}
+
+func (i *Notation) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var notationStr string
+	if err := unmarshal(&notationStr); err != nil {
+		return err
+	}
+
+	notation, err := ParseNotation(notationStr)
+	if err != nil {
+		return err
+	}
+
+	*i = notation
+
+	return nil
 }

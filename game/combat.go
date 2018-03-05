@@ -25,11 +25,7 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 
 	log.Printf("Fighting with %+v", attacker.Equipment)
-	notation, err := dice.ParseNotation(attacker.Equipment.Weapon.Power)
-	if err != nil {
-		log.Panicln("We couldn't fight, let's bail hard", err)
-	}
-	damage := dice.Roll(notation)
+	damage := dice.Roll(attacker.Equipment.Weapon.Power)
 	reduction := dice.Roll(dice.Notation{Num: 1, Sides: defender.Level / 2})
 	actual := max(0, damage-reduction)
 	defender.Damage(actual)

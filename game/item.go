@@ -3,20 +3,22 @@ package main
 import (
 	"fmt"
 
+	"github.com/thomas-holmes/delivery-rl/game/dice"
+
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 // This is used for empty hands, maybe?
-var BareHands = Item{Name: "Bare Hands", Power: "1d1"}
+var BareHands = Item{Name: "Bare Hands", Power: dice.Notation{Num: 1, Sides: 1}}
 
 type Item struct {
 	Name        string
 	Description string
 	Symbol      rune
 	Color       sdl.Color
-	Power       string
+	Power       dice.Notation
 
 	Kind items.ItemKind
 }
@@ -82,7 +84,7 @@ func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
 	window.PutString(offsetX, offsetY, powerString, White)
 
 	offsetX += len(powerString)
-	window.PutString(offsetX, offsetY, pop.Item.Power, pop.Item.Color)
+	window.PutString(offsetX, offsetY, pop.Item.Power.String(), pop.Item.Color)
 
 	return offsetY + 1
 }
