@@ -3,8 +3,8 @@ package dice
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/MichaelTJones/pcg"
 )
@@ -36,6 +36,7 @@ type Roller struct {
 type Notation struct {
 	Num   int
 	Sides int
+	Bonus int
 }
 
 func (n Notation) String() string {
@@ -59,24 +60,39 @@ func (r Roller) Roll(notation Notation) int {
 	return total
 }
 
+var diceRegex = regexp.MustCompile(`(?P<num>\d+)d(?P<sides>\d+)(\s*\+\s*(?P<bonus>\d+))?`)
+
 func ParseNotation(notationStr string) (Notation, error) {
-	parts := strings.Split(strings.TrimSpace(notationStr), "d")
-	if len(parts) != 2 {
-		return Notation{}, errors.New("Could not parse dice notation. Pass in form NdY")
+	var notation Notation
+	if !diceRegex.MatchString(notationStr) {
+		return Notation{}, errors.New("Not a valid dice notation")
 	}
-	numStr, sidesStr := parts[0], parts[1]
-	num, err := strconv.Atoi(numStr)
+	matches := diceRegex.FindStringSubmatch(notationStr)
+	if matches == nil {
+		return notation, errors.New("Didn't match properly")
+	}
+	num, err := strconv.Atoi(matches[1])
 	if err != nil {
-		return Notation{}, err
+		return notation, err
 	}
-	sides, err := strconv.Atoi(sidesStr)
+
+	sides, err := strconv.Atoi(matches[2])
 	if err != nil {
-		return Notation{}, err
+		return notation, err
 	}
-	return Notation{
-		Num:   num,
-		Sides: sides,
-	}, nil
+
+	var bonus int
+	if matches[4] != "" {
+		bonus, err = strconv.Atoi(matches[4])
+		if err != nil {
+			return notation, err
+		}
+	}
+	notation.Num = num
+	notation.Sides = sides
+	notation.Bonus = bonus
+
+	return notation, nil
 }
 
 // RollDice roll dice using dice notation
