@@ -25,7 +25,7 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 
 	log.Printf("Fighting with %+v", attacker.Equipment)
-	damage := dice.Roll(attacker.Equipment.Weapon.Power)
+	damage := dice.Roll(attacker.Equipment.Weapon.Power) + (attacker.Level / 3)
 	reduction := max(0, dice.Roll(dice.Notation{Num: 1, Sides: defender.Level / 3})-1)
 	actual := max(0, damage-reduction)
 	defender.Damage(actual)
