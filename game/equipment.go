@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -13,8 +14,14 @@ type Equipment struct {
 }
 
 func NewEquipment() Equipment {
+	def, ok := items.GetCollection("natural_weapons").GetByName("Bare Hands")
+	var weapon Item
+	if ok {
+		weapon = produceItem(def)
+	}
+
 	return Equipment{
-		Weapon: BareHands,
+		Weapon: weapon,
 	}
 }
 

@@ -55,10 +55,7 @@ func (m *MonsterWeapon) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if err := unmarshal(&weaponName); err != nil {
 		return err
 	}
-	naturalWeapons, err := items.GetCollection("natural_weapons")
-	if err != nil {
-		return err
-	}
+	naturalWeapons := items.GetCollection("natural_weapons")
 	def, ok := naturalWeapons.GetByName(weaponName)
 	if !ok {
 		return errors.New("Could not lookup monster weapon")

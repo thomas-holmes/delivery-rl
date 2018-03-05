@@ -40,8 +40,7 @@ func TestRepositoryConfigure(t *testing.T) {
 func TestRepositoryErrorBeforeConfigured(t *testing.T) {
 	repo := NewRepository()
 
-	_, err := repo.Get("foo")
-
+	err := repo.EnsureLoaded("foo")
 	if err == nil {
 		t.Error("Expected error due to using non-configured repository")
 	}
@@ -59,7 +58,12 @@ func TestRepositoryLoadsDefinitions(t *testing.T) {
    description: "A delicious green apple"
    glyph: "a"
    color: [0, 255, 0]
-   equippable: false
+   kind: consumeable
+
+ - name: Chocolate Cake
+   description: "Yummy chocolate cake"
+   glyph: "c"
+   color: [150, 150, 50]
    kind: consumeable
 `
 
@@ -77,12 +81,18 @@ func TestRepositoryLoadsDefinitions(t *testing.T) {
 		t.Fatal("Failed to configure repo", err)
 	}
 
-	collection, err := repo.Get("consumeables")
-	if err != nil {
-		t.Error("Failed to load consumeables collection", err)
+	collection := repo.Get("consumeables")
+
+	if len(collection.definitions) != 2 {
+		t.Error("Expected size of collection to be 2, instead got", len(collection.definitions))
 	}
 
-	if len(collection.definitions) != 1 {
-		t.Error("Expected size of collection to be 1, instead got", len(collection.definitions))
+	def, ok := collection.GetByName("chocolate cake")
+	if !ok {
+		t.Error("Expected to find chocolate cake")
+	}
+
+	if def.Name != "Chocolate Cake" {
+		t.Error("Expected to retrieve definition for Chocolate Cake, instead got", def.Name)
 	}
 }

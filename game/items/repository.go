@@ -13,17 +13,26 @@ import (
 // TODO: Maybe refactor this and use some reflection or something so it isn't doubly defined.
 
 type Collection struct {
+	initialized bool
 	definitions []Definition
 	nameMap     map[string]int
 }
 
+func (c Collection) ensureInitialized() {
+	if !c.initialized {
+		panic("Tried to use uninitialized collection")
+	}
+}
+
 func (c Collection) Sample(rng *pcg.PCG64) Definition {
+	c.ensureInitialized()
 	i := rng.Bounded(uint64(len(c.definitions)))
 
 	return c.definitions[i]
 }
 
 func (c Collection) GetByName(name string) (Definition, bool) {
+	c.ensureInitialized()
 	d, ok := c.nameMap[strings.ToLower(name)]
 	if ok {
 		return c.definitions[d], true
@@ -35,7 +44,7 @@ func (c Collection) GetByName(name string) (Definition, bool) {
 type Repository interface {
 	Configure(loadPath string) error
 	EnsureLoaded(Collection ...string) error
-	Get(collectionName string) (Collection, error)
+	Get(collectionName string) Collection
 }
 
 var defaultRepository = NewRepository()
@@ -108,6 +117,7 @@ func (i *repository) loadIfAbsent(collectionName string) error {
 		}
 
 		collection := Collection{
+			initialized: true,
 			definitions: definitions,
 			nameMap:     nameMap,
 		}
@@ -118,21 +128,21 @@ func (i *repository) loadIfAbsent(collectionName string) error {
 	return nil
 }
 
-func (i *repository) Get(collectionName string) (Collection, error) {
+func (i *repository) Get(collectionName string) Collection {
 	if err := i.ensureConfigured(); err != nil {
-		return Collection{}, err
+		panic(err)
 	}
 
 	if err := i.loadIfAbsent(collectionName); err != nil {
-		return Collection{}, err
+		panic(err)
 	}
 
 	collection, ok := i.collections[collectionName]
 	if !ok {
-		return Collection{}, errors.New("This should never happen, but just in case we couldn't load the collection immediately after load")
+		panic("Collection doesn't exist")
 	}
 
-	return collection, nil
+	return collection
 }
 
 // Configure operates on the default Repository. Sets the path for loading collections
@@ -145,6 +155,6 @@ func EnsureLoaded(collections ...string) error {
 	return defaultRepository.EnsureLoaded(collections...)
 }
 
-func GetCollection(collectionName string) (Collection, error) {
+func GetCollection(collectionName string) Collection {
 	return defaultRepository.Get(collectionName)
 }

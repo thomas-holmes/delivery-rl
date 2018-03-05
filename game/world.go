@@ -119,10 +119,7 @@ func buildMonsterFromDefinition(def monsters.Definition) Creature {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
-	monsterCollection, err := monsters.GetCollection("monsters")
-	if err != nil {
-		log.Fatalln("Could not load monsters collection", err)
-	}
+	monsterCollection := monsters.GetCollection("monsters")
 
 	for tries := 0; tries < level.MonsterDensity; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))

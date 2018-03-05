@@ -40,8 +40,7 @@ func TestRepositoryConfigure(t *testing.T) {
 func TestRepositoryErrorBeforeConfigured(t *testing.T) {
 	repo := NewRepository()
 
-	_, err := repo.Get("foo")
-
+	err := repo.EnsureLoaded("foo")
 	if err == nil {
 		t.Error("Expected error due to using non-configured repository")
 	}
@@ -82,10 +81,7 @@ func TestRepositoryLoadsDefinitions(t *testing.T) {
 		t.Fatal("Failed to configure repo", err)
 	}
 
-	collection, err := repo.Get("consumeables")
-	if err != nil {
-		t.Error("Failed to load consumeables collection", err)
-	}
+	collection := repo.Get("consumeables")
 
 	if len(collection.definitions) != 2 {
 		t.Error("Expected size of collection to be 2, instead got", len(collection.definitions))

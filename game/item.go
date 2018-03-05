@@ -10,9 +10,6 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// This is used for empty hands, maybe?
-var BareHands = Item{Name: "Bare Hands", Power: dice.Notation{Num: 1, Sides: 1}}
-
 type Item struct {
 	Name        string
 	Description string
