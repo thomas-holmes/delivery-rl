@@ -1,0 +1,14 @@
+---
+  - name: "Hand Warmer"
+    description: "Activate this small warming pouch to restore a small amount of heat to the pizza"
+    glyph: "*"
+    color: [200, 40, 40]
+    power: 3d10+10
+    kind: warmer
+  
+  - name: "Health Potion"
+    description: "Chug this to heal some HP!"
+    glyph: "!"
+    color: [255, 0, 0]
+    power: 2d6+4
+    kind: potion

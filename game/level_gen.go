@@ -34,12 +34,13 @@ type CandidateLevel struct {
 }
 
 const (
-	MinRoomWidth      = 3
-	MinRoomHeight     = 3
-	MaxRoomWidth      = 20
-	MaxRoomHeight     = 20
-	MaxRoomIterations = 200
-	MaxItemPlacement  = 25 // Let's go overboard at first.
+	MinRoomWidth            = 3
+	MinRoomHeight           = 3
+	MaxRoomWidth            = 20
+	MaxRoomHeight           = 20
+	MaxRoomIterations       = 200
+	MaxWeaponPlacement      = 10 // Let's go overboard at first.
+	MaxConsumeablePlacement = 10
 )
 
 func (level *CandidateLevel) genNextRoomID() int {
@@ -216,10 +217,9 @@ func (level *CandidateLevel) addStairs() {
 	}
 }
 
-func (level *CandidateLevel) addItems() {
-	itemCollection := items.GetCollection("weapons")
-	for i := 0; i < MaxItemPlacement; i++ {
-		itemDef := itemCollection.Sample(level.rng)
+func (level *CandidateLevel) addItems(collection items.Collection, max int) {
+	for i := 0; i < max; i++ {
+		itemDef := collection.Sample(level.rng)
 
 		randomItem := produceItem(itemDef)
 
@@ -287,7 +287,8 @@ func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *Candidate
 
 	level.addStairs()
 
-	level.addItems()
+	level.addItems(items.GetCollection("weapons"), MaxWeaponPlacement)
+	level.addItems(items.GetCollection("consumeables"), MaxConsumeablePlacement)
 
 	return level
 }

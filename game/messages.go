@@ -20,6 +20,7 @@ const (
 	SaveGame
 	GameWon
 	FoodSpoiled
+	QuaffPotion
 )
 
 type ClearRegionMessage struct {
@@ -78,8 +79,8 @@ type GameLogAppendMessage struct {
 	Messages []string
 }
 
-type SaveGameMessage struct {
-	World *World
+type QuaffPotionMessage struct {
+	Potion Item
 }
 
 type Notifier interface {

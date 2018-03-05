@@ -20,6 +20,10 @@ type Item struct {
 	Kind items.ItemKind
 }
 
+func (i Item) CanQuaff() bool {
+	return i.Kind == items.Potion
+}
+
 func produceItem(itemDef items.Definition) Item {
 	if itemDef.Name == "" {
 		return Item{}
@@ -40,6 +44,8 @@ type ItemDetails struct {
 	Item
 
 	PopMenu
+
+	Messaging
 }
 
 func (pop *ItemDetails) Update(input InputEvent) {
@@ -48,7 +54,13 @@ func (pop *ItemDetails) Update(input InputEvent) {
 		switch e.Keysym.Sym {
 		case sdl.K_ESCAPE:
 			pop.done = true
+		case sdl.K_q:
+			if pop.Item.CanQuaff() {
+				pop.Broadcast(QuaffPotion, QuaffPotionMessage{Potion: pop.Item})
+				pop.done = true
+			}
 		}
+
 	}
 }
 
@@ -86,10 +98,18 @@ func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
 	return offsetY + 1
 }
 
+func (pop *ItemDetails) renderUsage(window *gterm.Window) {
+	if pop.Item.Kind == items.Potion {
+		usageString := "Actions: (Q)uaff"
+		window.PutString(pop.X+1, pop.Y+pop.H-2, usageString, White)
+	}
+}
+
 func (pop *ItemDetails) Render(window *gterm.Window) {
 	window.ClearRegion(pop.X, pop.Y, pop.W, pop.H)
 	row := pop.Y + 1
 	row = pop.renderShortDescription(row, window)
 	row = pop.renderLongDescription(row, window)
 	_ = pop.renderPower(row, window)
+	pop.renderUsage(window)
 }

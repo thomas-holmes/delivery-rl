@@ -7,29 +7,34 @@ import (
 )
 
 func TestItemParsing(t *testing.T) {
-	appleYAML := `
-name: "Apple"
-description: "A delicious green apple"
-glyph: "a"
-color: [0, 255, 0]
-equippable: false
-kind: consumeable
+	healthPotionYAML := `
+name: "Health Potion"
+description: "Chug this to heal some HP!"
+glyph: "!"
+color: [255, 0, 0]
+power: 2d6+4
+kind: potion
 `
 
 	item := Definition{}
 
-	err := yaml.Unmarshal([]byte(appleYAML), &item)
+	err := yaml.Unmarshal([]byte(healthPotionYAML), &item)
 	if err != nil {
-		t.Errorf("Failed to decode apple %v", err)
+		t.Errorf("Failed to decode Health Potion %v", err)
 	}
 
-	if item.Name != "Apple" {
-		t.Errorf("Expected name (Apple) but got (%v)", item.Name)
+	if item.Name != "Health Potion" {
+		t.Errorf("Expected name (Health Potion) but got (%v)", item.Name)
 	}
 
-	if item.Kind != Consumeable {
-		t.Errorf("Expected item to be Consumeable(%v) but instead got %v", Consumeable, item.Kind)
+	if item.Kind != Potion {
+		t.Errorf("Expected item to be Consumeable(%v) but instead got %v", Potion, item.Kind)
 	}
+
+	if item.Power.String() != "2d6+4" {
+		t.Error("Expected power to be 2d6+4 instead got", item.Power.String())
+	}
+
 }
 
 func TestParseMultipleWeapons(t *testing.T) {
@@ -41,7 +46,7 @@ func TestParseMultipleWeapons(t *testing.T) {
     power: 1d4
     equippable: true
   - name: "Rapier"
-    description: "A slender weapon, perfect for thursting."
+    description: "A slender weapon, perfect for thrusting."
     glyph: ')'
     color: [0, 255, 0]
     power: 1d8

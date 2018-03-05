@@ -22,7 +22,7 @@ type InventoryPop struct {
 
 func (pop *InventoryPop) tryShowItem(index int) {
 	if index < len(pop.Items) {
-		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index]}
+		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index], Messaging: pop.Messaging}
 		log.Printf("Trying to broadcast %+v", menu)
 		pop.Broadcast(ShowMenu, ShowMenuMessage{Menu: &menu})
 	}

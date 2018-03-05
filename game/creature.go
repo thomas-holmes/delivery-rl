@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/dice"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -283,6 +284,20 @@ func (creature *Creature) CastSpell(spell Spell, world *World, targetX int, targ
 	world.Broadcast(SpellLaunch, SpellLaunchMessage{Caster: creature, Spell: spell, X: targetX, Y: targetY})
 }
 
+func (creature *Creature) Quaff(potion Item) {
+	if !potion.CanQuaff() {
+		log.Printf("Asked to quaff unquaffable item. %+v", potion)
+		return
+	}
+
+	healAmount := dice.Roll(potion.Power)
+
+	creature.Broadcast(GameLogAppend, GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}})
+
+	log.Printf("***********HEALING FROM QUAFFING*****************")
+	creature.Heal(healAmount)
+}
+
 // HandleInput updates player position based on user input
 func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 	newX := player.X
@@ -438,6 +453,10 @@ func (creature *Creature) Notify(message Message, data interface{}) {
 		if d, ok := data.(EquipItemMessage); ok {
 			creature.CompletedExternalAction = true
 			creature.Equipment.Weapon = d.Item // This is super low effort, but should work?
+		}
+	case QuaffPotion:
+		if d, ok := data.(QuaffPotionMessage); ok {
+			creature.Quaff(d.Potion)
 		}
 	}
 }

@@ -14,7 +14,8 @@ type ItemKind int
 
 const (
 	Unknown ItemKind = iota
-	Consumeable
+	Potion
+	Warmer
 	Weapon
 )
 
@@ -35,8 +36,10 @@ func (i *ItemKind) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func parseKind(kind string) (ItemKind, bool) {
 	switch strings.ToLower(kind) {
-	case "consumeable":
-		return Consumeable, true
+	case "potion":
+		return Potion, true
+	case "warmer":
+		return Warmer, true
 	case "weapon":
 		return Weapon, true
 	}
