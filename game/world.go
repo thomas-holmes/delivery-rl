@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"path"
 	"strconv"
 
 	"github.com/MichaelTJones/pcg"
@@ -115,7 +114,10 @@ func buildMonsterFromDefinition(def monsters.Definition) Creature {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
-	monsters := monsters.LoadDefinitions(path.Join("assets", "definitions", "monsters.yaml"))
+	monsters, err := monsters.GetCollection("monsters")
+	if err != nil {
+		log.Fatalln("Could not load monsters collection", err)
+	}
 
 	for tries := 0; tries < level.MonsterDensity; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))

@@ -30,6 +30,7 @@ type Definition struct {
 	Color       color
 
 	Level int
+	Power int
 	HP    int
 }
 
@@ -52,17 +53,17 @@ func (c *color) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func LoadDefinitions(path string) []Definition {
+func LoadDefinitions(path string) ([]Definition, error) {
 	var defs []Definition
 
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Panicf("Could not load monster definitions from %v. Error %+v", path, err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(bytes, &defs)
 	if err != nil {
-		log.Panicf("Could not load monster definitions from %v. Error %+v", path, err)
+		return nil, err
 	}
 
-	return defs
+	return defs, nil
 }

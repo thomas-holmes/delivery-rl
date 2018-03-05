@@ -8,6 +8,7 @@ import (
 	"path"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
+	"github.com/thomas-holmes/delivery-rl/game/monsters"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 
@@ -96,6 +97,10 @@ func main() {
 
 	if err := items.Configure(path.Join("assets", "definitions")); err != nil {
 		log.Fatalln("Could not configure items repository", err)
+	}
+
+	if err := monsters.Configure(path.Join("assets", "definitions")); err != nil {
+		log.Fatalln("Could not configure monsters repository", err)
 	}
 
 	window.ShouldRenderFps(true)
