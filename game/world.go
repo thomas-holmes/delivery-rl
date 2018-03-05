@@ -14,7 +14,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-const MaxDepth int = 3
+const MaxDepth int = 10
 
 type Position struct {
 	X int
@@ -129,7 +129,7 @@ func (world *World) addInitialMonsters(level *Level) {
 		y := int(world.rng.Bounded(uint64(level.Rows)))
 
 		if level.CanStandOnTile(x, y) {
-			def := monsterCollection.Sample(world.rng)
+			def := monsters.GetPowerBoundedMonster(world.rng, monsterCollection, level.Depth+1)
 			monster := buildMonsterFromDefinition(def)
 			monster.X = x
 			monster.Y = y
@@ -160,6 +160,7 @@ func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
 	if levels > 1 {
 		connectTwoLevels(&world.Levels[levelIndex-1], &world.Levels[levelIndex])
 	}
+	log.Println("Adding monsters to level with depth", world.Levels[levelIndex].Depth)
 	world.addInitialMonsters(&world.Levels[levelIndex])
 
 	if levels == world.MaxDepth {

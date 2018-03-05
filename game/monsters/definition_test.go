@@ -13,6 +13,7 @@ description: "A hungry little goblin."
 glyph: "g"
 color: [0, 255, 0]
 level: 1
+power: 4
 hp: 5
 `
 	monster := Definition{}
@@ -31,6 +32,10 @@ hp: 5
 
 	if monster.Color.G != 255 {
 		t.Errorf("Expected monster color R to be 255, got (%v)", monster.Color.G)
+	}
+
+	if monster.Power != 4 {
+		t.Errorf("Expected Power (4) but got (%v)", monster.Power)
 	}
 
 	if monster.HP != 5 {

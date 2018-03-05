@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/thomas-holmes/delivery-rl/game/dice"
 )
 
 type CombatSystem struct {
@@ -23,8 +25,14 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 
 	log.Printf("Fighting with %+v", attacker.Equipment)
-	defender.Damage(int(attacker.Equipment.Weapon.Power))
-	logString := fmt.Sprintf("%v hits %v for %v damage!", attacker.Name, defender.Name, attacker.Equipment.Weapon.Power)
+	damage, err := dice.RollDice(attacker.Equipment.Weapon.Power)
+	if err != nil {
+		log.Panicln("We couldn't fight, let's bail hard", err)
+	}
+	reduction := dice.Roll(1, defender.Level) / 2
+	actual := max(0, damage-reduction)
+	defender.Damage(actual)
+	logString := fmt.Sprintf("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
 	combat.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{logString}})
 
@@ -126,12 +134,10 @@ func (combat CombatSystem) Notify(message Message, data interface{}) {
 	switch message {
 	case AttackEntity:
 		if d, ok := data.(AttackEntityMesasge); ok {
-			log.Printf("Got a fight message, %+v, %+v, %+v", d, d.Attacker, d.Defender)
 			combat.fight(d.Attacker, d.Defender)
 		}
 	case SpellLaunch:
 		if d, ok := data.(SpellLaunchMessage); ok {
-			log.Printf("Got a spell attack, %+v", d)
 			combat.resolveSpell(d)
 		}
 	}

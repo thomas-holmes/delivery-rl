@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/MichaelTJones/pcg"
+
 	"github.com/thomas-holmes/delivery-rl/game/items"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -37,6 +39,15 @@ type Definition struct {
 	Level int
 	Power int
 	HP    int
+}
+
+func GetPowerBoundedMonster(rng *pcg.PCG64, collection Collection, powerBound int) Definition {
+	for {
+		def := collection.Sample(rng)
+		if def.Power <= powerBound {
+			return def
+		}
+	}
 }
 
 func (m *MonsterWeapon) UnmarshalYAML(unmarshal func(interface{}) error) error {

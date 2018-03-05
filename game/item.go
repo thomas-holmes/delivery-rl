@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
@@ -10,14 +9,14 @@ import (
 )
 
 // This is used for empty hands, maybe?
-var BareHands = Item{Name: "Bare Hands", Power: 1}
+var BareHands = Item{Name: "Bare Hands", Power: "1d1"}
 
 type Item struct {
 	Name        string
 	Description string
 	Symbol      rune
 	Color       sdl.Color
-	Power       float64
+	Power       string
 
 	Kind items.ItemKind
 }
@@ -83,7 +82,7 @@ func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
 	window.PutString(offsetX, offsetY, powerString, White)
 
 	offsetX += len(powerString)
-	window.PutString(offsetX, offsetY, strconv.Itoa(int(pop.Item.Power)), pop.Item.Color)
+	window.PutString(offsetX, offsetY, pop.Item.Power, pop.Item.Color)
 
 	return offsetY + 1
 }

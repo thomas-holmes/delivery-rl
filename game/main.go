@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"path"
 
+	"github.com/thomas-holmes/delivery-rl/game/dice"
+
 	"github.com/MichaelTJones/pcg"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
@@ -63,12 +65,8 @@ const (
 	DefaultSeq uint64 = iota * 1000
 )
 
-func MakeNewWorld(window *gterm.Window) *World {
-	pcgRng := pcg.NewPCG64()
-	seed := uint64(0xDEADBEEF)
-	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
-
-	world := NewWorld(window, true, pcgRng)
+func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
+	world := NewWorld(window, true, rng)
 	{
 		// TODO: Roll this up into some kind of registering a system function on the world
 		combat := CombatSystem{World: world}
@@ -92,9 +90,20 @@ func MakeNewWorld(window *gterm.Window) *World {
 	return world
 }
 
+// seedDice seeds the default dice roller with four random values from the world RNG
+func seedDice(pcgRng *pcg.PCG64) {
+	rng := pcg.NewPCG64()
+	rng.Seed(rng.Random(), rng.Random(), rng.Random(), rng.Random())
+	dice.SetDefaultRandomness(rng)
+}
+
 func main() {
 	// Disable FPS limit, generally, so I can monitor performance.
 	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "DejaVuSansMono.ttf"), 24, !NoVSync)
+
+	pcgRng := pcg.NewPCG64()
+	seed := uint64(0xDEADBEEF)
+	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
 
 	if err := window.Init(); err != nil {
 		log.Fatalln("Failed to Init() window", err)
@@ -111,8 +120,9 @@ func main() {
 		log.Fatalln("Could not configure monsters repository", err)
 	}
 
+	seedDice(pcgRng)
 	window.ShouldRenderFps(true)
-	world := MakeNewWorld(window)
+	world := MakeNewWorld(window, pcgRng)
 
 	hud := NewHud(world.Player, world, 60, 0)
 

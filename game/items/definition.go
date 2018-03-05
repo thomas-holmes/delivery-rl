@@ -47,7 +47,7 @@ type Definition struct {
 	Description string
 	Glyph       string
 	Color       []int
-	Power       float64
+	Power       string
 	Kind        ItemKind
 }
 

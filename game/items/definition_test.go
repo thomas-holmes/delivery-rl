@@ -38,13 +38,13 @@ func TestParseMultipleWeapons(t *testing.T) {
     description: "A plain dagger."
     glyph: ")"
     color: [255, 0, 0]
-    power: 2
+    power: 1d4
     equippable: true
   - name: "Rapier"
     description: "A slender weapon, perfect for thursting."
     glyph: ')'
     color: [0, 255, 0]
-    power: 4
+    power: 1d8
     equippable: true
 `
 
