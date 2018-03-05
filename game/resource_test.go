@@ -109,3 +109,17 @@ func TestResourceNegativeTickOneHalf(t *testing.T) {
 		t.Errorf("Got current value %v, but expected %v. %+v", r.Current, expected, r)
 	}
 }
+
+func TestResourceMinisculeRegenRate(t *testing.T) {
+	r := Resource{Current: 10, Max: 20, RegenRate: 0.05}
+
+	for i := 0; i < 20; i++ {
+		r.Tick()
+	}
+
+	expected := 11
+	if r.Current != expected {
+		t.Errorf("Got current value %v, but expected %v. %+v", r.Current, expected, r)
+	}
+
+}

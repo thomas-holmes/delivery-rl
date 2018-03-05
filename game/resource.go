@@ -1,6 +1,8 @@
 package main
 
-import "math"
+import (
+	"math"
+)
 
 // Resource represents some character resource that hax a max and [re/de]generates over time
 type Resource struct {
@@ -16,7 +18,7 @@ type Resource struct {
 func (resource *Resource) Tick() {
 	resource.regenPartial += resource.RegenRate
 
-	if math.Floor(resource.regenPartial) == math.Ceil(resource.regenPartial) {
+	if math.Abs(resource.regenPartial) >= 1 {
 		adjustment := math.Floor(resource.regenPartial)
 		newValue := resource.Current + int(math.Floor(resource.regenPartial))
 		newValue = min(newValue, resource.Max)
