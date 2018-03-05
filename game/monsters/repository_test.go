@@ -82,7 +82,7 @@ func TestRepositoryLoadsDefinitions(t *testing.T) {
 		t.Error("Failed to load consumeables collection", err)
 	}
 
-	if len(collection) != 1 {
-		t.Error("Expected size of collection to be 1, instead got", len(collection))
+	if len(collection.definitions) != 1 {
+		t.Error("Expected size of collection to be 1, instead got", len(collection.definitions))
 	}
 }

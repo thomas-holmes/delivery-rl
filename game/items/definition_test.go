@@ -16,7 +16,7 @@ equippable: false
 kind: consumeable
 `
 
-	item := ItemDefinition{}
+	item := Definition{}
 
 	err := yaml.Unmarshal([]byte(appleYAML), &item)
 	if err != nil {
@@ -48,7 +48,7 @@ func TestParseMultipleWeapons(t *testing.T) {
     equippable: true
 `
 
-	var items []ItemDefinition
+	var items []Definition
 	err := yaml.Unmarshal([]byte(itemsYAML), &items)
 	if err != nil {
 		t.Errorf("Failed to decode items %v", err)

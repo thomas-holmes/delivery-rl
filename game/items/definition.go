@@ -42,7 +42,7 @@ func parseKind(kind string) (ItemKind, bool) {
 	return Unknown, false
 }
 
-type ItemDefinition struct {
+type Definition struct {
 	Name        string
 	Description string
 	Glyph       string
@@ -51,8 +51,8 @@ type ItemDefinition struct {
 	Kind        ItemKind
 }
 
-func LoadItemDefinitions(path string) ([]ItemDefinition, error) {
-	var defs []ItemDefinition
+func LoadDefinitions(path string) ([]Definition, error) {
+	var defs []Definition
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err

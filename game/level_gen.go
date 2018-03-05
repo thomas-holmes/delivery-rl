@@ -219,13 +219,12 @@ func (level *CandidateLevel) addStairs() {
 }
 
 func (level *CandidateLevel) addItems() {
-	items, err := items.GetCollection("weapons")
+	itemCollection, err := items.GetCollection("weapons")
 	if err != nil {
 		log.Fatalln("Could not load weapons repository")
 	}
 	for i := 0; i < MaxItemPlacement; i++ {
-		itemIndex := level.rng.Bounded(uint64(len(items)))
-		itemDef := items[itemIndex]
+		itemDef := itemCollection.Sample(level.rng)
 
 		randomItem := produceItem(itemDef)
 

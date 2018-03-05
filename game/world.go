@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"strconv"
 
 	"github.com/MichaelTJones/pcg"
@@ -114,7 +113,7 @@ func buildMonsterFromDefinition(def monsters.Definition) Creature {
 }
 
 func (world *World) addInitialMonsters(level *Level) {
-	monsters, err := monsters.GetCollection("monsters")
+	monsterCollection, err := monsters.GetCollection("monsters")
 	if err != nil {
 		log.Fatalln("Could not load monsters collection", err)
 	}
@@ -124,8 +123,7 @@ func (world *World) addInitialMonsters(level *Level) {
 		y := int(world.rng.Bounded(uint64(level.Rows)))
 
 		if level.CanStandOnTile(x, y) {
-			index := rand.Intn(len(monsters))
-			def := monsters[index]
+			def := monsterCollection.Sample(world.rng)
 			monster := buildMonsterFromDefinition(def)
 			monster.X = x
 			monster.Y = y

@@ -5,29 +5,48 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
+
+	"github.com/MichaelTJones/pcg"
 )
+
+type Collection struct {
+	definitions []Definition
+	nameMap     map[string]int
+}
+
+func (c Collection) Sample(rng *pcg.PCG64) Definition {
+	i := rng.Bounded(uint64(len(c.definitions)))
+
+	return c.definitions[i]
+}
+
+func (c Collection) GetByName(name string) (Definition, bool) {
+	d, ok := c.nameMap[strings.ToLower(name)]
+	if ok {
+		return c.definitions[d], true
+	}
+
+	return Definition{}, false
+}
 
 type Repository interface {
 	Configure(loadPath string) error
-	EnsureLoaded(collections ...string) error
-	GetAll() ([]ItemDefinition, error)
-	Get(collectionName string) ([]ItemDefinition, error)
+	EnsureLoaded(Collection ...string) error
+	Get(collectionName string) (Collection, error)
 }
 
 var defaultRepository = NewRepository()
 
 func NewRepository() Repository {
-	return &itemRepository{
-		collections: make(map[string][]ItemDefinition),
-	}
+	return &itemRepository{collections: make(map[string]Collection)}
 }
 
 type itemRepository struct {
 	loadPath   string
 	configured bool
 
-	allDefinitions []ItemDefinition
-	collections    map[string][]ItemDefinition
+	collections map[string]Collection
 }
 
 func (i *itemRepository) Configure(loadPath string) error {
@@ -76,50 +95,39 @@ func (i *itemRepository) loadIfAbsent(collectionName string) error {
 
 	_, ok := i.collections[collectionName]
 	if !ok {
-		collection, err := LoadItemDefinitions(path.Join(i.loadPath, fmt.Sprintf("%s.yaml", collectionName)))
+		definitions, err := LoadDefinitions(path.Join(i.loadPath, fmt.Sprintf("%s.yaml", collectionName)))
 		if err != nil {
 			return err
 		}
-		i.allDefinitions = nil
+
+		nameMap := make(map[string]int)
+		for i, d := range definitions {
+			nameMap[strings.ToLower(d.Name)] = i
+		}
+
+		collection := Collection{
+			definitions: definitions,
+			nameMap:     nameMap,
+		}
+
 		i.collections[collectionName] = collection
 	}
 
 	return nil
 }
 
-func (i *itemRepository) GetAll() ([]ItemDefinition, error) {
+func (i *itemRepository) Get(collectionName string) (Collection, error) {
 	if err := i.ensureConfigured(); err != nil {
-		return nil, err
-	}
-
-	if i.allDefinitions != nil {
-		return i.allDefinitions, nil
-	}
-
-	var allDefinitions []ItemDefinition
-	for _, collection := range i.collections {
-		for _, definition := range collection {
-			allDefinitions = append(allDefinitions, definition)
-		}
-	}
-
-	i.allDefinitions = allDefinitions
-
-	return allDefinitions, nil
-}
-
-func (i *itemRepository) Get(collectionName string) ([]ItemDefinition, error) {
-	if err := i.ensureConfigured(); err != nil {
-		return nil, err
+		return Collection{}, err
 	}
 
 	if err := i.loadIfAbsent(collectionName); err != nil {
-		return nil, err
+		return Collection{}, err
 	}
 
 	collection, ok := i.collections[collectionName]
 	if !ok {
-		return nil, errors.New("This should never happen, but just in case we couldn't load the collection immediately after load")
+		return Collection{}, errors.New("This should never happen, but just in case we couldn't load the collection immediately after load")
 	}
 
 	return collection, nil
@@ -135,11 +143,6 @@ func EnsureLoaded(collections ...string) error {
 	return defaultRepository.EnsureLoaded(collections...)
 }
 
-// GetAll operates on the default Repository. Returns a merged list of all definitions.
-func GetAllCollections() ([]ItemDefinition, error) {
-	return defaultRepository.GetAll()
-}
-
-func GetCollection(collectionName string) ([]ItemDefinition, error) {
+func GetCollection(collectionName string) (Collection, error) {
 	return defaultRepository.Get(collectionName)
 }
