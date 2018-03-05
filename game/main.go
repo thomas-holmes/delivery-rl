@@ -76,12 +76,6 @@ func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
 	}
 
 	player := NewPlayer()
-	player.LevelUp()
-	player.LevelUp()
-	player.LevelUp()
-	player.LevelUp()
-	player.LevelUp()
-	player.LevelUp()
 
 	player.Name = "Euclid"
 

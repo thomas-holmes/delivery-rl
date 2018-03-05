@@ -157,22 +157,22 @@ func NewCreature(level int, maxHP int) Creature {
 			Current: 100,
 			Max:     100,
 		},
-		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.25},
-		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.25},
+		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
+		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.15},
 		Speed:     100,
 		Equipment: NewEquipment(),
 	}
 }
 
 func NewPlayer() Creature {
-	player := NewCreature(1, 5)
+	player := NewCreature(1, 20)
 	player.Team = PlayerTeam
 	player.RenderGlyph = '@'
 	player.RenderColor = Red
 	player.IsPlayer = true
 	player.Spells = DefaultSpells
 	player.VisionDistance = 12
-	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.5}
+	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.2}
 
 	return player
 }
@@ -190,7 +190,7 @@ func NewMonster(xPos int, yPos int, level int, hp int) Creature {
 }
 
 func (player *Creature) LevelUp() {
-	player.Experience = max(0, player.Experience-player.Level)
+	player.Experience = max(0, player.Experience-player.Level*10)
 	player.Level++
 	player.HP.Max = player.HP.Max + max(1, int(float64(player.HP.Max)*0.1))
 	player.HP.Current = player.HP.Max
@@ -201,7 +201,7 @@ func (player *Creature) LevelUp() {
 
 func (player *Creature) GainExp(exp int) {
 	player.Experience += exp
-	if player.Experience >= player.Level {
+	if player.Experience >= (player.Level * 10) {
 		player.LevelUp()
 		player.Broadcast(PlayerUpdate, nil)
 	}
@@ -428,11 +428,10 @@ func (creature *Creature) Notify(message Message, data interface{}) {
 			if attacker.ID != creature.ID {
 				return
 			}
-			attacker.GainExp(defender.Level)
 			if creature.Level > defender.Level {
-				//creature.GainExp((defender.Level + 1) / 4)
+				attacker.GainExp((defender.Level + 1) / 4)
 			} else {
-				//creature.GainExp((defender.Level + 1) / 2)
+				attacker.GainExp((defender.Level + 1) / 2)
 			}
 		}
 	case EquipItem:
