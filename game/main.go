@@ -77,9 +77,7 @@ func MakeNweWorld(window *gterm.Window) *World {
 
 	player.Name = "Euclid"
 
-	log.Printf("Entities Before(%+v)", world.CurrentLevel().Entities)
 	world.AddEntityToCurrentLevel(&player)
-	log.Printf("Entities After(%+v)", world.CurrentLevel().Entities)
 
 	return world
 }
