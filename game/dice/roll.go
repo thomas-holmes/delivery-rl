@@ -40,7 +40,11 @@ type Notation struct {
 }
 
 func (n Notation) String() string {
-	return fmt.Sprintf("%dd%d", n.Num, n.Sides)
+	if n.Bonus > 0 {
+		return fmt.Sprintf("%dd%d+%d", n.Num, n.Sides, n.Bonus)
+	} else {
+		return fmt.Sprintf("%dd%d", n.Num, n.Sides)
+	}
 }
 
 // Roll rolls n dice with y sides. To simulate a roll of 4d8 you

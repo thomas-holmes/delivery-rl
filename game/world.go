@@ -577,7 +577,7 @@ func (world *World) BuildLevels() {
 			genFlags = GenDownStairs | GenUpStairs
 		}
 
-		level := GenLevel(world.rng, 40, 40, genFlags)
+		level := GenLevel(world.rng, 72, 72, genFlags)
 		world.AddLevelFromCandidate(level)
 	}
 	world.SetCurrentLevel(0)

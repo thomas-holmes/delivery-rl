@@ -350,11 +350,11 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 		case sdl.K_g:
 			return player.PickupItem(world)
 		case sdl.K_i:
-			menu := &InventoryPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, Inventory: player.Inventory}
+			menu := &InventoryPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Inventory: player.Inventory}
 			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
 			return false
 		case sdl.K_e:
-			menu := &EquipmentPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, Player: player}
+			menu := &EquipmentPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Player: player}
 			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
 			return false
 		case sdl.K_x:
