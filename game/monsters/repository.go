@@ -41,17 +41,17 @@ type Repository interface {
 var defaultRepository = NewRepository()
 
 func NewRepository() Repository {
-	return &itemRepository{collections: make(map[string]Collection)}
+	return &repository{collections: make(map[string]Collection)}
 }
 
-type itemRepository struct {
+type repository struct {
 	loadPath   string
 	configured bool
 
 	collections map[string]Collection
 }
 
-func (i *itemRepository) Configure(loadPath string) error {
+func (i *repository) Configure(loadPath string) error {
 	fs, err := os.Stat(loadPath)
 	if err != nil && os.IsNotExist(err) {
 		return errors.New("File path does not exist")
@@ -67,7 +67,7 @@ func (i *itemRepository) Configure(loadPath string) error {
 	return nil
 }
 
-func (i *itemRepository) ensureConfigured() error {
+func (i *repository) ensureConfigured() error {
 	if !i.configured {
 		return errors.New("Repository must be configured before use")
 	}
@@ -76,7 +76,7 @@ func (i *itemRepository) ensureConfigured() error {
 }
 
 // EnsureLoaded eagerly loads all specified collections, returning an error if any fail to load.
-func (i *itemRepository) EnsureLoaded(collections ...string) error {
+func (i *repository) EnsureLoaded(collections ...string) error {
 	if err := i.ensureConfigured(); err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (i *itemRepository) EnsureLoaded(collections ...string) error {
 	return nil
 }
 
-func (i *itemRepository) loadIfAbsent(collectionName string) error {
+func (i *repository) loadIfAbsent(collectionName string) error {
 	if err := i.ensureConfigured(); err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (i *itemRepository) loadIfAbsent(collectionName string) error {
 	return nil
 }
 
-func (i *itemRepository) Get(collectionName string) (Collection, error) {
+func (i *repository) Get(collectionName string) (Collection, error) {
 	if err := i.ensureConfigured(); err != nil {
 		return Collection{}, err
 	}
