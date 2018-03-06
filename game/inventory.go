@@ -13,6 +13,15 @@ type Inventory struct {
 	Items []Item
 }
 
+func (inventory *Inventory) RemoveItem(item Item) {
+	for i, iterItem := range inventory.Items {
+		if iterItem == item {
+			inventory.Items = append(inventory.Items[:i], inventory.Items[i+1:]...)
+			return
+		}
+	}
+}
+
 type InventoryPop struct {
 	Inventory
 

@@ -298,6 +298,8 @@ func (creature *Creature) Quaff(potion Item) {
 	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}}})
 	creature.CompletedExternalAction = true
 
+	creature.Inventory.RemoveItem(potion)
+
 	creature.Heal(healAmount)
 }
 
