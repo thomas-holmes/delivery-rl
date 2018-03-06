@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
@@ -44,8 +45,6 @@ type ItemDetails struct {
 	Item
 
 	PopMenu
-
-	Messaging
 }
 
 func (pop *ItemDetails) Update(input InputEvent) {
@@ -56,7 +55,7 @@ func (pop *ItemDetails) Update(input InputEvent) {
 			pop.done = true
 		case sdl.K_q:
 			if pop.Item.CanQuaff() {
-				pop.Broadcast(QuaffPotion, QuaffPotionMessage{Potion: pop.Item})
+				m.Broadcast(m.M{ID: QuaffPotion, Data: QuaffPotionMessage{Potion: pop.Item}})
 				pop.done = true
 			}
 		}

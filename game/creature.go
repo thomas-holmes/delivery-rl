@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -83,7 +84,7 @@ type Creature struct {
 
 	Name string
 
-	Messaging
+	m.Unsubscribe
 }
 
 func (c *Creature) StartTurn() {
@@ -124,7 +125,7 @@ func (c *Creature) Damage(damage int) {
 	c.HP.Current = max(0, c.HP.Current-damage)
 
 	if c.IsPlayer {
-		c.Broadcast(PlayerUpdate, nil)
+		m.Broadcast(m.M{ID: PlayerUpdate})
 	}
 }
 
@@ -150,8 +151,8 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	return MoveIsInvalid, nil
 }
 
-func NewCreature(level int, maxHP int) Creature {
-	return Creature{
+func NewCreature(level int, maxHP int) *Creature {
+	return &Creature{
 		Level: level,
 		Team:  NeutralTeam,
 		Energy: Energy{
@@ -165,7 +166,7 @@ func NewCreature(level int, maxHP int) Creature {
 	}
 }
 
-func NewPlayer() Creature {
+func NewPlayer() *Creature {
 	player := NewCreature(1, 20)
 	player.Team = PlayerTeam
 	player.RenderGlyph = '@'
@@ -175,10 +176,12 @@ func NewPlayer() Creature {
 	player.VisionDistance = 12
 	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.2}
 
+	player.Unsubscribe = m.Subscribe(player.Notify)
+
 	return player
 }
 
-func NewMonster(xPos int, yPos int, level int, hp int) Creature {
+func NewMonster(xPos int, yPos int, level int, hp int) *Creature {
 	monster := NewCreature(level, hp)
 
 	monster.X = xPos
@@ -197,14 +200,14 @@ func (player *Creature) LevelUp() {
 	player.HP.Current = player.HP.Max
 	player.ST.Max = player.ST.Max + max(1, int(float64(player.ST.Max)*0.1))
 	player.ST.Current = player.ST.Max
-	player.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{fmt.Sprintf("You are now level %v", player.Level)}})
+	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{fmt.Sprintf("You are now level %v", player.Level)}}})
 }
 
 func (player *Creature) GainExp(exp int) {
 	player.Experience += exp
 	if player.Experience >= (player.Level * 10) {
 		player.LevelUp()
-		player.Broadcast(PlayerUpdate, nil)
+		m.Broadcast(m.M{ID: PlayerUpdate})
 	}
 }
 
@@ -220,7 +223,7 @@ func (player *Creature) Heal(amount int) {
 	newHp := min(player.HP.Current+amount, player.HP.Max)
 	player.HP.Current = newHp
 
-	player.Broadcast(PlayerUpdate, nil)
+	m.Broadcast(m.M{ID: PlayerUpdate})
 }
 
 func (player *Creature) PickupItem(world *World) bool {
@@ -240,7 +243,7 @@ func (creature *Creature) IsFoodRuined() bool {
 }
 
 func (creature *Creature) EndGame() {
-	creature.Broadcast(FoodSpoiled, nil)
+	m.Broadcast(m.M{ID: FoodSpoiled})
 }
 
 // Update returns true if an action that would constitute advancing the turn took place
@@ -266,7 +269,7 @@ func (creature *Creature) Update(turn uint64, input InputEvent, world *World) bo
 
 func (creature *Creature) TargetSpell(spell Spell, world *World) {
 	menu := &SpellTargeting{PopMenu: PopMenu{X: 0, Y: 0, W: 0, H: 0}, TargetX: creature.X, TargetY: creature.Y, World: world, Spell: spell}
-	creature.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
+	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 }
 
 func (creature *Creature) CanCast(spell Spell) bool {
@@ -281,7 +284,7 @@ func (creature *Creature) CastSpell(spell Spell, world *World, targetX int, targ
 	creature.CompletedExternalAction = true
 	creature.ST.Current -= spell.Cost
 	// Can attack self. Do we care?
-	world.Broadcast(SpellLaunch, SpellLaunchMessage{Caster: creature, Spell: spell, X: targetX, Y: targetY})
+	m.Broadcast(m.M{ID: SpellLaunch, Data: SpellLaunchMessage{Caster: creature, Spell: spell, X: targetX, Y: targetY}})
 }
 
 func (creature *Creature) Quaff(potion Item) {
@@ -292,7 +295,7 @@ func (creature *Creature) Quaff(potion Item) {
 
 	healAmount := dice.Roll(potion.Power)
 
-	creature.Broadcast(GameLogAppend, GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}})
+	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}}})
 
 	log.Printf("***********HEALING FROM QUAFFING*****************")
 	creature.Heal(healAmount)
@@ -316,9 +319,9 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 				tile := world.CurrentLevel().GetTile(player.X, player.Y)
 				if tile.TileKind == UpStair {
 					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
-						player.Broadcast(PlayerFloorChange, PlayerFloorChangeMessage{
+						m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
 							Stair: stair,
-						})
+						}})
 					} else {
 						return false
 					}
@@ -330,9 +333,9 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 				tile := world.CurrentLevel().GetTile(player.X, player.Y)
 				if tile.TileKind == DownStair {
 					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
-						player.Broadcast(PlayerFloorChange, PlayerFloorChangeMessage{
+						m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
 							Stair: stair,
-						})
+						}})
 					} else {
 						return false
 					}
@@ -366,22 +369,22 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 			return player.PickupItem(world)
 		case sdl.K_i:
 			menu := &InventoryPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Inventory: player.Inventory}
-			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
+			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 			return false
 		case sdl.K_e:
 			menu := &EquipmentPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Player: player}
-			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
+			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 			return false
 		case sdl.K_x:
 			menu := &InspectionPop{PopMenu: PopMenu{X: 60, Y: 20, W: 30, H: 5}, World: world, InspectX: player.X, InspectY: player.Y}
-			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
+			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 			return false
 		case sdl.K_z:
 			menu := &SpellPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
-			player.Broadcast(ShowMenu, ShowMenuMessage{Menu: menu})
+			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 			return false
 		case sdl.K_m:
-			player.Broadcast(ShowFullGameLog, nil)
+			m.Broadcast(m.M{ID: ShowFullGameLog})
 			return false
 		case sdl.K_q:
 			if input.Keymod&sdl.KMOD_CTRL > 0 {
@@ -403,16 +406,16 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 				oldY := player.Y
 				player.X = newX
 				player.Y = newY
-				player.Broadcast(MoveEntity, MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY})
+				m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
 			case MoveIsEnemy:
 				if data, ok := data.(MoveEnemy); ok {
-					player.Broadcast(AttackEntity, AttackEntityMesasge{
+					m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
 						Attacker: data.Attacker,
 						Defender: data.Defender,
-					})
+					}})
 				}
 			case MoveIsVictory:
-				player.Broadcast(GameWon, nil)
+				m.Broadcast(m.M{ID: GameWon})
 			}
 		}
 		return true
@@ -420,13 +423,10 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 	return false
 }
 
-func (creature *Creature) Notify(message Message, data interface{}) {
-	if !creature.IsPlayer {
-		return
-	}
-	switch message {
+func (creature *Creature) Notify(message m.M) {
+	switch message.ID {
 	case KillEntity:
-		if d, ok := data.(KillEntityMessage); ok {
+		if d, ok := message.Data.(KillEntityMessage); ok {
 			attacker, ok := d.Attacker.(*Creature)
 			if !ok {
 				return
@@ -437,7 +437,7 @@ func (creature *Creature) Notify(message Message, data interface{}) {
 			}
 
 			if defender.ID == creature.ID {
-				creature.Broadcast(PlayerDead, nil)
+				m.Broadcast(m.M{ID: PlayerDead})
 				return
 			}
 			if attacker.ID != creature.ID {
@@ -450,12 +450,12 @@ func (creature *Creature) Notify(message Message, data interface{}) {
 			}
 		}
 	case EquipItem:
-		if d, ok := data.(EquipItemMessage); ok {
+		if d, ok := message.Data.(EquipItemMessage); ok {
 			creature.CompletedExternalAction = true
 			creature.Equipment.Weapon = d.Item // This is super low effort, but should work?
 		}
 	case QuaffPotion:
-		if d, ok := data.(QuaffPotionMessage); ok {
+		if d, ok := message.Data.(QuaffPotionMessage); ok {
 			creature.Quaff(d.Potion)
 		}
 	}
@@ -496,19 +496,19 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 				oldY := monster.Y
 				monster.X = choice.X
 				monster.Y = choice.Y
-				monster.Broadcast(MoveEntity, MoveEntityMessage{
+				m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{
 					ID:   monster.ID,
 					OldX: oldX,
 					OldY: oldY,
 					NewX: choice.X,
 					NewY: choice.Y,
-				})
+				}})
 			case MoveIsEnemy:
 				if data, ok := data.(MoveEnemy); ok {
-					monster.Broadcast(AttackEntity, AttackEntityMesasge{
+					m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
 						Attacker: data.Attacker,
 						Defender: data.Defender,
-					})
+					}})
 				}
 			}
 			return true

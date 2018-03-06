@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 
 	"github.com/MichaelTJones/pcg"
 
@@ -64,7 +65,6 @@ type World struct {
 	QuitGame bool
 
 	*GameLog
-	Messaging
 }
 
 // CurrentLevel returns a pointer to the current level. Don't store this pointer!
@@ -105,7 +105,7 @@ func (world *World) SetCurrentLevel(id int) {
 	}
 }
 
-func buildMonsterFromDefinition(def monsters.Definition) Creature {
+func buildMonsterFromDefinition(def monsters.Definition) *Creature {
 	monster := NewMonster(0, 0, def.Level, def.HP)
 	monster.Name = def.Name
 	monster.RenderGlyph = []rune(def.Glyph)[0]
@@ -130,7 +130,7 @@ func (world *World) addInitialMonsters(level *Level) {
 			monster := buildMonsterFromDefinition(def)
 			monster.X = x
 			monster.Y = y
-			world.AddEntity(&monster, level.ID)
+			world.AddEntity(monster, level.ID)
 		}
 	}
 }
@@ -140,7 +140,7 @@ func (world *World) addDragonToLevel(level *Level) {
 	dragon.Team = NeutralTeam
 	dragon.IsDragon = true
 
-	world.AddEntity(&dragon, level.ID)
+	world.AddEntity(dragon, level.ID)
 }
 
 // AddLevelFromCandidate constructs a real level from an intermediate level representation
@@ -200,14 +200,6 @@ func (world *World) AddEntity(e Entity, levelID int) {
 		log.Printf("giving it an ID! %v", e.Identity())
 	}
 	log.Printf("Adding entity %+v", e)
-
-	if n, ok := e.(Notifier); ok {
-		n.SetMessageBus(world.messageBus)
-	}
-
-	if l, ok := e.(Listener); ok {
-		world.messageBus.Subscribe(l)
-	}
 
 	if c, ok := e.(*Creature); ok {
 		world.addCreature(c, level)
@@ -460,9 +452,6 @@ func (world *World) RemoveEntity(entity Entity) {
 	if creature, ok := foundEntity.(*Creature); ok {
 		world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
 	}
-	if l, ok := entity.(Listener); ok {
-		l.UnSub()
-	}
 }
 
 func (world *World) MoveEntity(message MoveEntityMessage) {
@@ -509,33 +498,33 @@ func (world *World) AddAnimation(a Animation) {
 func (world *World) ShowEndGameMenu() {
 	world.GameOver = true
 	pop := NewEndGameMenu(world, 5, 5, 50, 6, Red, "YOU ARE VERY DEAD", "I AM SO SORRY :(")
-	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
+	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &pop}})
 }
 
 func (world *World) ShowFoodSpoiledMenu() {
 	world.GameOver = true
 	pop := NewEndGameMenu(world, 5, 5, 50, 6, Red, "GAME OVER", "You let the food spoil!")
-	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
+	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &pop}})
 }
 
 func (world *World) ShowGameWonMenu() {
 	world.GameOver = true
 	pop := NewEndGameMenu(world, 5, 5, 50, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered with %v heat remaning", world.Player.HT.Current))
-	world.Broadcast(ShowMenu, ShowMenuMessage{Menu: &pop})
+	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &pop}})
 }
 
-func (world *World) Notify(message Message, data interface{}) {
-	switch message {
+func (world *World) Notify(message m.M) {
+	switch message.ID {
 	case ClearRegion:
-		if d, ok := data.(ClearRegionMessage); ok {
+		if d, ok := message.Data.(ClearRegionMessage); ok {
 			world.Window.ClearRegion(d.X, d.Y, d.W, d.H)
 		}
 	case MoveEntity:
-		if d, ok := data.(MoveEntityMessage); ok {
+		if d, ok := message.Data.(MoveEntityMessage); ok {
 			world.MoveEntity(d)
 		}
 	case KillEntity:
-		if d, ok := data.(KillEntityMessage); ok {
+		if d, ok := message.Data.(KillEntityMessage); ok {
 			world.RemoveEntity(d.Defender)
 		}
 	case PlayerDead:
@@ -545,7 +534,7 @@ func (world *World) Notify(message Message, data interface{}) {
 	case FoodSpoiled:
 		world.ShowFoodSpoiledMenu()
 	case PlayerFloorChange:
-		if d, ok := data.(PlayerFloorChangeMessage); ok {
+		if d, ok := message.Data.(PlayerFloorChangeMessage); ok {
 			if !d.Connected {
 				break
 			}
@@ -557,11 +546,8 @@ func (world *World) Notify(message Message, data interface{}) {
 			world.AddEntityToCurrentLevel(world.Player)
 		}
 	case ShowMenu:
-		if d, ok := data.(ShowMenuMessage); ok {
+		if d, ok := message.Data.(ShowMenuMessage); ok {
 			log.Printf("World: %T %+v", d.Menu, d.Menu)
-			if n, ok := d.Menu.(Notifier); ok {
-				n.SetMessageBus(world.messageBus)
-			}
 			d.Menu.Update(world.PopInput())
 			world.MenuStack = append(world.MenuStack, d.Menu)
 		}
@@ -613,10 +599,9 @@ func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 		rng:                rng,
 	}
 
-	world.messageBus = &MessageBus{}
-	world.messageBus.Subscribe(world)
+	m.Subscribe(world.Notify)
 
-	world.GameLog = NewGameLog(0, window.Rows-4, 56, 3, world, world.messageBus)
+	world.GameLog = NewGameLog(0, window.Rows-4, 56, 3, world)
 
 	world.BuildLevels()
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"path"
+	"time"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 
@@ -55,7 +56,7 @@ func spawnRandomMonster(world *World) {
 			level := rand.Intn(8) + 1
 			monster := NewMonster(x, y, level, level)
 			monster.Name = fmt.Sprintf("A Scary Number %v", level)
-			world.AddEntityToCurrentLevel(&monster)
+			world.AddEntityToCurrentLevel(monster)
 			return
 		}
 	}
@@ -67,19 +68,15 @@ const (
 
 func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
 	world := NewWorld(window, true, rng)
-	{
-		// TODO: Roll this up into some kind of registering a system function on the world
-		combat := &CombatSystem{World: world}
 
-		combat.SetMessageBus(world.messageBus)
-		world.messageBus.Subscribe(combat)
-	}
+	// TODO: Roll this up into some kind of registering a system function on the world
+	NewCombatSystem(world)
 
 	player := NewPlayer()
 
 	player.Name = "Euclid"
 
-	world.AddEntityToCurrentLevel(&player)
+	world.AddEntityToCurrentLevel(player)
 
 	return world
 }
@@ -96,7 +93,7 @@ func main() {
 	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "DejaVuSansMono.ttf"), 24, !NoVSync)
 
 	pcgRng := pcg.NewPCG64()
-	seed := uint64(0xDEADBEEF)
+	seed := uint64(Seed)
 	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
 
 	if err := window.Init(); err != nil {
@@ -153,9 +150,17 @@ func main() {
 }
 
 var NoVSync = true
+var Seed int64
 
 func init() {
 	go http.ListenAndServe("localhost:6060", nil)
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
+	flag.Int64Var(&Seed, "seed", 0, "Provide a seed for launching the game")
 	flag.Parse()
+
+	if Seed == 0 {
+		Seed = time.Now().UnixNano()
+	}
+
+	log.Println("Starting game with seed", Seed)
 }

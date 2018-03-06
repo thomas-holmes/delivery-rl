@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -29,8 +30,6 @@ type EquipmentPop struct {
 	Player *Creature
 
 	PopMenu
-
-	Messaging
 }
 
 func (pop *EquipmentPop) equipItem(index int) {
@@ -39,7 +38,7 @@ func (pop *EquipmentPop) equipItem(index int) {
 	if index < len(pop.Player.Inventory.Items) {
 		item := pop.Player.Inventory.Items[index]
 		log.Printf("Equipping item %+v", item)
-		pop.Broadcast(EquipItem, EquipItemMessage{item})
+		m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
 		pop.done = true
 	}
 }

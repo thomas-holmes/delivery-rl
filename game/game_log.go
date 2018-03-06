@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 )
 
@@ -17,23 +18,18 @@ type GameLog struct {
 
 	// Consider switching to fixed size circular buffer
 	Messages []string
-
-	Messaging
 }
 
-func NewGameLog(x int, y int, w int, h int, world *World, messageBus *MessageBus) *GameLog {
+func NewGameLog(x int, y int, w int, h int, world *World) *GameLog {
 	gameLog := GameLog{
 		world: world,
 		X:     x,
 		Y:     y,
 		W:     w,
 		H:     h,
-		Messaging: Messaging{
-			messageBus: messageBus,
-		},
 	}
 
-	gameLog.messageBus.Subscribe(&gameLog)
+	m.Subscribe(gameLog.Notify)
 
 	return &gameLog
 }
@@ -55,14 +51,14 @@ func (gameLog *GameLog) appendMessages(messages []string) {
 	gameLog.Messages = append(messages, gameLog.Messages...)
 }
 
-func (gameLog *GameLog) Notify(message Message, data interface{}) {
-	switch message {
+func (gameLog *GameLog) Notify(message m.M) {
+	switch message.ID {
 	case GameLogAppend:
-		if d, ok := data.(GameLogAppendMessage); ok {
+		if d, ok := message.Data.(GameLogAppendMessage); ok {
 			gameLog.appendMessages(d.Messages)
 		}
 	case ShowFullGameLog:
 		menu := &FullGameLog{PopMenu: PopMenu{X: 0, Y: 0, W: 80, H: gameLog.world.Window.Rows}, GameLog: gameLog}
-		gameLog.Broadcast(ShowMenu, ShowMenuMessage{menu})
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{menu}})
 	}
 }

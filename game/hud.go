@@ -16,12 +16,10 @@ type HUD struct {
 	Height int
 
 	nextFreeRow int
-
-	Messaging
 }
 
 func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
-	hud := HUD{
+	hud := &HUD{
 		Player:      player,
 		World:       world,
 		XPos:        xPos,
@@ -29,9 +27,7 @@ func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
 		nextFreeRow: 0,
 	}
 
-	world.messageBus.Subscribe(&hud)
-
-	return &hud
+	return hud
 }
 
 func (hud *HUD) GetNextRow() int {
@@ -39,11 +35,6 @@ func (hud *HUD) GetNextRow() int {
 	return hud.nextFreeRow + hud.YPos - 1
 }
 
-func (hud *HUD) Notify(message Message, data interface{}) {
-	switch message {
-	case PlayerUpdate:
-	}
-}
 func (hud *HUD) renderPlayerName(world *World) {
 	world.Window.PutString(hud.XPos, hud.GetNextRow(), world.Player.Name, Yellow)
 }

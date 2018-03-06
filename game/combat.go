@@ -5,12 +5,17 @@ import (
 	"log"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 )
 
 type CombatSystem struct {
 	World *World
+}
 
-	Messaging
+func NewCombatSystem(world *World) *CombatSystem {
+	c := &CombatSystem{World: world}
+	m.Subscribe(c.Notify)
+	return c
 }
 
 func (combat CombatSystem) fight(a Entity, d Entity) {
@@ -32,14 +37,14 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	defender.Damage(actual)
 	logString := fmt.Sprintf("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
-	combat.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{logString}})
+	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{logString}}})
 
 	// This should be done by the entity instead of here, I think?
 	// I think this used to attribute the experience gain on death. Maybe
 	// need a more sophisticated combat/exp tracking system instead based
 	// on damage dealt & proximity?
 	if defender.HP.Current == 0 {
-		combat.Broadcast(KillEntity, KillEntityMessage{Attacker: a, Defender: d})
+		m.Broadcast(m.M{ID: KillEntity, Data: KillEntityMessage{Attacker: a, Defender: d}})
 	}
 }
 
@@ -60,7 +65,7 @@ func (combat CombatSystem) zap(a Entity, d Entity, s Spell) {
 		defender.Damage(s.Power)
 		logString := fmt.Sprintf("%v hits %v with %v for %v damage!", attacker.Name, defender.Name, s.Name, s.Power)
 
-		combat.Broadcast(GameLogAppend, GameLogAppendMessage{[]string{logString}})
+		m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{logString}}})
 	}
 
 	// This should be done by the entity instead of here, I think?
@@ -68,7 +73,7 @@ func (combat CombatSystem) zap(a Entity, d Entity, s Spell) {
 	// need a more sophisticated combat/exp tracking system instead based
 	// on damage dealt & proximity?
 	if defender.HP.Current == 0 {
-		combat.Broadcast(KillEntity, KillEntityMessage{Attacker: a, Defender: d})
+		m.Broadcast(m.M{ID: KillEntity, Data: KillEntityMessage{Attacker: a, Defender: d}})
 	}
 
 }
@@ -128,14 +133,14 @@ func (combat CombatSystem) resolveSpell(launch SpellLaunchMessage) {
 	}
 }
 
-func (combat CombatSystem) Notify(message Message, data interface{}) {
-	switch message {
+func (combat CombatSystem) Notify(message m.M) {
+	switch message.ID {
 	case AttackEntity:
-		if d, ok := data.(AttackEntityMesasge); ok {
+		if d, ok := message.Data.(AttackEntityMesasge); ok {
 			combat.fight(d.Attacker, d.Defender)
 		}
 	case SpellLaunch:
-		if d, ok := data.(SpellLaunchMessage); ok {
+		if d, ok := message.Data.(SpellLaunchMessage); ok {
 			combat.resolveSpell(d)
 		}
 	}

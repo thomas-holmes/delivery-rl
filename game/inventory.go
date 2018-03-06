@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -16,15 +17,13 @@ type InventoryPop struct {
 	Inventory
 
 	PopMenu
-
-	Messaging
 }
 
 func (pop *InventoryPop) tryShowItem(index int) {
 	if index < len(pop.Items) {
-		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index], Messaging: pop.Messaging}
+		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index]}
 		log.Printf("Trying to broadcast %+v", menu)
-		pop.Broadcast(ShowMenu, ShowMenuMessage{Menu: &menu})
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &menu}})
 	}
 }
 
