@@ -21,6 +21,16 @@ type InventoryPop struct {
 
 func (pop *InventoryPop) tryShowItem(index int) {
 	if index < len(pop.Items) {
+		var unsub m.Unsubscribe
+		unsub = m.Subscribe(func(message m.M) {
+			if message.ID == QuaffPotion {
+				if unsub != nil {
+					unsub()
+				}
+				pop.done = true
+			}
+		})
+
 		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index]}
 		log.Printf("Trying to broadcast %+v", menu)
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &menu}})
@@ -37,7 +47,6 @@ func (pop *InventoryPop) Update(input InputEvent) {
 		case k >= sdl.K_a && k <= sdl.K_z:
 			pop.tryShowItem(int(k - sdl.K_a))
 		}
-
 	}
 }
 

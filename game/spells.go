@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -57,9 +58,7 @@ func (pop *SpellPop) castSpell(index int) {
 
 			pop.done = true // Maybe needs to be before player.CastSpell
 
-			// Doing something a little different on purpose, going to call
-			// back onto the creature instead of broadcasting directly
-			pop.World.Player.TargetSpell(spell, pop.World)
+			m.Broadcast(m.M{ID: SpellTarget, Data: SpellTargetMessage{Spell: spell, World: pop.World}})
 		}
 	}
 }

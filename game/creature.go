@@ -296,8 +296,8 @@ func (creature *Creature) Quaff(potion Item) {
 	healAmount := dice.Roll(potion.Power)
 
 	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}}})
+	creature.CompletedExternalAction = true
 
-	log.Printf("***********HEALING FROM QUAFFING*****************")
 	creature.Heal(healAmount)
 }
 
@@ -453,6 +453,10 @@ func (creature *Creature) Notify(message m.M) {
 		if d, ok := message.Data.(EquipItemMessage); ok {
 			creature.CompletedExternalAction = true
 			creature.Equipment.Weapon = d.Item // This is super low effort, but should work?
+		}
+	case SpellTarget:
+		if d, ok := message.Data.(SpellTargetMessage); ok {
+			creature.TargetSpell(d.Spell, d.World)
 		}
 	case QuaffPotion:
 		if d, ok := message.Data.(QuaffPotionMessage); ok {

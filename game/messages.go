@@ -7,6 +7,7 @@ const (
 	ClearRegion
 	MoveEntity
 	AttackEntity
+	SpellTarget
 	SpellLaunch
 	PlayerDead
 	KillEntity
@@ -39,6 +40,11 @@ type MoveEntityMessage struct {
 type AttackEntityMesasge struct {
 	Attacker Entity
 	Defender Entity
+}
+
+type SpellTargetMessage struct {
+	Spell Spell
+	World *World
 }
 
 type SpellLaunchMessage struct {
