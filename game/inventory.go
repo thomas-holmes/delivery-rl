@@ -9,15 +9,32 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type Inventory struct {
-	Items []Item
+type Inventory []Item
+
+func (inventory *Inventory) Add(item Item) {
+	if !item.Stacks {
+		*inventory = append(*inventory, item)
+		return
+	}
+	for i, it := range *inventory {
+		if it.Name == item.Name {
+			(*inventory)[i].Count += item.Count
+			return
+		}
+	}
+	*inventory = append(*inventory, item)
 }
 
 func (inventory *Inventory) RemoveItem(item Item) {
-	for i, iterItem := range inventory.Items {
-		if iterItem == item {
-			inventory.Items = append(inventory.Items[:i], inventory.Items[i+1:]...)
-			return
+	for i, it := range *inventory {
+		if it.Name == item.Name {
+			if item.Count == 1 {
+				*inventory = append((*inventory)[:i], (*inventory)[i+1:]...)
+				return
+			} else {
+				(*inventory)[i].Count--
+				return
+			}
 		}
 	}
 }
@@ -29,18 +46,22 @@ type InventoryPop struct {
 }
 
 func (pop *InventoryPop) tryShowItem(index int) {
-	if index < len(pop.Items) {
+	if index < len(pop.Inventory) {
 		var unsub m.Unsubscribe
 		unsub = m.Subscribe(func(message m.M) {
-			if message.ID == QuaffPotion {
-				if unsub != nil {
-					unsub()
+			if message.ID == ItemDetailClosed {
+				if d, ok := message.Data.(ItemDetailClosedMessage); ok {
+					if unsub != nil {
+						unsub()
+					}
+					if d.CloseInventory {
+						pop.done = true
+					}
 				}
-				pop.done = true
 			}
 		})
 
-		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index]}
+		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Inventory[index]}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &menu}})
 	}
 }
@@ -62,9 +83,14 @@ func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) in
 	offsetY := row
 	offsetX := pop.X + 1
 
-	item := pop.Items[index]
+	item := pop.Inventory[index]
 
-	selectionStr := fmt.Sprintf("%v - ", string('a'+index))
+	var selectionStr string
+	if item.Count > 1 {
+		selectionStr = fmt.Sprintf("%v - [%d] ", string('a'+index), item.Count)
+	} else {
+		selectionStr = fmt.Sprintf("%v - ", string('a'+index))
+	}
 
 	window.PutString(offsetX, offsetY, selectionStr, White)
 
@@ -81,7 +107,7 @@ func (pop *InventoryPop) Render(window *gterm.Window) {
 	}
 
 	nextRow := pop.Y + 1
-	for i := 0; i < len(pop.Items); i++ {
+	for i := 0; i < len(pop.Inventory); i++ {
 		nextRow = pop.renderItem(i, nextRow, window)
 	}
 

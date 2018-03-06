@@ -20,6 +20,7 @@ const (
 	GameWon
 	FoodSpoiled
 	QuaffPotion
+	ItemDetailClosed
 )
 
 type ClearRegionMessage struct {
@@ -77,4 +78,8 @@ type GameLogAppendMessage struct {
 
 type QuaffPotionMessage struct {
 	Potion Item
+}
+
+type ItemDetailClosedMessage struct {
+	CloseInventory bool
 }

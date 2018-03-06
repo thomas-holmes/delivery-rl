@@ -10,19 +10,19 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-type ItemKind int
+type Kind int
 
 const (
-	Unknown ItemKind = iota
-	Potion
+	Unknown Kind = 0
+	Potion  Kind = 1 << iota
 	Warmer
 	Weapon
 )
 
-func (i *ItemKind) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (i *Kind) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var kindStr string
 	if err := unmarshal(&kindStr); err != nil {
-		log.Println("Failed to unmarshal ItemKind", err)
+		log.Println("Failed to unmarshal Kind", err)
 	}
 
 	k, ok := parseKind(kindStr)
@@ -34,7 +34,7 @@ func (i *ItemKind) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func parseKind(kind string) (ItemKind, bool) {
+func parseKind(kind string) (Kind, bool) {
 	switch strings.ToLower(kind) {
 	case "potion":
 		return Potion, true
@@ -52,8 +52,9 @@ type Definition struct {
 	Description string
 	Glyph       string
 	Color       []int
+	Stacks      bool
 	Power       dice.Notation
-	Kind        ItemKind
+	Kind        Kind
 }
 
 func LoadDefinitions(path string) ([]Definition, error) {

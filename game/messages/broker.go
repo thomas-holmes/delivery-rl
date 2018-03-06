@@ -1,5 +1,7 @@
 package messages
 
+import "log"
+
 var defaultBroker Broker
 
 // M is the message payload struct. ID is an opaque identifier and
@@ -32,6 +34,7 @@ func (b *Broker) Subscribe(listener Listener) Unsubscribe {
 	b.subscriptions = append(b.subscriptions, subscription{id: id, Listener: listener})
 
 	return func() {
+		log.Printf("Removing listener %+v", listener)
 		for i, s := range b.subscriptions {
 			if id == s.id {
 				b.subscriptions[i] = subscription{}

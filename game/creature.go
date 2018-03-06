@@ -233,7 +233,7 @@ func (player *Creature) PickupItem(world *World) bool {
 		return false
 	}
 
-	player.Items = append(player.Items, tile.Item)
+	player.Inventory.Add(tile.Item)
 	tile.Item = Item{}
 	return true
 }
@@ -392,8 +392,8 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 			if input.Keymod&sdl.KMOD_CTRL > 0 {
 				world.QuitGame = true
 				world.GameOver = true
-				return true
 			}
+			return false
 		default:
 			return false
 		}

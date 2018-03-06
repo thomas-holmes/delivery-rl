@@ -5,6 +5,7 @@
     color: [200, 40, 40]
     power: 3d10+10
     kind: warmer
+    stacks: true
   
   - name: "Health Potion"
     description: "Chug this to heal some HP!"
@@ -12,3 +13,4 @@
     color: [255, 0, 0]
     power: 2d6+4
     kind: potion
+    stacks: true

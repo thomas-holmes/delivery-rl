@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
@@ -33,11 +31,8 @@ type EquipmentPop struct {
 }
 
 func (pop *EquipmentPop) equipItem(index int) {
-	// Should probably filter on equippable and change the list, whatever
-	// Consider doing this w/o message broadcast. We do have a ref to the player, after all
-	if index < len(pop.Player.Inventory.Items) {
-		item := pop.Player.Inventory.Items[index]
-		log.Printf("Equipping item %+v", item)
+	if index < len(pop.Player.Inventory) {
+		item := pop.Player.Inventory[index]
 		m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
 		pop.done = true
 	}

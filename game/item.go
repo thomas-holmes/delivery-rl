@@ -17,8 +17,10 @@ type Item struct {
 	Symbol      rune
 	Color       sdl.Color
 	Power       dice.Notation
+	Stacks      bool
+	Count       int
 
-	Kind items.ItemKind
+	Kind items.Kind
 }
 
 func (i Item) CanQuaff() bool {
@@ -38,6 +40,8 @@ func produceItem(itemDef items.Definition) Item {
 		Description: itemDef.Description,
 		Power:       itemDef.Power,
 		Kind:        itemDef.Kind,
+		Stacks:      itemDef.Stacks,
+		Count:       1,
 	}
 }
 
@@ -52,10 +56,12 @@ func (pop *ItemDetails) Update(input InputEvent) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_ESCAPE:
+			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: false}})
 			pop.done = true
 		case sdl.K_q:
 			if pop.Item.CanQuaff() {
 				m.Broadcast(m.M{ID: QuaffPotion, Data: QuaffPotionMessage{Potion: pop.Item}})
+				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
 				pop.done = true
 			}
 		}
