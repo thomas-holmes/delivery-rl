@@ -16,6 +16,8 @@ type HUD struct {
 	Height int
 
 	nextFreeRow int
+
+	Messaging
 }
 
 func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {

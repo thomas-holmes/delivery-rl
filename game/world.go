@@ -460,6 +460,9 @@ func (world *World) RemoveEntity(entity Entity) {
 	if creature, ok := foundEntity.(*Creature); ok {
 		world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
 	}
+	if l, ok := entity.(Listener); ok {
+		l.UnSub()
+	}
 }
 
 func (world *World) MoveEntity(message MoveEntityMessage) {

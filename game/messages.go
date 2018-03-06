@@ -55,12 +55,28 @@ type KillEntityMessage struct {
 	Defender Entity
 }
 
+type subscription struct {
+	id int
+	Listener
+}
+
 type Listener interface {
+	SetUnsubFunc(func())
+	UnSub()
 	Notify(message Message, data interface{})
 }
 
 type Messaging struct {
 	messageBus *MessageBus
+	unsubFunc  func()
+}
+
+func (m *Messaging) SetUnsubFunc(f func()) {
+	m.unsubFunc = f
+}
+
+func (m *Messaging) UnSub() {
+	m.unsubFunc()
 }
 
 type PlayerFloorChangeMessage struct {
@@ -106,11 +122,26 @@ func (messaging *Messaging) RemoveMessageBus() {
 }
 
 type MessageBus struct {
-	Listeners []Listener
+	nextId    int
+	Listeners []subscription
 }
 
+func (m *MessageBus) removeSubId(id int) {
+	for i, s := range m.Listeners {
+		if s.id == id {
+			m.Listeners = append(m.Listeners[:i], m.Listeners[i+1:]...)
+			return
+		}
+	}
+}
 func (messageBus *MessageBus) Subscribe(listener Listener) {
-	messageBus.Listeners = append(messageBus.Listeners, listener)
+	sub := subscription{
+		id:       messageBus.nextId,
+		Listener: listener,
+	}
+	messageBus.nextId++
+	listener.SetUnsubFunc(func() { messageBus.removeSubId(sub.id) })
+	messageBus.Listeners = append(messageBus.Listeners, sub)
 }
 
 // Broadcast notifie all listeners. This is synchronous.

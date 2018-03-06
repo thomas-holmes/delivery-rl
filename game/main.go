@@ -69,7 +69,7 @@ func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
 	world := NewWorld(window, true, rng)
 	{
 		// TODO: Roll this up into some kind of registering a system function on the world
-		combat := CombatSystem{World: world}
+		combat := &CombatSystem{World: world}
 
 		combat.SetMessageBus(world.messageBus)
 		world.messageBus.Subscribe(combat)

@@ -9,6 +9,7 @@ import (
 
 type CombatSystem struct {
 	World *World
+
 	Messaging
 }
 
