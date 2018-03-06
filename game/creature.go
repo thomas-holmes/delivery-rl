@@ -289,7 +289,7 @@ func (creature *Creature) CastSpell(spell Spell, world *World, targetX int, targ
 
 func (creature *Creature) Quaff(potion Item) {
 	if !potion.CanQuaff() {
-		log.Printf("Asked to quaff unquaffable item. %+v", potion)
+		log.Fatalf("Asked to quaff unquaffable item. %+v", potion)
 		return
 	}
 

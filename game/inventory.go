@@ -41,7 +41,6 @@ func (pop *InventoryPop) tryShowItem(index int) {
 		})
 
 		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Items[index]}
-		log.Printf("Trying to broadcast %+v", menu)
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &menu}})
 	}
 }
