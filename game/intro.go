@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -44,7 +45,7 @@ func (intro *IntroScreen) maybeLoadPizza() {
 		} else if err != nil {
 			log.Panicln("Failed during reading of pizza", err)
 		}
-		intro.pizza = append(intro.pizza, line)
+		intro.pizza = append(intro.pizza, strings.TrimRight(line, "\r\n "))
 	}
 }
 
