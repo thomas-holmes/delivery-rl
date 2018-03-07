@@ -29,19 +29,7 @@ func (pop *EndGameMenu) Update(input InputEvent) {
 }
 
 func (pop *EndGameMenu) RenderBorder(window *gterm.Window) {
-	leftX := pop.X
-	rightX := pop.X + pop.W - 1
-
-	topY := pop.Y
-	bottomY := pop.Y + pop.H - 1
-
-	for y := topY; y <= bottomY; y++ {
-		for x := leftX; x <= rightX; x++ {
-			if y == topY || y == bottomY || x == leftX || x == rightX {
-				window.PutRune(x, y, '%', pop.ContentColor, gterm.NoColor)
-			}
-		}
-	}
+	pop.DrawBox(window, pop.ContentColor)
 }
 
 func (pop *EndGameMenu) RenderContents(window *gterm.Window) {

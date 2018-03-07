@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
@@ -108,12 +107,7 @@ func (pop SpellPop) Render(window *gterm.Window) {
 		nextRow = pop.renderItem(i, nextRow, window)
 	}
 
-	window.PutString(pop.X, pop.Y, strings.Repeat("%", pop.W), White)
-	for y := pop.Y + 1; y < pop.Y+pop.H-1; y++ {
-		window.PutRune(pop.X, y, '%', White, gterm.NoColor)
-		window.PutRune(pop.X+pop.W-1, y, '%', White, gterm.NoColor)
-	}
-	window.PutString(pop.X, pop.Y+pop.H-1, strings.Repeat("%", pop.W), White)
+	pop.DrawBox(window, White)
 }
 
 // Targeting

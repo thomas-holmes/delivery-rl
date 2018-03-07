@@ -52,9 +52,6 @@ func (pop *FullGameLog) Update(input InputEvent) {
 }
 
 func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
-	top := '^'
-	bottom := 'v'
-
 	barSpace := float64(pop.H - 2)
 
 	percentageShown := float64(min(pop.H, len(pop.GameLog.Messages))) / float64(len(pop.GameLog.Messages))
@@ -62,19 +59,19 @@ func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
 
 	topOfBar := int(float64(barSpace) * float64(pop.ScrollPosition) / float64(len(pop.GameLog.Messages)))
 
-	window.PutRune(pop.X, pop.Y, top, Yellow, gterm.NoColor)
+	window.PutRune(pop.X, pop.Y, upArrow, Yellow, gterm.NoColor)
 
 	barRunesDrawn := 0
 	for row := pop.Y + 1; row < (pop.Y + pop.H - 1); row++ {
 		if (row >= topOfBar) && (barRunesDrawn <= scrollBarWidth) {
-			window.PutRune(pop.X, row, '#', Yellow, gterm.NoColor)
+			window.PutRune(pop.X, row, fullBlock, Yellow, gterm.NoColor)
 			barRunesDrawn++
 		} else {
-			window.PutRune(pop.X, row, '|', Grey, gterm.NoColor)
+			window.PutRune(pop.X, row, vertical, Grey, gterm.NoColor)
 		}
 	}
 
-	window.PutRune(pop.X, pop.Y+pop.H-1, bottom, Yellow, gterm.NoColor)
+	window.PutRune(pop.X, pop.Y+pop.H-1, downArrow, Yellow, gterm.NoColor)
 }
 
 func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {

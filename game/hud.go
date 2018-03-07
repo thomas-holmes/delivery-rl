@@ -47,10 +47,6 @@ func (hud *HUD) renderPlayerPosition(world *World) {
 	world.Window.PutString(hud.XPos, hud.GetNextRow(), position, Yellow)
 }
 
-var partial = rune('▌')
-var partialRight = rune('▐')
-var block = rune('█')
-
 func drawBar(window *gterm.Window, pct float64, width int, x int, y int, color sdl.Color) {
 	dimColor := color
 	dimColor.R /= 2
@@ -65,14 +61,14 @@ func drawBar(window *gterm.Window, pct float64, width int, x int, y int, color s
 		leftChunk, rightChunk := i*2, i*2+1
 
 		if rightChunk < filledChunks {
-			window.PutRune(x+i, y, block, color, gterm.NoColor)
+			window.PutRune(x+i, y, fullBlock, color, gterm.NoColor)
 		} else {
 			if leftChunk < filledChunks {
-				window.PutRune(x+i, y, partial, color, gterm.NoColor)
+				window.PutRune(x+i, y, partialBlockLeft, color, gterm.NoColor)
 			} else {
-				window.PutRune(x+i, y, partial, dimColor, gterm.NoColor)
+				window.PutRune(x+i, y, partialBlockLeft, dimColor, gterm.NoColor)
 			}
-			window.PutRune(x+i, y, partialRight, dimColor, gterm.NoColor)
+			window.PutRune(x+i, y, partialBlockRight, dimColor, gterm.NoColor)
 		}
 	}
 }
