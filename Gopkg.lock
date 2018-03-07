@@ -10,8 +10,8 @@
 [[projects]]
   name = "github.com/thomas-holmes/gterm"
   packages = ["."]
-  revision = "5f50da0019e44ef57549e0f7bb15b090329ec2d1"
-  version = "v0.2.2"
+  revision = "5159c665f0273d91d0e513c36a7113688c4f91b7"
+  version = "v0.2.3"
 
 [[projects]]
   name = "github.com/veandco/go-sdl2"
@@ -31,6 +31,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5b7decd6e73b10914d9b977469828de02c723ddb5588806fa62aebfc3f6d51f2"
+  inputs-digest = "38c76738e62bd715798b98bd524768f0ce8cd01505a45ce7c07a0096fb08b029"
   solver-name = "gps-cdcl"
   solver-version = 1
