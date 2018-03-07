@@ -13,6 +13,6 @@ func QuaffPotion(creature *Creature, potion Item) {
 		creature.Heal(power)
 	case "Power Potion":
 		gl.Append("%s quaffs a %s and gains %d max health!", creature.Name, potion.Name, power)
-		creature.HP.Max += power
+		creature.BoostMaxHP(power)
 	}
 }

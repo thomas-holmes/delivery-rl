@@ -216,6 +216,11 @@ func (player *Creature) Heal(amount int) {
 	player.HP.Current = newHp
 }
 
+func (player *Creature) BoostMaxHP(amount int) {
+	player.HP.Max += amount
+	player.HP.Current += amount
+}
+
 func (player *Creature) PickupItem(world *World) bool {
 	tile := world.CurrentLevel().GetTile(player.X, player.Y)
 	a := Item{}
