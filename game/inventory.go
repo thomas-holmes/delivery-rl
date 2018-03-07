@@ -4,12 +4,26 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
+
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Inventory []Item
+
+func (inventory *Inventory) Filter(filter items.Kind) []Item {
+	var filtered []Item
+
+	for _, item := range *inventory {
+		if item.Kind&filter > 0 {
+			filtered = append(filtered, item)
+		}
+	}
+
+	return filtered
+}
 
 func (inventory *Inventory) Add(item Item) {
 	if !item.Stacks {

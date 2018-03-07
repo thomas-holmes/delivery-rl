@@ -10,7 +10,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-type Kind int
+type Kind uint32
 
 const (
 	Unknown Kind = 0

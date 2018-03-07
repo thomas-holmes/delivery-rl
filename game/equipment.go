@@ -32,11 +32,11 @@ type EquipmentPop struct {
 }
 
 func (pop *EquipmentPop) equipItem(index int) {
-	if index >= len(pop.Player.Inventory) {
+	if index >= len(pop.Player.Inventory.Filter(items.Weapon)) {
 		return
 	}
 
-	item := pop.Player.Inventory[index]
+	item := pop.Player.Inventory.Filter(items.Weapon)[index]
 	if item.Kind != items.Weapon {
 		gl.Append("You can't wield a %s", item.Name)
 		return
@@ -63,7 +63,7 @@ func (pop *EquipmentPop) Update(input InputEvent) {
 func (pop *EquipmentPop) Render(window *gterm.Window) {
 	// TODO: Don't do this
 	inventoryPop := InventoryPop{
-		Inventory: pop.Player.Inventory,
+		Inventory: pop.Player.Inventory.Filter(items.Weapon),
 		PopMenu: PopMenu{
 			X: pop.X,
 			Y: pop.Y,
