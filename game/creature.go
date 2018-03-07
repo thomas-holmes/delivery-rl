@@ -454,7 +454,14 @@ func (creature *Creature) Notify(message m.M) {
 	case EquipItem:
 		if d, ok := message.Data.(EquipItemMessage); ok {
 			creature.CompletedExternalAction = true
-			creature.Equipment.Weapon = d.Item // This is super low effort, but should work?
+
+			// Put it back in my inventory
+			if creature.Equipment.Weapon.Name != "Bare Hands" {
+				creature.Inventory.Add(creature.Equipment.Weapon)
+			}
+
+			creature.Equipment.Weapon = d.Item
+			creature.Inventory.RemoveItem(d.Item)
 		}
 	case SpellTarget:
 		if d, ok := message.Data.(SpellTargetMessage); ok {
