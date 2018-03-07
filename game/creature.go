@@ -122,12 +122,7 @@ func (c Creature) YPos() int {
 }
 
 func (c *Creature) Damage(damage int) {
-	log.Printf("%v is Taking damage of %v", *c, damage)
 	c.HP.Current = max(0, c.HP.Current-damage)
-
-	if c.IsPlayer {
-		m.Broadcast(m.M{ID: PlayerUpdate})
-	}
 }
 
 func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interface{}) {
@@ -208,7 +203,6 @@ func (player *Creature) GainExp(exp int) {
 	player.Experience += exp
 	if player.Experience >= (player.Level * 10) {
 		player.LevelUp()
-		m.Broadcast(m.M{ID: PlayerUpdate})
 	}
 }
 
@@ -223,8 +217,6 @@ func (player *Creature) Heal(amount int) {
 
 	newHp := min(player.HP.Current+amount, player.HP.Max)
 	player.HP.Current = newHp
-
-	m.Broadcast(m.M{ID: PlayerUpdate})
 }
 
 func (player *Creature) PickupItem(world *World) bool {

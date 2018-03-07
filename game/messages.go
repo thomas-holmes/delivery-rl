@@ -3,9 +3,7 @@ package main
 type Message int
 
 const (
-	PlayerUpdate Message = iota
-	ClearRegion
-	MoveEntity
+	MoveEntity Message = iota
 	AttackEntity
 	SpellTarget
 	SpellLaunch
@@ -15,19 +13,11 @@ const (
 	ShowMenu
 	EquipItem
 	ShowFullGameLog
-	SaveGame
 	GameWon
 	FoodSpoiled
 	QuaffPotion
 	ItemDetailClosed
 )
-
-type ClearRegionMessage struct {
-	X int
-	Y int
-	W int
-	H int
-}
 
 type MoveEntityMessage struct {
 	ID   int

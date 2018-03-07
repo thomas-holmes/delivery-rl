@@ -515,10 +515,6 @@ func (world *World) ShowGameWonMenu() {
 
 func (world *World) Notify(message m.M) {
 	switch message.ID {
-	case ClearRegion:
-		if d, ok := message.Data.(ClearRegionMessage); ok {
-			world.Window.ClearRegion(d.X, d.Y, d.W, d.H)
-		}
 	case MoveEntity:
 		if d, ok := message.Data.(MoveEntityMessage); ok {
 			world.MoveEntity(d)
