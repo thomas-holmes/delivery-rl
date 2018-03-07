@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -17,7 +18,8 @@ type FullGameLog struct {
 }
 
 func (pop *FullGameLog) ScrollDown(distance int) {
-	maxScrollPosition := max(0, len(pop.GameLog.Messages)-pop.H)
+	messages := gl.Messages()
+	maxScrollPosition := max(0, len(messages)-pop.H)
 	pop.ScrollPosition = min(maxScrollPosition, pop.ScrollPosition+distance)
 }
 
@@ -38,7 +40,7 @@ func (pop *FullGameLog) Update(input InputEvent) {
 		case sdl.K_PAGEUP:
 			pop.ScrollUp(10)
 		case sdl.K_HOME:
-			pop.ScrollUp(len(pop.GameLog.Messages))
+			pop.ScrollUp(len(gl.Messages()))
 		case sdl.K_j:
 			fallthrough
 		case sdl.K_DOWN:
@@ -46,18 +48,19 @@ func (pop *FullGameLog) Update(input InputEvent) {
 		case sdl.K_PAGEDOWN:
 			pop.ScrollDown(10)
 		case sdl.K_END:
-			pop.ScrollDown(len(pop.GameLog.Messages))
+			pop.ScrollDown(len(gl.Messages()))
 		}
 	}
 }
 
 func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
+	messages := gl.Messages()
 	barSpace := float64(pop.H - 2)
 
-	percentageShown := float64(min(pop.H, len(pop.GameLog.Messages))) / float64(len(pop.GameLog.Messages))
+	percentageShown := float64(min(pop.H, len(messages))) / float64(len(messages))
 	scrollBarWidth := int(math.Ceil(barSpace * percentageShown))
 
-	topOfBar := int(float64(barSpace) * float64(pop.ScrollPosition) / float64(len(pop.GameLog.Messages)))
+	topOfBar := int(float64(barSpace) * float64(pop.ScrollPosition) / float64(len(messages)))
 
 	window.PutRune(pop.X, pop.Y, upArrow, Yellow, gterm.NoColor)
 
@@ -75,12 +78,12 @@ func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
 }
 
 func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
-
-	messagesToRender := len(pop.GameLog.Messages) - pop.ScrollPosition
+	messages := gl.Messages()
+	messagesToRender := len(messages) - pop.ScrollPosition
 
 	yOffset := 0
 	for i := messagesToRender - 1; i >= 0; i-- {
-		message := pop.GameLog.Messages[i]
+		message := messages[i]
 		window.PutString(pop.X+1, pop.Y+yOffset, message, White)
 		yOffset++
 	}

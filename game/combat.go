@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 )
 
@@ -35,9 +35,7 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	reduction := max(0, dice.Roll(dice.Notation{Num: 1, Sides: defender.Level / 3})-1)
 	actual := max(0, damage-reduction)
 	defender.Damage(actual)
-	logString := fmt.Sprintf("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
-
-	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{logString}}})
+	gl.Append("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
 	// This should be done by the entity instead of here, I think?
 	// I think this used to attribute the experience gain on death. Maybe
@@ -63,9 +61,7 @@ func (combat CombatSystem) zap(a Entity, d Entity, s Spell) {
 	log.Printf("Spell attacking with %+v", s)
 	for i := 0; i < s.Hits; i++ {
 		defender.Damage(s.Power)
-		logString := fmt.Sprintf("%v hits %v with %v for %v damage!", attacker.Name, defender.Name, s.Name, s.Power)
-
-		m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{logString}}})
+		gl.Append("%v hits %v with %v for %v damage!", attacker.Name, defender.Name, s.Name, s.Power)
 	}
 
 	// This should be done by the entity instead of here, I think?

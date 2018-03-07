@@ -14,7 +14,6 @@ const (
 	PlayerFloorChange
 	ShowMenu
 	EquipItem
-	GameLogAppend
 	ShowFullGameLog
 	SaveGame
 	GameWon
@@ -70,10 +69,6 @@ type ShowMenuMessage struct {
 
 type EquipItemMessage struct {
 	Item
-}
-
-type GameLogAppendMessage struct {
-	Messages []string
 }
 
 type QuaffPotionMessage struct {

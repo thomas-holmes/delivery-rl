@@ -1,6 +1,7 @@
 package main
 
 import (
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
@@ -37,7 +38,7 @@ func (pop *EquipmentPop) equipItem(index int) {
 
 	item := pop.Player.Inventory[index]
 	if item.Kind != items.Weapon {
-		m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{"You can't wield a " + item.Name}}})
+		gl.Append("You can't wield a %s", item.Name)
 		return
 	}
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -200,7 +201,7 @@ func (player *Creature) LevelUp() {
 	player.HP.Current = player.HP.Max
 	player.ST.Max = player.ST.Max + max(1, int(float64(player.ST.Max)*0.1))
 	player.ST.Current = player.ST.Max
-	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{[]string{fmt.Sprintf("You are now level %v", player.Level)}}})
+	gl.Append("You are now level %d", player.Level)
 }
 
 func (player *Creature) GainExp(exp int) {
@@ -295,7 +296,7 @@ func (creature *Creature) Quaff(potion Item) {
 
 	healAmount := dice.Roll(potion.Power)
 
-	m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{fmt.Sprintf("Drank a %s and healed %d", potion.Name, healAmount)}}})
+	gl.Append("Drank a %s and healed %d", potion.Name, healAmount)
 	creature.CompletedExternalAction = true
 
 	creature.Inventory.RemoveItem(potion)
