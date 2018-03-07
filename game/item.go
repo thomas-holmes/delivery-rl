@@ -112,6 +112,7 @@ func (pop *ItemDetails) renderUsage(window *gterm.Window) {
 
 func (pop *ItemDetails) Render(window *gterm.Window) {
 	window.ClearRegion(pop.X, pop.Y, pop.W, pop.H)
+	pop.DrawBox(window, White)
 	row := pop.Y + 1
 	row = pop.renderShortDescription(row, window)
 	row = pop.renderLongDescription(row, window)

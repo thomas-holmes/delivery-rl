@@ -34,12 +34,16 @@ func NewGameLog(x int, y int, w int, h int, world *World) *GameLog {
 
 func (gameLog *GameLog) Render(window *gterm.Window) {
 	messages := gamelog.Messages()
-	for i := 0; i < gameLog.H && i < len(messages); i++ {
+	lastMessage := max(0, len(messages))
+	firstMessage := max(0, lastMessage-gameLog.H)
+
+	for i := firstMessage; i < lastMessage; i++ {
 		message := messages[i]
+		yOffset := lastMessage - i - 1
 		cut := min(len(message), gameLog.W)
-		err := window.PutString(gameLog.X, gameLog.Y+gameLog.H-i, messages[i][:cut], White)
+		err := window.PutString(gameLog.X, gameLog.Y+gameLog.H-yOffset, messages[i][:cut], White)
 		if err != nil {
-			log.Println("Failed to render log?", err)
+			log.Println("Failed ot render log", err)
 		}
 	}
 }
