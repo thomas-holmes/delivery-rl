@@ -27,3 +27,9 @@ func (resource *Resource) Tick() {
 		resource.regenPartial -= adjustment
 	}
 }
+
+func (resource Resource) Percentage() float64 {
+	current := float64(resource.Current)
+	max := float64(resource.Max)
+	return current / max
+}

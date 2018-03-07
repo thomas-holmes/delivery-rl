@@ -190,7 +190,7 @@ func NewMonster(xPos int, yPos int, level int, hp int) *Creature {
 }
 
 func (player *Creature) LevelUp() {
-	player.Experience = max(0, player.Experience-player.Level*10)
+	player.Experience = max(0, player.Experience-player.NextLevelCost())
 	player.Level++
 	player.HP.Max = player.HP.Max + max(1, int(float64(player.HP.Max)*0.1))
 	player.HP.Current = player.HP.Max
@@ -201,15 +201,13 @@ func (player *Creature) LevelUp() {
 
 func (player *Creature) GainExp(exp int) {
 	player.Experience += exp
-	if player.Experience >= (player.Level * 10) {
+	if player.Experience >= player.NextLevelCost() {
 		player.LevelUp()
 	}
 }
 
-func (resource Resource) Percentage() float64 {
-	current := float64(resource.Current)
-	max := float64(resource.Max)
-	return current / max
+func (player *Creature) NextLevelCost() int {
+	return player.Level * 10
 }
 
 func (player *Creature) Heal(amount int) {
@@ -360,6 +358,9 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 		case sdl.K_2:
 			player.Heal(1)
 			return false
+		case sdl.K_3:
+			player.HT.Current++
+			return false
 		case sdl.K_g:
 			return player.PickupItem(world)
 		case sdl.K_i:
@@ -418,6 +419,13 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 	return false
 }
 
+func computeExperience(attacker *Creature, defender *Creature) int {
+	axp := attacker.Level * attacker.Level
+	dxp := defender.Level * defender.Level
+	diff := max(defender.Level, dxp-axp)
+	return diff
+}
+
 func (creature *Creature) Notify(message m.M) {
 	switch message.ID {
 	case KillEntity:
@@ -438,11 +446,9 @@ func (creature *Creature) Notify(message m.M) {
 			if attacker.ID != creature.ID {
 				return
 			}
-			if creature.Level > defender.Level {
-				attacker.GainExp((defender.Level + 1) / 4)
-			} else {
-				attacker.GainExp((defender.Level + 1) / 2)
-			}
+			expGain := computeExperience(attacker, defender)
+			gl.Append("Gained %d experience for killing %s", expGain, defender.Name)
+			attacker.GainExp(computeExperience(attacker, defender))
 		}
 	case EquipItem:
 		if d, ok := message.Data.(EquipItemMessage); ok {
