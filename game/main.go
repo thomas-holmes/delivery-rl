@@ -33,6 +33,8 @@ func filterActionableEvents(input InputEvent) InputEvent {
 	return InputEvent{}
 }
 
+var showFPS = true
+
 func handleInput(input InputEvent, world *World) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
@@ -41,6 +43,9 @@ func handleInput(input InputEvent, world *World) {
 			spawnRandomMonster(world)
 		case sdl.K_BACKSLASH:
 			world.ToggleScentOverlay()
+		case sdl.K_F12:
+			showFPS = !showFPS
+			world.Window.ShouldRenderFps(showFPS)
 		}
 	case *sdl.QuitEvent:
 		quit = true
@@ -88,6 +93,26 @@ func seedDice(pcgRng *pcg.PCG64) {
 	dice.SetDefaultRandomness(rng)
 }
 
+func configureItemsRepository() {
+	if err := items.Configure(path.Join("assets", "definitions")); err != nil {
+		log.Fatalln("Could not configure items repository", err)
+	}
+
+	if err := items.EnsureLoaded("consumeables", "weapons", "shoes", "natural_weapons"); err != nil {
+		log.Fatalln("Failed to load all item repositories", err)
+	}
+}
+
+func configureMonstersRepository() {
+	if err := monsters.Configure(path.Join("assets", "definitions")); err != nil {
+		log.Fatalln("Could not configure monsters repository", err)
+	}
+
+	if err := monsters.EnsureLoaded("monsters"); err != nil {
+		log.Fatalln("Could not load monster repositories", err)
+	}
+}
+
 func main() {
 	// Disable FPS limit, generally, so I can monitor performance.
 	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), 32, !NoVSync)
@@ -103,16 +128,11 @@ func main() {
 	window.SetTitle("DeliveryRL")
 	window.SetBackgroundColor(gterm.NoColor)
 
-	if err := items.Configure(path.Join("assets", "definitions")); err != nil {
-		log.Fatalln("Could not configure items repository", err)
-	}
-
-	if err := monsters.Configure(path.Join("assets", "definitions")); err != nil {
-		log.Fatalln("Could not configure monsters repository", err)
-	}
+	configureItemsRepository()
+	configureMonstersRepository()
 
 	seedDice(pcgRng)
-	window.ShouldRenderFps(true)
+	window.ShouldRenderFps(showFPS)
 	world := MakeNewWorld(window, pcgRng)
 
 	hud := NewHud(world.Player, world, 60, 0)
