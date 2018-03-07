@@ -31,11 +31,18 @@ type EquipmentPop struct {
 }
 
 func (pop *EquipmentPop) equipItem(index int) {
-	if index < len(pop.Player.Inventory) {
-		item := pop.Player.Inventory[index]
-		m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
-		pop.done = true
+	if index >= len(pop.Player.Inventory) {
+		return
 	}
+
+	item := pop.Player.Inventory[index]
+	if item.Kind != items.Weapon {
+		m.Broadcast(m.M{ID: GameLogAppend, Data: GameLogAppendMessage{Messages: []string{"You can't wield a " + item.Name}}})
+		return
+	}
+
+	m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
+	pop.done = true
 }
 
 func (pop *EquipmentPop) Update(input InputEvent) {
