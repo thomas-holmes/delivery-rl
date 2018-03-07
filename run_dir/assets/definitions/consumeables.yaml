@@ -14,3 +14,11 @@
     power: 2d6+4
     kind: potion
     stacks: true
+
+  - name: "Power Potion"
+    description: "Boost your max HP"
+    glyph: "!"
+    color: [200, 0, 200]
+    power: 1d10
+    kind: potion
+    stacks: true

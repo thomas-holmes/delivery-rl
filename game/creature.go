@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thomas-holmes/delivery-rl/game/dice"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
@@ -284,14 +283,9 @@ func (creature *Creature) Quaff(potion Item) {
 		return
 	}
 
-	healAmount := dice.Roll(potion.Power)
-
-	gl.Append("Drank a %s and healed %d", potion.Name, healAmount)
+	QuaffPotion(creature, potion)
 	creature.CompletedExternalAction = true
-
 	creature.Inventory.RemoveItem(potion)
-
-	creature.Heal(healAmount)
 }
 
 // HandleInput updates player position based on user input
@@ -466,8 +460,8 @@ func (creature *Creature) Notify(message m.M) {
 		if d, ok := message.Data.(SpellTargetMessage); ok {
 			creature.TargetSpell(d.Spell, d.World)
 		}
-	case QuaffPotion:
-		if d, ok := message.Data.(QuaffPotionMessage); ok {
+	case PlayerQuaffPotion:
+		if d, ok := message.Data.(PlayerQuaffPotionMessage); ok {
 			creature.Quaff(d.Potion)
 		}
 	}

@@ -15,7 +15,7 @@ const (
 	ShowFullGameLog
 	GameWon
 	FoodSpoiled
-	QuaffPotion
+	PlayerQuaffPotion
 	ItemDetailClosed
 )
 
@@ -61,7 +61,7 @@ type EquipItemMessage struct {
 	Item
 }
 
-type QuaffPotionMessage struct {
+type PlayerQuaffPotionMessage struct {
 	Potion Item
 }
 

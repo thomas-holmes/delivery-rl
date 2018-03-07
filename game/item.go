@@ -60,7 +60,7 @@ func (pop *ItemDetails) Update(input InputEvent) {
 			pop.done = true
 		case sdl.K_q:
 			if pop.Item.CanQuaff() {
-				m.Broadcast(m.M{ID: QuaffPotion, Data: QuaffPotionMessage{Potion: pop.Item}})
+				m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: pop.Item}})
 				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
 				pop.done = true
 			}
