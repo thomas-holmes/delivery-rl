@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/thomas-holmes/gterm"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 type HUD struct {
@@ -24,6 +25,8 @@ func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
 		World:       world,
 		XPos:        xPos,
 		YPos:        yPos,
+		Width:       world.Window.Columns - xPos,
+		Height:      world.Window.Rows - yPos,
 		nextFreeRow: 0,
 	}
 
@@ -42,6 +45,36 @@ func (hud *HUD) renderPlayerName(world *World) {
 func (hud *HUD) renderPlayerPosition(world *World) {
 	position := fmt.Sprintf("(%v, %v) - Level %v", hud.Player.X, hud.Player.Y, hud.Player.Depth+1)
 	world.Window.PutString(hud.XPos, hud.GetNextRow(), position, Yellow)
+}
+
+var partial = rune('▌')
+var partialRight = rune('▐')
+var block = rune('█')
+
+func drawBar(window *gterm.Window, pct float64, width int, x int, y int, color sdl.Color) {
+	dimColor := color
+	dimColor.R /= 2
+	dimColor.G /= 2
+	dimColor.B /= 2
+
+	chunks := width * 2
+	filledChunks := int(pct * float64(chunks))
+
+	for i := 0; i < width; i++ {
+		// Render dim
+		leftChunk, rightChunk := i*2, i*2+1
+
+		if rightChunk < filledChunks {
+			window.PutRune(x+i, y, block, color, gterm.NoColor)
+		} else {
+			if leftChunk < filledChunks {
+				window.PutRune(x+i, y, partial, color, gterm.NoColor)
+			} else {
+				window.PutRune(x+i, y, partial, dimColor, gterm.NoColor)
+			}
+			window.PutRune(x+i, y, partialRight, dimColor, gterm.NoColor)
+		}
+	}
 }
 
 func (hud *HUD) renderPlayerHealth(world *World) {
@@ -73,6 +106,12 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 	if err := world.Window.PutString(hud.XPos+len(label)+1, row, hp, hpColor); err != nil {
 		log.Fatalln("Couldn't write HUD hp", err)
 	}
+
+	width := 20
+	xOffset := hud.XPos + hud.Width - width - 1
+	playerHP := hud.Player.HP.Percentage()
+
+	drawBar(world.Window, playerHP, width, xOffset, row, hpColor)
 }
 
 func (hud *HUD) renderPlayerStamina(world *World) {
@@ -80,13 +119,13 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 	pct := hud.Player.ST.Percentage()
 	switch {
 	case pct >= 0.8:
-		stColor = Green
+		stColor = Purple
 	case pct >= 0.6:
-		stColor = Yellow
+		stColor = Blue
 	case pct >= 0.4:
-		stColor = Orange
-	default:
 		stColor = Red
+	default:
+		stColor = Orange
 	}
 
 	label := "Stamina:"
@@ -103,6 +142,12 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 	if err := world.Window.PutString(hud.XPos+len(label)+1, row, st, stColor); err != nil {
 		log.Fatalln("Couldn't write HUD st", err)
 	}
+
+	width := 20
+	xOffset := hud.XPos + hud.Width - width - 1
+	playerST := hud.Player.ST.Percentage()
+
+	drawBar(world.Window, playerST, width, xOffset, row, stColor)
 }
 
 func (hud *HUD) renderPlayerHeat(world *World) {
@@ -110,13 +155,13 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 	pct := hud.Player.HT.Percentage()
 	switch {
 	case pct >= 0.8:
-		htColor = Green
-	case pct >= 0.6:
-		htColor = Yellow
-	case pct >= 0.4:
-		htColor = Orange
-	default:
 		htColor = Red
+	case pct >= 0.6:
+		htColor = Orange
+	case pct >= 0.4:
+		htColor = Yellow
+	default:
+		htColor = Blue
 	}
 
 	label := "Heat:"
@@ -133,6 +178,12 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 	if err := world.Window.PutString(hud.XPos+len(label)+1, row, ht, htColor); err != nil {
 		log.Fatalln("Couldn't write HUD ht", err)
 	}
+
+	width := 20
+	xOffset := hud.XPos + hud.Width - width - 1
+	playerHT := hud.Player.HT.Percentage()
+
+	drawBar(world.Window, playerHT, width, xOffset, row, htColor)
 }
 
 func (hud *HUD) renderPlayerLevel(world *World) {
