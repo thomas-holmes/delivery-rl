@@ -146,6 +146,28 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	return MoveIsInvalid, nil
 }
 
+func (player *Creature) TryTeleport(newX int, newY int, world *World) bool {
+	if newX != player.X || newY != player.Y {
+		result, _ := player.TryMove(newX, newY, world)
+		switch result {
+		case MoveIsInvalid:
+			return false
+		case MoveIsSuccess:
+			oldX := player.X
+			oldY := player.Y
+			player.X = newX
+			player.Y = newY
+			m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
+		case MoveIsEnemy:
+			return false
+		case MoveIsVictory:
+			m.Broadcast(m.M{ID: GameWon})
+		}
+	}
+	player.CompletedExternalAction = true
+	return true
+}
+
 func NewCreature(level int, maxHP int) *Creature {
 	return &Creature{
 		Level: level,

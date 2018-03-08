@@ -104,6 +104,12 @@ func (combat CombatSystem) zapSquare(launch SpellLaunchMessage) {
 	}
 }
 
+func (combat CombatSystem) MovementSpell(launch SpellLaunchMessage) {
+	if c, ok := launch.Caster.(*Creature); ok {
+		c.TryTeleport(launch.X, launch.Y, combat.World)
+	}
+}
+
 func (combat CombatSystem) resolveSpell(launch SpellLaunchMessage) {
 	if launch.Spell.Name == "Fire Bolt" {
 		if c, ok := launch.Caster.(*Creature); ok {
@@ -119,13 +125,17 @@ func (combat CombatSystem) resolveSpell(launch SpellLaunchMessage) {
 		}
 
 	}
-	switch launch.Spell.Shape {
-	case Square:
-		combat.zapSquare(launch)
-	case Line:
-		// Nothing yet
-	case Cone:
-		combat.zapCone(launch)
+	if launch.Spell.Hits == 0 {
+		combat.MovementSpell(launch)
+	} else {
+		switch launch.Spell.Shape {
+		case Square:
+			combat.zapSquare(launch)
+		case Line:
+			// Nothing yet
+		case Cone:
+			combat.zapCone(launch)
+		}
 	}
 }
 

@@ -18,6 +18,7 @@ const (
 	PlayerQuaffPotion
 	PlayerActivateItem
 	ItemDetailClosed
+	TryMoveCreature
 )
 
 type MoveEntityMessage struct {
@@ -72,4 +73,10 @@ type PlayerActivateItemMessage struct {
 
 type ItemDetailClosedMessage struct {
 	CloseInventory bool
+}
+
+type TryMoveCreatureMessage struct {
+	*Creature
+	NewX int
+	NewY int
 }

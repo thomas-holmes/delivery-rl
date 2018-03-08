@@ -541,6 +541,10 @@ func (world *World) Notify(message m.M) {
 			world.SetCurrentLevel(d.DestLevelID)
 			world.AddEntityToCurrentLevel(world.Player)
 		}
+	case TryMoveCreature:
+		if d, ok := message.Data.(TryMoveCreatureMessage); ok {
+			d.Creature.TryMove(d.X, d.Y, world)
+		}
 	case ShowMenu:
 		if d, ok := message.Data.(ShowMenuMessage); ok {
 			log.Printf("World: %T %+v", d.Menu, d.Menu)

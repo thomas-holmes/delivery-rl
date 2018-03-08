@@ -15,6 +15,7 @@ const (
 	Square SpellShape = iota
 	Line
 	Cone
+	Point
 )
 
 type Spell struct {
@@ -40,6 +41,9 @@ var DefaultSpells = []Spell{
 
 	// Hits 5x5
 	Spell{Name: "Fire Ball", Description: "Hurls a large ball of fire at a group of oponnents", Range: 8, Power: 4, Cost: 4, Shape: Square, Size: 2, Hits: 1},
+
+	// Movement Spell
+	Spell{Name: "Blink", Description: "Teleport to a nearby unoccupied space you can see", Range: 8, Power: 0, Cost: 1, Shape: Point, Size: 1, Hits: 0},
 }
 
 type SpellPop struct {
@@ -119,6 +123,7 @@ type SpellTargeting struct {
 	TargetX int
 	TargetY int
 
+	targetVisible bool
 	initialized   bool
 	creatures     []*Creature
 	creatureIndex int
@@ -199,23 +204,37 @@ func (pop *SpellTargeting) Update(input InputEvent) {
 		}
 	}
 
+	pop.checkTargetVisibility(newX, newY)
+
 	if (newX != pop.TargetX || newY != pop.TargetY) &&
 		(newX > 0 && newX < pop.World.CurrentLevel().Columns) &&
-		(newY > 0 && newY < pop.World.CurrentLevel().Rows) {
-		// Guard against level boundaries
+		(newY > 0 && newY < pop.World.CurrentLevel().Rows) &&
+		pop.targetVisible {
 		pop.TargetX = newX
 		pop.TargetY = newY
 	}
 
 	pop.distance = squareDistance(player.X, player.Y, pop.TargetX, pop.TargetY)
 
-	if pop.distance > pop.Spell.Range {
+	if pop.distance > pop.Spell.Range || !pop.targetVisible {
 		pop.cursorColor = Red
 		pop.lineColor = Red
 	} else {
 		pop.cursorColor = Yellow
 		pop.lineColor = White
 	}
+}
+
+func (pop *SpellTargeting) checkTargetVisibility(newX int, newY int) {
+	positions := PlotLine(pop.World.Player.X, pop.World.Player.Y, newX, newY)
+	for _, pos := range positions {
+		if pop.World.CurrentLevel().GetTile(pos.X, pos.Y).IsWall() ||
+			pop.World.CurrentLevel().VisionMap.VisibilityAt(pos.X, pos.Y) != Visible {
+			pop.targetVisible = false
+			return
+		}
+	}
+	pop.targetVisible = true
 }
 
 func (pop SpellTargeting) renderSquareCursor() {
@@ -291,6 +310,13 @@ func (pop SpellTargeting) renderConeCursor() {
 
 }
 
+func (pop SpellTargeting) renderPointCursor() {
+	cursorColor := pop.cursorColor
+
+	cursorColor.A = 200
+	pop.World.RenderRuneAt(pop.TargetX, pop.TargetY, ' ', gterm.NoColor, cursorColor)
+}
+
 func (pop SpellTargeting) Render(window *gterm.Window) {
 	lineColor := pop.lineColor
 
@@ -308,5 +334,7 @@ func (pop SpellTargeting) Render(window *gterm.Window) {
 		fallthrough
 	case Square:
 		pop.renderSquareCursor()
+	case Point:
+		pop.renderPointCursor()
 	}
 }
