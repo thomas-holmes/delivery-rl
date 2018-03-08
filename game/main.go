@@ -184,12 +184,7 @@ var Seed int64
 func init() {
 	go http.ListenAndServe("localhost:6060", nil)
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
-	flag.Int64Var(&Seed, "seed", 0, "Provide a seed for launching the game")
+	flag.Int64Var(&Seed, "seed", time.Now().UnixNano(), "Provide a seed for launching the game")
 	flag.Parse()
-
-	if Seed == 0 {
-		Seed = time.Now().UnixNano()
-	}
-
 	log.Println("Starting game with seed", Seed)
 }
