@@ -373,6 +373,11 @@ func (player *Creature) HandleInput(input InputEvent, world *World) bool {
 			}
 			// Period returns true because it means "wait"
 			return true
+		case sdl.K_SLASH:
+			if input.Keymod&sdl.KMOD_SHIFT > 0 {
+				m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewHelpPop(1, 1, (world.Window.Columns-2)/2, world.Window.Rows-2)}})
+				return false
+			}
 		case sdl.K_h:
 			newX = player.X - 1
 		case sdl.K_j:
