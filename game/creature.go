@@ -221,6 +221,12 @@ func (player *Creature) BoostMaxHP(amount int) {
 	player.HP.Current += amount
 }
 
+func (player *Creature) RestoreHeat(amount int) {
+	amount = max(amount, 0)
+
+	player.HT.Current = min(player.HT.Current+amount, player.HT.Max)
+}
+
 func (player *Creature) PickupItem(world *World) bool {
 	tile := world.CurrentLevel().GetTile(player.X, player.Y)
 	a := Item{}
@@ -291,6 +297,16 @@ func (creature *Creature) Quaff(potion Item) {
 	QuaffPotion(creature, potion)
 	creature.CompletedExternalAction = true
 	creature.Inventory.RemoveItem(potion)
+}
+
+func (creature *Creature) ActivateItem(item Item) {
+	if !item.CanActivate() {
+		log.Fatalf("Asked to activate non-activateable item. %+v", item)
+	}
+
+	ActivateItem(creature, item)
+	creature.CompletedExternalAction = true
+	creature.Inventory.RemoveItem(item)
 }
 
 // HandleInput updates player position based on user input
@@ -468,6 +484,10 @@ func (creature *Creature) Notify(message m.M) {
 	case PlayerQuaffPotion:
 		if d, ok := message.Data.(PlayerQuaffPotionMessage); ok {
 			creature.Quaff(d.Potion)
+		}
+	case PlayerActivateItem:
+		if d, ok := message.Data.(PlayerActivateItemMessage); ok {
+			creature.ActivateItem(d.Item)
 		}
 	}
 }

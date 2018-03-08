@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/thomas-holmes/delivery-rl/game/dice"
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 
 	"github.com/MichaelTJones/pcg"
 
@@ -35,6 +36,8 @@ func filterActionableEvents(input InputEvent) InputEvent {
 
 var showFPS = true
 
+var testMessageCount = 1
+
 func handleInput(input InputEvent, world *World) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
@@ -46,6 +49,12 @@ func handleInput(input InputEvent, world *World) {
 		case sdl.K_F12:
 			showFPS = !showFPS
 			world.Window.ShouldRenderFps(showFPS)
+		case sdl.K_F10:
+			gl.Append("This is a test message %d", testMessageCount)
+			testMessageCount++
+		case sdl.K_F11:
+			gl.Append("This is a test very long message, its number is %d so you can figure it out", testMessageCount)
+			testMessageCount++
 		}
 	case *sdl.QuitEvent:
 		quit = true

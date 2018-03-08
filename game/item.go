@@ -27,6 +27,10 @@ func (i Item) CanQuaff() bool {
 	return i.Kind == items.Potion
 }
 
+func (i Item) CanActivate() bool {
+	return i.Kind == items.Warmer
+}
+
 func produceItem(itemDef items.Definition) Item {
 	if itemDef.Name == "" {
 		return Item{}
@@ -64,8 +68,13 @@ func (pop *ItemDetails) Update(input InputEvent) {
 				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
 				pop.done = true
 			}
+		case sdl.K_a:
+			if pop.Item.CanActivate() {
+				m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: pop.Item}})
+				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
+				pop.done = true
+			}
 		}
-
 	}
 }
 
@@ -104,9 +113,15 @@ func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
 }
 
 func (pop *ItemDetails) renderUsage(window *gterm.Window) {
-	if pop.Item.Kind == items.Potion {
-		usageString := "Actions: (Q)uaff"
-		window.PutString(pop.X+1, pop.Y+pop.H-2, usageString, White)
+	var usageStr string
+	switch pop.Item.Kind {
+	case items.Potion:
+		usageStr = "Actions: (Q)uaff"
+	case items.Warmer:
+		usageStr = "Actions: (A)ctivate"
+	}
+	if usageStr != "" {
+		window.PutString(pop.X+1, pop.Y+pop.H-2, usageStr, White)
 	}
 }
 

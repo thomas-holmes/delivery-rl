@@ -597,7 +597,7 @@ func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 
 	m.Subscribe(world.Notify)
 
-	world.GameLog = NewGameLog(0, window.Rows-4, 56, 3, world)
+	world.GameLog = NewGameLog(0, window.Rows-4, window.Columns, 3, world)
 
 	world.BuildLevels()
 

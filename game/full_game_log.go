@@ -81,11 +81,14 @@ func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
 	messages := gl.Messages()
 	messagesToRender := len(messages) - pop.ScrollPosition
 
-	yOffset := 0
-	for i := messagesToRender - 1; i >= 0; i-- {
+	yPos := pop.Y
+	for i := messagesToRender - 1; i >= 0 && yPos+1 < pop.Y+pop.H; i-- {
 		message := messages[i]
-		window.PutString(pop.X+1, pop.Y+yOffset, message, White)
-		yOffset++
+		yPos += putWrappedText(window, message, pop.X+1, yPos, 0, 2, pop.W-2, White)
+		/*
+			window.PutString(pop.X+1, pop.Y+yOffset, message, White)
+			yOffset++
+		*/
 	}
 
 }

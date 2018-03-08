@@ -42,11 +42,11 @@ func (inventory *Inventory) Add(item Item) {
 func (inventory *Inventory) RemoveItem(item Item) {
 	for i, it := range *inventory {
 		if it.Name == item.Name {
-			if item.Count == 1 {
-				*inventory = append((*inventory)[:i], (*inventory)[i+1:]...)
+			if item.Count > 1 {
+				(*inventory)[i].Count--
 				return
 			} else {
-				(*inventory)[i].Count--
+				*inventory = append((*inventory)[:i], (*inventory)[i+1:]...)
 				return
 			}
 		}

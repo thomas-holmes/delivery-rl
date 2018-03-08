@@ -16,6 +16,7 @@ const (
 	GameWon
 	FoodSpoiled
 	PlayerQuaffPotion
+	PlayerActivateItem
 	ItemDetailClosed
 )
 
@@ -63,6 +64,10 @@ type EquipItemMessage struct {
 
 type PlayerQuaffPotionMessage struct {
 	Potion Item
+}
+
+type PlayerActivateItemMessage struct {
+	Item Item
 }
 
 type ItemDetailClosedMessage struct {
