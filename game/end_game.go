@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -16,7 +17,7 @@ type EndGameMenu struct {
 	PopMenu
 }
 
-func (pop *EndGameMenu) Update(input InputEvent) {
+func (pop *EndGameMenu) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym

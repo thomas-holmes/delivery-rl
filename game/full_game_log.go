@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -27,7 +28,7 @@ func (pop *FullGameLog) ScrollUp(distance int) {
 	pop.ScrollPosition = max(0, pop.ScrollPosition-distance)
 }
 
-func (pop *FullGameLog) Update(input InputEvent) {
+func (pop *FullGameLog) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {

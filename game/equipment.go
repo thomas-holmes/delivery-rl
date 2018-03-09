@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
@@ -46,7 +47,7 @@ func (pop *EquipmentPop) equipItem(index int) {
 	pop.done = true
 }
 
-func (pop *EquipmentPop) Update(input InputEvent) {
+func (pop *EquipmentPop) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym

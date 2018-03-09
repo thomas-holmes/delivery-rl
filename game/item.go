@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 
@@ -55,7 +56,7 @@ type ItemDetails struct {
 	PopMenu
 }
 
-func (pop *ItemDetails) Update(input InputEvent) {
+func (pop *ItemDetails) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {

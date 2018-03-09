@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
@@ -80,7 +81,7 @@ func (pop *InventoryPop) tryShowItem(index int) {
 	}
 }
 
-func (pop *InventoryPop) Update(input InputEvent) {
+func (pop *InventoryPop) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym

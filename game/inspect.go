@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -16,7 +17,7 @@ type InspectionPop struct {
 	InspectY int
 }
 
-func (pop *InspectionPop) Update(input InputEvent) {
+func (pop *InspectionPop) Update(input controls.InputEvent) {
 	newX, newY := pop.InspectX, pop.InspectY
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:

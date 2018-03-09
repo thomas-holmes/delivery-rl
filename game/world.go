@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 
@@ -56,7 +57,7 @@ type World struct {
 
 	showScentOverlay bool
 
-	bufferedInput InputEvent
+	bufferedInput controls.InputEvent
 
 	MenuStack  []Menu
 	Animations []Animation
@@ -82,15 +83,15 @@ func (world *World) GetNextID() int {
 }
 
 // PopInput get a queued input if there is one.
-func (world *World) PopInput() InputEvent {
+func (world *World) PopInput() controls.InputEvent {
 	input := world.bufferedInput
-	world.bufferedInput = InputEvent{}
+	world.bufferedInput = controls.InputEvent{}
 
 	return input
 }
 
 // AddInput queue an input for the game loop
-func (world *World) AddInput(input InputEvent) {
+func (world *World) AddInput(input controls.InputEvent) {
 	world.bufferedInput = input
 }
 
@@ -245,7 +246,7 @@ func (world *World) tidyMenus() bool {
 	return len(world.MenuStack) > 0
 }
 
-func (world *World) Update(input InputEvent) {
+func (world *World) Update(input controls.InputEvent) {
 	world.AddInput(input)
 	// log.Printf("Updating turn [%v]", world.turnCount)
 	currentTicks := sdl.GetTicks()

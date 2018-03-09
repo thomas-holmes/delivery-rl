@@ -24,7 +24,7 @@ func NewHelpPop(x, y, w, h int) *HelpPop {
 	}
 }
 
-func (pop *HelpPop) Update(input InputEvent) {
+func (pop *HelpPop) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
@@ -270,7 +271,7 @@ func (creature *Creature) EndGame() {
 }
 
 // Update returns true if an action that would constitute advancing the turn took place
-func (creature *Creature) Update(turn uint64, input InputEvent, world *World) bool {
+func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *World) bool {
 	success := false
 	if creature.IsPlayer {
 		if creature.IsFoodRuined() {
@@ -332,7 +333,7 @@ func (creature *Creature) ActivateItem(item Item) {
 }
 
 // HandleInput updates player position based on user input
-func (player *Creature) HandleInput(input InputEvent, world *World) bool {
+func (player *Creature) HandleInput(input controls.InputEvent, world *World) bool {
 	newX := player.X
 	newY := player.Y
 

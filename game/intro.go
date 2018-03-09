@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -18,7 +19,7 @@ type IntroScreen struct {
 	pizza []string
 }
 
-func (intro *IntroScreen) Update(input InputEvent) {
+func (intro *IntroScreen) Update(input controls.InputEvent) {
 	switch input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		intro.done = true

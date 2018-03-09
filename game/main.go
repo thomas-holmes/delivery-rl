@@ -8,6 +8,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 
@@ -24,21 +25,21 @@ import (
 
 var quit = false
 
-func filterActionableEvents(input InputEvent) InputEvent {
+func filterActionableEvents(input controls.InputEvent) controls.InputEvent {
 	switch input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		return input
 	case *sdl.QuitEvent:
 		return input
 	}
-	return InputEvent{}
+	return controls.InputEvent{}
 }
 
 var showFPS = true
 
 var testMessageCount = 1
 
-func handleInput(input InputEvent, world *World) {
+func handleInput(input controls.InputEvent, world *World) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
@@ -149,7 +150,7 @@ func main() {
 	intro := IntroScreen{}
 	for !quit && !world.QuitGame {
 
-		inputEvent := InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
+		inputEvent := controls.InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
 		window.ClearWindow()
 		inputEvent = filterActionableEvents(inputEvent)
 		if !intro.Done() {

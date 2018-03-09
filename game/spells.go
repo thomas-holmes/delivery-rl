@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -66,7 +67,7 @@ func (pop *SpellPop) castSpell(index int) {
 	}
 }
 
-func (pop *SpellPop) Update(input InputEvent) {
+func (pop *SpellPop) Update(input controls.InputEvent) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
@@ -160,7 +161,7 @@ func (pop *SpellTargeting) setInitialState() {
 	}
 }
 
-func (pop *SpellTargeting) Update(input InputEvent) {
+func (pop *SpellTargeting) Update(input controls.InputEvent) {
 	player := pop.World.Player
 	pop.setInitialState()
 	newX, newY := pop.TargetX, pop.TargetY

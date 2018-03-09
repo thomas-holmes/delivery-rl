@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -39,7 +40,7 @@ func (pop PopMenu) DrawBox(window *gterm.Window, color sdl.Color) {
 }
 
 type Menu interface {
-	Update(InputEvent)
+	Update(controls.InputEvent)
 	Render(window *gterm.Window)
 	Done() bool
 }

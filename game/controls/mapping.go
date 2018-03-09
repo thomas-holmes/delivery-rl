@@ -47,3 +47,12 @@ var AllMappings = []*Mapping{
 	&Activate,
 	&Inspect,
 }
+
+type InputEvent struct {
+	sdl.Event
+	sdl.Keymod
+}
+
+func (m Mapping) IsKey(e InputEvent) {
+
+}
