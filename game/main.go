@@ -111,7 +111,7 @@ func configureMonstersRepository() {
 
 func main() {
 	// Disable FPS limit, generally, so I can monitor performance.
-	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), 26, !NoVSync)
+	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), 32, 0.8, !NoVSync)
 
 	pcgRng := pcg.NewPCG64()
 	seed := uint64(Seed)
