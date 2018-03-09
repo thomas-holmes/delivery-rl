@@ -39,6 +39,7 @@ var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl
 
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
+var KeyEnter = Mapping{Name: "Confirm", Action: Confirm, Keys: []string{"enter", "return"}, SdlKeys: []sdl.Keycode{sdl.K_RETURN, sdl.K_KP_ENTER}, HideHelp: true}
 var KeyEsc = Mapping{Name: "Cancel", Action: Cancel, Keys: []string{"ESC"}, SdlKeys: []sdl.Keycode{sdl.K_ESCAPE}, HideHelp: true}
 var KeyPgUp = Mapping{Name: "Page Up", Action: SkipUp, Keys: []string{"PGUP"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEUP}, HideHelp: true}
 var KeyPgDown = Mapping{Name: "Page Down", Action: SkipDown, Keys: []string{"PGDN"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEDOWN}, HideHelp: true}
@@ -66,6 +67,7 @@ var AllMappings = []*Mapping{
 	&KeyA,
 	&KeyX,
 	&KeyG,
+	&KeyEnter,
 	&KeyQuestion,
 	&KeyCQ,
 	&KeyPgUp,
@@ -98,6 +100,7 @@ const (
 	Activate
 	Examine
 	Get
+	Confirm
 	Help
 	Quit
 	SkipUp

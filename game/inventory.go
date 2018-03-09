@@ -76,10 +76,38 @@ func (pop *InventoryPop) selectedItem() (Item, bool) {
 	return pop.Inventory[pop.selectedIndex], true
 }
 
-func (pop *InventoryPop) Update(input controls.InputEvent) {
+func (pop *InventoryPop) tryUseSelectedItem(action controls.Action) {
 	item, itemSelected := pop.selectedItem()
+	if !itemSelected {
+		return
+	}
+	switch {
+	case item.CanQuaff():
+		if action != controls.Confirm && action != controls.Quaff {
+			return
+		}
+		m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: item}})
+	case item.CanActivate():
+		if action != controls.Confirm && action != controls.Activate {
+			return
+		}
+		m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: item}})
+	case item.CanEquip():
+		if action != controls.Confirm && action != controls.Equip {
+			return
+		}
+		m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
+	default:
+		return
+	}
+
+	pop.done = true
+}
+
+func (pop *InventoryPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
-	switch input.Action() {
+	action := input.Action()
+	switch action {
 	case controls.Up:
 		pop.adjustSelection(-1)
 	case controls.Down:
@@ -92,21 +120,8 @@ func (pop *InventoryPop) Update(input controls.InputEvent) {
 		pop.adjustSelection(-len(pop.Inventory))
 	case controls.Bottom:
 		pop.adjustSelection(len(pop.Inventory))
-	case controls.Quaff:
-		if itemSelected && item.CanQuaff() {
-			m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: item}})
-			pop.done = true
-		}
-	case controls.Activate:
-		if itemSelected && item.CanActivate() {
-			m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: item}})
-			pop.done = true
-		}
-	case controls.Equip:
-		if itemSelected && item.CanEquip() {
-			m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
-			pop.done = true
-		}
+	case controls.Confirm, controls.Quaff, controls.Activate, controls.Equip:
+		pop.tryUseSelectedItem(action)
 	}
 }
 
