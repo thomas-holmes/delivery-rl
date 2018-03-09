@@ -82,12 +82,11 @@ func (pop *InventoryPop) tryShowItem(index int) {
 }
 
 func (pop *InventoryPop) Update(input controls.InputEvent) {
+	pop.CheckCancel(input)
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
-		case k == sdl.K_ESCAPE:
-			pop.done = true
 		case k >= sdl.K_a && k <= sdl.K_z:
 			pop.tryShowItem(int(k - sdl.K_a))
 		}

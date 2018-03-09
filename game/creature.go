@@ -342,124 +342,103 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 		return true
 	}
 
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		switch e.Keysym.Sym {
-		case sdl.K_COMMA:
-			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				tile := world.CurrentLevel().GetTile(player.X, player.Y)
-				if tile.TileKind == UpStair {
-					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
-						m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
-							Stair: stair,
-						}})
-					} else {
-						return false
-					}
-				}
-			}
-			return false
-		case sdl.K_PERIOD:
-			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				tile := world.CurrentLevel().GetTile(player.X, player.Y)
-				if tile.TileKind == DownStair {
-					if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
-						m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
-							Stair: stair,
-						}})
-					} else {
-						return false
-					}
-				}
-			}
-			// Period returns true because it means "wait"
-			return true
-		case sdl.K_SLASH:
-			if input.Keymod&sdl.KMOD_SHIFT > 0 {
-				m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewHelpPop(2, 1, 50, world.Window.Rows-2)}})
+	switch input.Action() {
+	case controls.Ascend:
+		tile := world.CurrentLevel().GetTile(player.X, player.Y)
+		if tile.TileKind == UpStair {
+			if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
+				m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
+					Stair: stair,
+				}})
+			} else {
 				return false
 			}
-		case sdl.K_h:
-			newX = player.X - 1
-		case sdl.K_j:
-			newY = player.Y + 1
-		case sdl.K_k:
-			newY = player.Y - 1
-		case sdl.K_l:
-			newX = player.X + 1
-		case sdl.K_b:
-			newX, newY = player.X-1, player.Y+1
-		case sdl.K_n:
-			newX, newY = player.X+1, player.Y+1
-		case sdl.K_y:
-			newX, newY = player.X-1, player.Y-1
-		case sdl.K_u:
-			newX, newY = player.X+1, player.Y-1
-		case sdl.K_1:
-			player.Damage(1)
-			return false
-		case sdl.K_2:
-			player.Heal(1)
-			return false
-		case sdl.K_3:
-			player.HT.Current++
-			return false
-		case sdl.K_g:
-			return player.PickupItem(world)
-		case sdl.K_i:
-			menu := &InventoryPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Inventory: player.Inventory}
-			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-			return false
-		case sdl.K_e:
-			menu := &EquipmentPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Player: player}
-			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-			return false
-		case sdl.K_x:
-			menu := &InspectionPop{PopMenu: PopMenu{X: 60, Y: 20, W: 30, H: 5}, World: world, InspectX: player.X, InspectY: player.Y}
-			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-			return false
-		case sdl.K_z:
-			menu := &SpellPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
-			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-			return false
-		case sdl.K_m:
-			m.Broadcast(m.M{ID: ShowFullGameLog})
-			return false
-		case sdl.K_q:
-			if input.Keymod&sdl.KMOD_CTRL > 0 {
-				world.QuitGame = true
-				world.GameOver = true
-			}
-			return false
-		default:
-			return false
 		}
-
-		if newX != player.X || newY != player.Y {
-			result, data := player.TryMove(newX, newY, world)
-			switch result {
-			case MoveIsInvalid:
+	case controls.Descend:
+		tile := world.CurrentLevel().GetTile(player.X, player.Y)
+		if tile.TileKind == DownStair {
+			if stair, ok := world.CurrentLevel().getStair(player.X, player.Y); ok {
+				m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
+					Stair: stair,
+				}})
+			} else {
 				return false
-			case MoveIsSuccess:
-				oldX := player.X
-				oldY := player.Y
-				player.X = newX
-				player.Y = newY
-				m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
-			case MoveIsEnemy:
-				if data, ok := data.(MoveEnemy); ok {
-					m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
-						Attacker: data.Attacker,
-						Defender: data.Defender,
-					}})
-				}
-			case MoveIsVictory:
-				m.Broadcast(m.M{ID: GameWon})
 			}
 		}
-		return true
+	case controls.Help:
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewHelpPop(2, 1, 50, world.Window.Rows-2)}})
+		return false
+	case controls.Left:
+		newX = player.X - 1
+	case controls.Down:
+		newY = player.Y + 1
+	case controls.Up:
+		newY = player.Y - 1
+	case controls.Right:
+		newX = player.X + 1
+	case controls.DownLeft:
+		newX, newY = player.X-1, player.Y+1
+	case controls.DownRight:
+		newX, newY = player.X+1, player.Y+1
+	case controls.UpLeft:
+		newX, newY = player.X-1, player.Y-1
+	case controls.UpRight:
+		newX, newY = player.X+1, player.Y-1
+	case controls.Wait:
+		break
+	case controls.Get:
+		return player.PickupItem(world)
+	case controls.Inventory:
+		menu := &InventoryPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Inventory: player.Inventory}
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
+		return false
+	case controls.Equip:
+		menu := &EquipmentPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Player: player}
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
+		return false
+	case controls.Examine:
+		menu := &InspectionPop{PopMenu: PopMenu{X: 60, Y: 20, W: 30, H: 5}, World: world, InspectX: player.X, InspectY: player.Y}
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
+		return false
+	case controls.Cast:
+		menu := &SpellPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
+		return false
+	case controls.Messages:
+		m.Broadcast(m.M{ID: ShowFullGameLog})
+		return false
+	case controls.Quit:
+		world.QuitGame = true
+		world.GameOver = true
+		return false
+	default:
+		return false
 	}
-	return false
+
+	if newX != player.X || newY != player.Y {
+		result, data := player.TryMove(newX, newY, world)
+		switch result {
+		case MoveIsInvalid:
+			return false
+		case MoveIsSuccess:
+			oldX := player.X
+			oldY := player.Y
+			player.X = newX
+			player.Y = newY
+			m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
+		case MoveIsEnemy:
+			if data, ok := data.(MoveEnemy); ok {
+				m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
+					Attacker: data.Attacker,
+					Defender: data.Defender,
+				}})
+			}
+		case MoveIsVictory:
+			m.Broadcast(m.M{ID: GameWon})
+			return false
+		}
+	}
+	return true
 }
 
 func computeExperience(attacker *Creature, defender *Creature) int {

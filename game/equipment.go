@@ -48,16 +48,14 @@ func (pop *EquipmentPop) equipItem(index int) {
 }
 
 func (pop *EquipmentPop) Update(input controls.InputEvent) {
+	pop.CheckCancel(input)
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
-		case k == sdl.K_ESCAPE:
-			pop.done = true
 		case k >= sdl.K_a && k <= sdl.K_z:
 			pop.equipItem(int(k - sdl.K_a))
 		}
-
 	}
 }
 

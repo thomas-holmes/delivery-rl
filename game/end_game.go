@@ -18,14 +18,9 @@ type EndGameMenu struct {
 }
 
 func (pop *EndGameMenu) Update(input controls.InputEvent) {
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		k := e.Keysym.Sym
-		switch {
-		case k == sdl.K_ESCAPE:
-			pop.done = true
-			pop.world.QuitGame = true
-		}
+	pop.CheckCancel(input)
+	if pop.done {
+		pop.world.QuitGame = true
 	}
 }
 

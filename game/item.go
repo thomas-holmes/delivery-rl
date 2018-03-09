@@ -57,24 +57,21 @@ type ItemDetails struct {
 }
 
 func (pop *ItemDetails) Update(input controls.InputEvent) {
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		switch e.Keysym.Sym {
-		case sdl.K_ESCAPE:
-			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: false}})
+	switch input.Action() {
+	case controls.Cancel:
+		m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: false}})
+		pop.done = true
+	case controls.Quaff:
+		if pop.Item.CanQuaff() {
+			m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: pop.Item}})
+			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
 			pop.done = true
-		case sdl.K_q:
-			if pop.Item.CanQuaff() {
-				m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: pop.Item}})
-				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
-				pop.done = true
-			}
-		case sdl.K_a:
-			if pop.Item.CanActivate() {
-				m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: pop.Item}})
-				m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
-				pop.done = true
-			}
+		}
+	case controls.Activate:
+		if pop.Item.CanActivate() {
+			m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: pop.Item}})
+			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
+			pop.done = true
 		}
 	}
 }

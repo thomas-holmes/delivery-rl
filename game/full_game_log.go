@@ -29,6 +29,8 @@ func (pop *FullGameLog) ScrollUp(distance int) {
 }
 
 func (pop *FullGameLog) Update(input controls.InputEvent) {
+	pop.CheckCancel(input)
+
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {

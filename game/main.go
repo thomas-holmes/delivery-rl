@@ -2,9 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"math/rand"
 	"path"
 	"time"
 
@@ -43,8 +41,6 @@ func handleInput(input controls.InputEvent, world *World) {
 	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
-		case sdl.K_5:
-			spawnRandomMonster(world)
 		case sdl.K_BACKSLASH:
 			world.ToggleScentOverlay()
 		case sdl.K_F12:
@@ -59,21 +55,6 @@ func handleInput(input controls.InputEvent, world *World) {
 		}
 	case *sdl.QuitEvent:
 		quit = true
-	}
-}
-
-func spawnRandomMonster(world *World) {
-	for tries := 0; tries < 100; tries++ {
-		x := rand.Intn(world.CurrentLevel().Columns)
-		y := rand.Intn(world.CurrentLevel().Rows)
-
-		if world.CurrentLevel().CanStandOnTile(x, y) {
-			level := rand.Intn(8) + 1
-			monster := NewMonster(x, y, level, level)
-			monster.Name = fmt.Sprintf("A Scary Number %v", level)
-			world.AddEntityToCurrentLevel(monster)
-			return
-		}
 	}
 }
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type HelpPop struct {
@@ -25,14 +24,7 @@ func NewHelpPop(x, y, w, h int) *HelpPop {
 }
 
 func (pop *HelpPop) Update(input controls.InputEvent) {
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		k := e.Keysym.Sym
-		switch {
-		case k == sdl.K_ESCAPE:
-			pop.done = true
-		}
-	}
+	pop.CheckCancel(input)
 }
 
 func (pop HelpPop) Render(window *gterm.Window) {
@@ -47,6 +39,9 @@ func (pop HelpPop) Render(window *gterm.Window) {
 	y += 2
 
 	for _, m := range controls.AllMappings {
+		if m.HideHelp {
+			continue
+		}
 		var padded []string
 		for _, key := range m.Keys {
 			padded = append(padded, fmt.Sprintf("%-8s", key))

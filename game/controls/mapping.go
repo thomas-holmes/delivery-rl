@@ -1,58 +1,171 @@
 package controls
 
 import (
+	"fmt"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Mapping struct {
-	Name    string
-	Keys    []string
-	SdlKeys []uint32
+	Name     string
+	Action   Action
+	Keys     []string
+	SdlKeys  []sdl.Keycode
+	Shift    bool
+	Control  bool
+	HideHelp bool
 }
 
-var Up = Mapping{Name: "Up", Keys: []string{"K", "KP_8", "UP"}, SdlKeys: []uint32{sdl.K_k, sdl.K_KP_8, sdl.K_KP_8}}
-var UpRight = Mapping{Name: "Up-Right", Keys: []string{"U", "KP_9"}, SdlKeys: []uint32{sdl.K_u, sdl.K_KP_9}}
-var Right = Mapping{Name: "Right", Keys: []string{"L", "KP_6", "RIGHT"}, SdlKeys: []uint32{sdl.K_l, sdl.K_KP_6, sdl.K_RIGHT}}
-var DownRight = Mapping{Name: "Down-Right", Keys: []string{"N", "KP_3"}, SdlKeys: []uint32{sdl.K_n, sdl.K_KP_3}}
-var Down = Mapping{Name: "Down", Keys: []string{"J", "KP_2", "DOWN"}, SdlKeys: []uint32{sdl.K_j, sdl.K_KP_2, sdl.K_DOWN}}
-var DownLeft = Mapping{Name: "DownLeft", Keys: []string{"B", "KP_1"}, SdlKeys: []uint32{sdl.K_b, sdl.K_KP_1}}
-var Left = Mapping{Name: "Left", Keys: []string{"H", "KP_4", "LEFT"}, SdlKeys: []uint32{sdl.K_h, sdl.K_KP_4, sdl.K_LEFT}}
-var UpLeft = Mapping{Name: "UpLeft", Keys: []string{"Y", "KP_7"}, SdlKeys: []uint32{sdl.K_y, sdl.K_KP_7}}
-var Wait = Mapping{Name: "Wait", Keys: []string{".", "KP_.", "5"}, SdlKeys: []uint32{sdl.K_PERIOD, sdl.K_5, sdl.K_KP_5, sdl.K_KP_PERIOD}}
+var KeyUp = Mapping{Name: "Up", Action: Up, Keys: []string{"K", "KP_8", "UP"}, SdlKeys: []sdl.Keycode{sdl.K_k, sdl.K_KP_8, sdl.K_UP}}
+var KeyUpRight = Mapping{Name: "Up-Right", Action: UpRight, Keys: []string{"U", "KP_9"}, SdlKeys: []sdl.Keycode{sdl.K_u, sdl.K_KP_9}}
+var KeyRight = Mapping{Name: "Right", Action: Right, Keys: []string{"L", "KP_6", "RIGHT"}, SdlKeys: []sdl.Keycode{sdl.K_l, sdl.K_KP_6, sdl.K_RIGHT}}
+var KeyDownRight = Mapping{Name: "Down-Right", Action: DownRight, Keys: []string{"N", "KP_3"}, SdlKeys: []sdl.Keycode{sdl.K_n, sdl.K_KP_3}}
+var KeyDown = Mapping{Name: "Down", Action: Down, Keys: []string{"J", "KP_2", "DOWN"}, SdlKeys: []sdl.Keycode{sdl.K_j, sdl.K_KP_2, sdl.K_DOWN}}
+var KeyDownLeft = Mapping{Name: "DownLeft", Action: DownLeft, Keys: []string{"B", "KP_1"}, SdlKeys: []sdl.Keycode{sdl.K_b, sdl.K_KP_1}}
+var KeyLeft = Mapping{Name: "Left", Action: Left, Keys: []string{"H", "KP_4", "LEFT"}, SdlKeys: []sdl.Keycode{sdl.K_h, sdl.K_KP_4, sdl.K_LEFT}}
+var KeyUpLeft = Mapping{Name: "UpLeft", Action: UpLeft, Keys: []string{"Y", "KP_7"}, SdlKeys: []sdl.Keycode{sdl.K_y, sdl.K_KP_7}}
+var KeyFive = Mapping{Name: "Wait", Action: Wait, Keys: []string{".", "KP_.", "5"}, SdlKeys: []sdl.Keycode{sdl.K_PERIOD, sdl.K_5, sdl.K_KP_5, sdl.K_KP_PERIOD}}
+var KeyGreater = Mapping{Name: "Descend", Action: Descend, Keys: []string{">"}, SdlKeys: []sdl.Keycode{sdl.K_PERIOD}, Shift: true}
+var KeyLesser = Mapping{Name: "Ascend", Action: Ascend, Keys: []string{"<"}, SdlKeys: []sdl.Keycode{sdl.K_COMMA}, Shift: true}
 
-var Messages = Mapping{Name: "Messages", Keys: []string{"M"}, SdlKeys: []uint32{sdl.K_m}}
+var KeyQuestion = Mapping{Name: "Help", Action: Help, Keys: []string{"?"}, SdlKeys: []sdl.Keycode{sdl.K_SLASH}, Shift: true}
 
-var Cast = Mapping{Name: "Cast", Keys: []string{"Z"}, SdlKeys: []uint32{sdl.K_z}}
-var Equip = Mapping{Name: "Equip", Keys: []string{"E"}, SdlKeys: []uint32{sdl.K_e}}
-var Inventory = Mapping{Name: "Inventory", Keys: []string{"I"}, SdlKeys: []uint32{sdl.K_i}}
-var Quaff = Mapping{Name: "Quaff", Keys: []string{"Q"}, SdlKeys: []uint32{sdl.K_q}}
-var Activate = Mapping{Name: "Activate", Keys: []string{"A"}, SdlKeys: []uint32{sdl.K_a}}
-var Inspect = Mapping{Name: "Inspect", Keys: []string{"X"}, SdlKeys: []uint32{sdl.K_x}}
+var KeyM = Mapping{Name: "Messages", Action: Messages, Keys: []string{"M"}, SdlKeys: []sdl.Keycode{sdl.K_m}}
+var KeyZ = Mapping{Name: "Cast", Action: Cast, Keys: []string{"Z"}, SdlKeys: []sdl.Keycode{sdl.K_z}}
+var KeyE = Mapping{Name: "Equip", Action: Equip, Keys: []string{"E"}, SdlKeys: []sdl.Keycode{sdl.K_e}}
+var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I"}, SdlKeys: []sdl.Keycode{sdl.K_i}}
+var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}}
+var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}}
+var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
+var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
+
+var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
+
+var KeyEsc = Mapping{Name: "Cancel", Action: Cancel, Keys: []string{"ESC"}, SdlKeys: []sdl.Keycode{sdl.K_ESCAPE}, HideHelp: true}
 
 var AllMappings = []*Mapping{
-	&Up,
-	&UpRight,
-	&Right,
-	&DownRight,
-	&Down,
-	&DownLeft,
-	&Left,
-	&UpLeft,
-	&Wait,
-	&Messages,
-	&Cast,
-	&Equip,
-	&Inventory,
-	&Quaff,
-	&Activate,
-	&Inspect,
+	&KeyUp,
+	&KeyUpRight,
+	&KeyRight,
+	&KeyDownRight,
+	&KeyDown,
+	&KeyDownLeft,
+	&KeyLeft,
+	&KeyUpLeft,
+	&KeyGreater,
+	&KeyLesser,
+	&KeyFive,
+	&KeyEsc,
+	&KeyM,
+	&KeyZ,
+	&KeyE,
+	&KeyI,
+	&KeyQ,
+	&KeyA,
+	&KeyX,
+	&KeyG,
+	&KeyQuestion,
+	&KeyCQ,
 }
+
+type Action int
+
+const (
+	None Action = iota
+	Up
+	UpRight
+	Right
+	DownRight
+	Down
+	DownLeft
+	Ascend
+	Descend
+	Left
+	UpLeft
+	Wait
+	Cancel
+	Messages
+	Cast
+	Equip
+	Inventory
+	Quaff
+	Activate
+	Examine
+	Get
+	Help
+	Quit
+	FinalUnused
+)
 
 type InputEvent struct {
 	sdl.Event
 	sdl.Keymod
 }
 
-func (m Mapping) IsKey(e InputEvent) {
+func (i InputEvent) Action() Action {
+	shiftPressed := i.Keymod&sdl.KMOD_SHIFT > 0
+	controlPressed := i.Keymod&sdl.KMOD_CTRL > 0
+	switch e := i.Event.(type) {
+	case *sdl.KeyDownEvent:
+		keyPressed := e.Keysym.Sym
 
+		for _, m := range AllMappings {
+			for _, mappedKey := range m.SdlKeys {
+				if mappedKey == keyPressed && shiftPressed == m.Shift && controlPressed == m.Control {
+					return m.Action
+				}
+			}
+		}
+	}
+
+	return None
+}
+
+func verifyMappingCounts() {
+	if len(AllMappings) != int(FinalUnused-1) {
+		panic(fmt.Sprintf("Expected to find %d Actions but instead have %d", FinalUnused-1, len(AllMappings)))
+	}
+}
+
+func verifyNoDuplicateActionMappings() {
+	controlSeen := make(map[sdl.Keycode]int)
+	shiftSeen := make(map[sdl.Keycode]int)
+	seen := make(map[sdl.Keycode]int)
+
+	for _, m := range AllMappings {
+		switch {
+		case m.Shift:
+			for _, k := range m.SdlKeys {
+				_, ok := shiftSeen[k]
+				if !ok {
+					shiftSeen[k] = 1
+				} else {
+					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
+				}
+			}
+		case m.Control:
+			for _, k := range m.SdlKeys {
+				_, ok := controlSeen[k]
+				if !ok {
+					controlSeen[k] = 1
+				} else {
+					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
+				}
+			}
+		default:
+			for _, k := range m.SdlKeys {
+				_, ok := seen[k]
+				if !ok {
+					seen[k] = 1
+				} else {
+					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
+				}
+			}
+		}
+	}
+}
+
+func init() {
+	verifyMappingCounts()
+	verifyNoDuplicateActionMappings()
 }
