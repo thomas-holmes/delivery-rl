@@ -83,6 +83,10 @@ func (pop *ItemDetails) renderLongDescription(row int, window *gterm.Window) int
 }
 
 func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
+	if pop.Item.Power.Num == 0 {
+		return row
+	}
+
 	offsetX := pop.X + 2
 	offsetY := row + 1
 

@@ -78,7 +78,12 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		xOffset := 0
 		pop.World.Window.PutRune(pop.X+xOffset, pop.Y+yOffset, i.Symbol, i.Color, gterm.NoColor)
 
-		itemLine1 := fmt.Sprintf("- %v (%v)", i.Name, i.Power)
+		var itemLine1 string
+		if i.Power.Num > 0 {
+			itemLine1 = fmt.Sprintf("- %v (%v)", i.Name, i.Power)
+		} else {
+			itemLine1 = fmt.Sprintf("- %v", i.Name)
+		}
 		yOffset += putWrappedText(pop.World.Window, itemLine1, pop.X, pop.Y+yOffset, 2, 4, pop.W-xOffset, Yellow)
 	}
 	{
@@ -98,11 +103,6 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 			pop.World.Window.PutString(pop.X, pop.Y+yOffset, terrainLine1, Yellow)
 			yOffset++
 		}
-	}
-	{
-		scentStrength := pop.World.CurrentLevel().ScentMap.getScent(pop.InspectX, pop.InspectY)
-		scentLine1 := fmt.Sprintf("Scent Strength: (%v)", scentStrength)
-		pop.World.Window.PutString(pop.X, pop.Y+yOffset, scentLine1, Yellow)
 	}
 }
 
