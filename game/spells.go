@@ -71,7 +71,7 @@ func (pop *SpellPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
 
 	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
+	case sdl.KeyDownEvent:
 		k := e.Keysym.Sym
 		switch {
 		case k >= sdl.K_a && k <= sdl.K_z:
@@ -166,7 +166,7 @@ func (pop *SpellTargeting) Update(input controls.InputEvent) {
 	pop.setInitialState()
 	newX, newY := pop.TargetX, pop.TargetY
 	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
+	case sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_RETURN:
 			if pop.distance <= pop.Spell.Range {

@@ -57,7 +57,7 @@ type World struct {
 
 	showScentOverlay bool
 
-	bufferedInput controls.InputEvent
+	Input controls.InputEvent
 
 	MenuStack  []Menu
 	Animations []Animation
@@ -80,19 +80,6 @@ func (world *World) CurrentLevel() *Level {
 func (world *World) GetNextID() int {
 	world.nextID++
 	return world.nextID
-}
-
-// PopInput get a queued input if there is one.
-func (world *World) PopInput() controls.InputEvent {
-	input := world.bufferedInput
-	world.bufferedInput = controls.InputEvent{}
-
-	return input
-}
-
-// AddInput queue an input for the game loop
-func (world *World) AddInput(input controls.InputEvent) {
-	world.bufferedInput = input
 }
 
 // SetCurrentLevel update the worlds inner CurrentLevel pointer
@@ -246,72 +233,87 @@ func (world *World) tidyMenus() bool {
 	return len(world.MenuStack) > 0
 }
 
-func (world *World) Update(input controls.InputEvent) {
-	world.AddInput(input)
-	// log.Printf("Updating turn [%v]", world.turnCount)
+func (world *World) Update() {
 	currentTicks := sdl.GetTicks()
 	world.CurrentTickDelta = currentTicks - world.CurrentUpdateTicks
 	world.CurrentUpdateTicks = currentTicks
 
-	if world.tidyMenus() {
-		currentMenu := world.MenuStack[len(world.MenuStack)-1]
-		currentMenu.Update(world.PopInput())
-	}
-
-	if world.tidyAnimations() {
-		for _, a := range world.Animations {
-			a.Update(world.CurrentTickDelta)
+	// Check for Game Over
+	{
+		if world.GameOver {
+			return
 		}
 	}
 
-	if world.GameOver {
-		return
-	}
-
-	// Attempt at a hack
-	if world.CurrentLevel().NextEntity >= len(world.CurrentLevel().Entities) {
-		world.CurrentLevel().NextEntity = 0
-	}
-	// log.Printf("next (%v), len(%v)", world.CurrentLevel().NextEntity, len(world.CurrentLevel().Entities))
-	for i := world.CurrentLevel().NextEntity; i < len(world.CurrentLevel().Entities) && !world.GameOver; i++ {
-		e := world.CurrentLevel().Entities[i]
-
-		a, ok := e.(Actor)
-		if !ok {
-			continue
-		}
-
-		a.StartTurn()
-
-		if a.CanAct() {
-			if !a.Update(world.turnCount, world.PopInput(), world) {
-				break
+	// Update Animations
+	{
+		if world.tidyAnimations() {
+			for _, a := range world.Animations {
+				a.Update(world.CurrentTickDelta)
 			}
+			return
 		}
+	}
 
-		// We've finished, so it is safe to advance
-		if !a.CanAct() {
-			a.EndTurn()
-			world.CurrentLevel().NextEntity = i + 1
+	// Update Menus
+	{
+		if world.tidyMenus() {
+			currentMenu := world.MenuStack[len(world.MenuStack)-1]
+			currentMenu.Update(world.Input)
+			return
 		}
+	}
 
-		if c, ok := e.(*Creature); ok && c.IsPlayer {
-			world.turnCount++
-			world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
-			world.CurrentLevel().ScentMap.UpdateScents(world)
-		}
+	// Update All Actors?
+	{
+		for {
+			entities := world.CurrentLevel().Entities
+			if world.CurrentLevel().NextEntity >= len(entities) {
+				world.CurrentLevel().NextEntity = 0
+			}
+			currentEntity := world.CurrentLevel().NextEntity
+			e := entities[currentEntity]
 
-		if world.LevelChanged {
-			a.EndTurn()
-			world.LevelChanged = false
-			// Reset these or the player can end up in a spot where they have no energy but need input
-			world.CurrentLevel().NextEntity = 0
-			return // Is this the right thing to do? Or could we just break?
-		}
+			a, ok := e.(Actor)
+			if !ok {
+				world.CurrentLevel().NextEntity++
+				continue
+			}
+			a.StartTurn()
 
-		if world.CurrentLevel().NextEntity >= len(world.CurrentLevel().Entities) {
-			world.CurrentLevel().NextEntity = 0
-			i = -1
+			if !a.CanAct() {
+				a.EndTurn()
+				world.CurrentLevel().NextEntity++
+				continue
+			}
+
+			advancedTurn := a.Update(world.turnCount, world.Input, world)
+
+			if c, ok := a.(*Creature); ok {
+				if c.IsPlayer {
+					if advancedTurn {
+						world.turnCount++
+					}
+					world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
+					world.CurrentLevel().ScentMap.UpdateScents(world)
+				}
+			}
+
+			// bit of a hack, copied from below instead of rewritten
+			if world.LevelChanged {
+				a.EndTurn()
+				world.LevelChanged = false
+				world.CurrentLevel().NextEntity = 0
+				return // Is this the right thing to do? Or could we just break?
+			}
+
+			if a.CanAct() {
+				// Needs more input
+				return
+			} else {
+				world.CurrentLevel().NextEntity++
+				world.Input = controls.InputEvent{}
+			}
 		}
 	}
 }
@@ -444,11 +446,11 @@ func (world *World) RemoveEntity(entity Entity) {
 		}
 	}
 
-	// This creates a but in some cases where a monster at the end of the entity list is killed.
-	// This causes the game to kind of weirdly freeze forever. We need to fix how entities are removed
-	// to fix it.
 	if foundIndex > -1 {
 		world.CurrentLevel().Entities = append(world.CurrentLevel().Entities[:foundIndex], world.CurrentLevel().Entities[foundIndex+1:]...)
+		if foundIndex > world.CurrentLevel().NextEntity {
+			world.CurrentLevel().NextEntity--
+		}
 	}
 	if creature, ok := foundEntity.(*Creature); ok {
 		world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
@@ -549,7 +551,6 @@ func (world *World) Notify(message m.M) {
 	case ShowMenu:
 		if d, ok := message.Data.(ShowMenuMessage); ok {
 			log.Printf("World: %T %+v", d.Menu, d.Menu)
-			d.Menu.Update(world.PopInput())
 			world.MenuStack = append(world.MenuStack, d.Menu)
 		}
 	}

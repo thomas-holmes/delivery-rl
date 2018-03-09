@@ -23,14 +23,18 @@ import (
 
 var quit = false
 
+var i = 0
+
 func filterActionableEvents(input controls.InputEvent) controls.InputEvent {
-	switch input.Event.(type) {
+	switch e := input.Event.(type) {
 	case *sdl.KeyDownEvent:
+		input.Event = *e
 		return input
 	case *sdl.QuitEvent:
+		input.Event = *e
 		return input
 	}
-	return controls.InputEvent{}
+	return controls.InputEvent{Event: nil}
 }
 
 var showFPS = true
@@ -39,7 +43,7 @@ var testMessageCount = 1
 
 func handleInput(input controls.InputEvent, world *World) {
 	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
+	case sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_BACKSLASH:
 			world.ToggleScentOverlay()
@@ -53,7 +57,8 @@ func handleInput(input controls.InputEvent, world *World) {
 			gl.Append("This is a test very long message, its number is %d so you can figure it out", testMessageCount)
 			testMessageCount++
 		}
-	case *sdl.QuitEvent:
+		world.Input = input
+	case sdl.QuitEvent:
 		quit = true
 	}
 }
@@ -106,7 +111,7 @@ func configureMonstersRepository() {
 
 func main() {
 	// Disable FPS limit, generally, so I can monitor performance.
-	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), 32, !NoVSync)
+	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), 26, !NoVSync)
 
 	pcgRng := pcg.NewPCG64()
 	seed := uint64(Seed)
@@ -130,32 +135,33 @@ func main() {
 
 	intro := IntroScreen{}
 	for !quit && !world.QuitGame {
-
-		inputEvent := controls.InputEvent{Event: sdl.PollEvent(), Keymod: sdl.GetModState()}
-		window.ClearWindow()
-		inputEvent = filterActionableEvents(inputEvent)
-		if !intro.Done() {
-			intro.Update(inputEvent)
-			intro.Render(window)
-			window.Refresh()
-			continue
+		for {
+			event, mod := sdl.PollEvent(), sdl.GetModState()
+			if event == nil {
+				break
+			}
+			inputEvent := controls.InputEvent{Event: event, Keymod: mod}
+			inputEvent = filterActionableEvents(inputEvent)
+			handleInput(inputEvent, world)
+			if !intro.Done() {
+				intro.Update(inputEvent)
+			}
 		}
+		world.Update()
+		world.Input = controls.InputEvent{}
 
-		// Probably don't do this either
-		handleInput(inputEvent, world)
-
-		world.AddInput(inputEvent)
-
-		world.Update(inputEvent)
+		window.ClearWindow()
 
 		if world.Animating() {
 			world.UpdateAnimations()
 		}
 
-		world.Render()
-
-		hud.Render(world)
-
+		if !intro.Done() {
+			intro.Render(window)
+		} else {
+			world.Render()
+			hud.Render(world)
+		}
 		window.Refresh()
 	}
 }

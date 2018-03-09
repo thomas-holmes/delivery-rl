@@ -21,7 +21,7 @@ func (pop *InspectionPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
 	newX, newY := pop.InspectX, pop.InspectY
 	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
+	case sdl.KeyDownEvent:
 		switch e.Keysym.Sym {
 		case sdl.K_ESCAPE:
 			pop.done = true

@@ -21,7 +21,7 @@ type IntroScreen struct {
 
 func (intro *IntroScreen) Update(input controls.InputEvent) {
 	switch input.Event.(type) {
-	case *sdl.KeyDownEvent:
+	case sdl.KeyDownEvent:
 		intro.done = true
 	}
 }
