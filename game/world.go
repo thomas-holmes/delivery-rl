@@ -289,6 +289,14 @@ func (world *World) Update() {
 
 			advancedTurn := a.Update(world.turnCount, world.Input, world)
 
+			// bit of a hack, copied from below instead of rewritten
+			if world.LevelChanged {
+				a.EndTurn()
+				world.LevelChanged = false
+				world.CurrentLevel().NextEntity = 0
+				return // Is this the right thing to do? Or could we just break?
+			}
+
 			if c, ok := a.(*Creature); ok {
 				if c.IsPlayer {
 					if advancedTurn {
@@ -297,14 +305,6 @@ func (world *World) Update() {
 					world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
 					world.CurrentLevel().ScentMap.UpdateScents(world)
 				}
-			}
-
-			// bit of a hack, copied from below instead of rewritten
-			if world.LevelChanged {
-				a.EndTurn()
-				world.LevelChanged = false
-				world.CurrentLevel().NextEntity = 0
-				return // Is this the right thing to do? Or could we just break?
 			}
 
 			if a.CanAct() {
