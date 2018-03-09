@@ -17,6 +17,7 @@ const (
 	Potion  Kind = 1 << iota
 	Warmer
 	Weapon
+	Food
 )
 
 func (i *Kind) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -42,6 +43,8 @@ func parseKind(kind string) (Kind, bool) {
 		return Warmer, true
 	case "weapon":
 		return Weapon, true
+	case "food":
+		return Food, true
 	}
 
 	return Unknown, false

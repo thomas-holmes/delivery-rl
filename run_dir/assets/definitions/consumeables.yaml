@@ -16,9 +16,33 @@
     stacks: true
 
   - name: "Power Potion"
-    description: "Boost your max HP"
+    description: "Boost your max HP."
     glyph: "!"
     color: [200, 0, 200]
     power: 1d10
     kind: potion
     stacks: true
+  
+  - name: Slice of Pizza"
+    description: "A slice of pepperoni pizza."
+    glyph: '¥'
+    color: [160, 160, 20]
+    power: 1d1
+    kind: food
+    stacks: true
+
+  - name: "Breadstick"
+    description: "A long delicious breadstick. Smells like garlic..."
+    glyph: "/"
+    color: [245, 222, 179]
+    power: 1d1
+    kind: food
+    stacks: true
+
+  - name: "Chicken Wing"
+    description: "Chicken wings. Awesome! Everyone loves chicken wings... especially the wolves"
+    glyph: "&"
+    color: [178, 34, 34]
+    power: 1d1
+    kind: food
+    stracks: true
