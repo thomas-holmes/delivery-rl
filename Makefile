@@ -4,6 +4,7 @@ GOBUILD=$(CC) build
 GOPKG='github.com/thomas-holmes/delivery-rl/game'
 MKFILE_PATH=$(abspath $(lastword $(MAKEFILE_LIST)))
 ROOT=$(shell git rev-parse --show-toplevel)
+SHA=$(shell git rev-parse HEAD)
 BINARY=delivery-rl
 
 all: test build
@@ -22,6 +23,13 @@ runv: build
 
 runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
+
+dist: test build buildwin
+	echo $(SHA) > run_dir/COMMIT
+	mv run_dir deliveryrl
+	tar -czf deliveryrl.tgz deliveryrl
+	mv deliveryrl run_dir
+	rm run_dir/COMMIT
 
 test:
 	$(GO_BIN) test ./...
