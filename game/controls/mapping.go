@@ -1,8 +1,6 @@
 package controls
 
 import (
-	"fmt"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -42,6 +40,10 @@ var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
 var KeyEsc = Mapping{Name: "Cancel", Action: Cancel, Keys: []string{"ESC"}, SdlKeys: []sdl.Keycode{sdl.K_ESCAPE}, HideHelp: true}
+var KeyPgUp = Mapping{Name: "Page Up", Action: SkipUp, Keys: []string{"PGUP"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEUP}, HideHelp: true}
+var KeyPgDown = Mapping{Name: "Page Down", Action: SkipDown, Keys: []string{"PGDN"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEDOWN}, HideHelp: true}
+var KeyHome = Mapping{Name: "Home", Action: Top, Keys: []string{"HOME"}, SdlKeys: []sdl.Keycode{sdl.K_HOME}, HideHelp: true}
+var KeyEnd = Mapping{Name: "End", Action: Bottom, Keys: []string{"END"}, SdlKeys: []sdl.Keycode{sdl.K_END}, HideHelp: true}
 
 var AllMappings = []*Mapping{
 	&KeyUp,
@@ -66,6 +68,10 @@ var AllMappings = []*Mapping{
 	&KeyG,
 	&KeyQuestion,
 	&KeyCQ,
+	&KeyPgUp,
+	&KeyPgDown,
+	&KeyHome,
+	&KeyEnd,
 }
 
 type Action int
@@ -94,6 +100,10 @@ const (
 	Get
 	Help
 	Quit
+	SkipUp
+	SkipDown
+	Top
+	Bottom
 	FinalUnused
 )
 
@@ -119,53 +129,4 @@ func (i InputEvent) Action() Action {
 	}
 
 	return None
-}
-
-func verifyMappingCounts() {
-	if len(AllMappings) != int(FinalUnused-1) {
-		panic(fmt.Sprintf("Expected to find %d Actions but instead have %d", FinalUnused-1, len(AllMappings)))
-	}
-}
-
-func verifyNoDuplicateActionMappings() {
-	controlSeen := make(map[sdl.Keycode]int)
-	shiftSeen := make(map[sdl.Keycode]int)
-	seen := make(map[sdl.Keycode]int)
-
-	for _, m := range AllMappings {
-		switch {
-		case m.Shift:
-			for _, k := range m.SdlKeys {
-				_, ok := shiftSeen[k]
-				if !ok {
-					shiftSeen[k] = 1
-				} else {
-					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
-				}
-			}
-		case m.Control:
-			for _, k := range m.SdlKeys {
-				_, ok := controlSeen[k]
-				if !ok {
-					controlSeen[k] = 1
-				} else {
-					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
-				}
-			}
-		default:
-			for _, k := range m.SdlKeys {
-				_, ok := seen[k]
-				if !ok {
-					seen[k] = 1
-				} else {
-					panic(fmt.Sprintf("Found duplicate %v mapping %+v", k, m))
-				}
-			}
-		}
-	}
-}
-
-func init() {
-	verifyMappingCounts()
-	verifyNoDuplicateActionMappings()
 }

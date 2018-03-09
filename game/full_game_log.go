@@ -7,7 +7,6 @@ import (
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/gterm"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type FullGameLog struct {
@@ -31,28 +30,19 @@ func (pop *FullGameLog) ScrollUp(distance int) {
 func (pop *FullGameLog) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
 
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		switch e.Keysym.Sym {
-		case sdl.K_ESCAPE:
-			pop.done = true
-		case sdl.K_k:
-			fallthrough
-		case sdl.K_UP:
-			pop.ScrollUp(1)
-		case sdl.K_PAGEUP:
-			pop.ScrollUp(10)
-		case sdl.K_HOME:
-			pop.ScrollUp(len(gl.Messages()))
-		case sdl.K_j:
-			fallthrough
-		case sdl.K_DOWN:
-			pop.ScrollDown(1)
-		case sdl.K_PAGEDOWN:
-			pop.ScrollDown(10)
-		case sdl.K_END:
-			pop.ScrollDown(len(gl.Messages()))
-		}
+	switch input.Action() {
+	case controls.Up:
+		pop.ScrollUp(1)
+	case controls.SkipUp:
+		pop.ScrollUp(10)
+	case controls.Top:
+		pop.ScrollUp(len(gl.Messages()))
+	case controls.Down:
+		pop.ScrollDown(1)
+	case controls.SkipDown:
+		pop.ScrollDown(10)
+	case controls.Bottom:
+		pop.ScrollDown(len(gl.Messages()))
 	}
 }
 
