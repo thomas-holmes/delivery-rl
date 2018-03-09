@@ -121,13 +121,15 @@ func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) in
 		prefix = fmt.Sprintf("[%d] ", item.Count)
 	}
 
+	color := Grey
 	if pop.selectedIndex == index {
+		color = White
 		window.PutRune(offsetX+1, offsetY, rightArrow, White, gterm.NoColor)
 	}
 
 	name := item.Name
 
-	offsetY += putWrappedText(window, prefix+name, offsetX, offsetY, 4, 2, pop.W-offsetX+pop.X-1, White)
+	offsetY += putWrappedText(window, prefix+name, offsetX, offsetY, 4, 2, pop.W-offsetX+pop.X-1, color)
 	return offsetY
 }
 
