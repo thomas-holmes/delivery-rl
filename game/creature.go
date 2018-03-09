@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/items"
+
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
@@ -195,6 +197,16 @@ func NewPlayer() *Creature {
 	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.2}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
+
+	if def, ok := items.GetCollection("weapons").GetByName("Thunderfury, Blessed Blade of the Windseeker"); ok {
+		player.Inventory.Add(produceItem(def))
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		player.Inventory.Add(it)
+	}
 
 	return player
 }
@@ -389,11 +401,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 	case controls.Get:
 		return player.PickupItem(world)
 	case controls.Inventory:
-		menu := &InventoryPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Inventory: player.Inventory}
-		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-		return false
-	case controls.Equip:
-		menu := &EquipmentPop{PopMenu: PopMenu{X: 6, Y: 2, W: 40, H: world.Window.Rows - 4}, Player: player}
+		menu := &InventoryPop{PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, Inventory: player.Inventory}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Examine:
@@ -482,6 +490,7 @@ func (creature *Creature) Notify(message m.M) {
 			}
 
 			creature.Equipment.Weapon = d.Item
+			gl.Append("%s equips %s", creature.Name, d.Item.Name)
 			creature.Inventory.RemoveItem(d.Item)
 		}
 	case SpellTarget:

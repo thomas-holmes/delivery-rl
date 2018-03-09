@@ -5,7 +5,6 @@ import (
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
-	m "github.com/thomas-holmes/delivery-rl/game/messages"
 
 	"github.com/thomas-holmes/delivery-rl/game/items"
 	"github.com/thomas-holmes/gterm"
@@ -30,6 +29,10 @@ func (i Item) CanQuaff() bool {
 
 func (i Item) CanActivate() bool {
 	return i.Kind == items.Warmer
+}
+
+func (i Item) CanEquip() bool {
+	return i.Kind == items.Weapon
 }
 
 func produceItem(itemDef items.Definition) Item {
@@ -57,34 +60,16 @@ type ItemDetails struct {
 }
 
 func (pop *ItemDetails) Update(input controls.InputEvent) {
-	switch input.Action() {
-	case controls.Cancel:
-		m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: false}})
-		pop.done = true
-	case controls.Quaff:
-		if pop.Item.CanQuaff() {
-			m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: pop.Item}})
-			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
-			pop.done = true
-		}
-	case controls.Activate:
-		if pop.Item.CanActivate() {
-			m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: pop.Item}})
-			m.Broadcast(m.M{ID: ItemDetailClosed, Data: ItemDetailClosedMessage{CloseInventory: true}})
-			pop.done = true
-		}
-	}
 }
 
 func (pop *ItemDetails) renderShortDescription(row int, window *gterm.Window) int {
-	offsetX := pop.X + 1
+	offsetX := pop.X + 2
 	offsetY := row
 	window.PutRune(offsetX, offsetY, pop.Item.Symbol, pop.Item.Color, gterm.NoColor)
-	nameStr := fmt.Sprintf(" - %v", pop.Item.Name)
-	offsetX += 2
+	nameStr := fmt.Sprintf("- %v", pop.Item.Name)
 
-	window.PutString(offsetX, offsetY, nameStr, White)
-	return offsetY + 1
+	offsetY += putWrappedText(window, nameStr, offsetX, offsetY, 2, 0, pop.W-1, White)
+	return offsetY
 }
 
 func (pop *ItemDetails) renderLongDescription(row int, window *gterm.Window) int {
@@ -92,13 +77,13 @@ func (pop *ItemDetails) renderLongDescription(row int, window *gterm.Window) int
 	offsetY := row + 1
 
 	description := pop.Item.Description
-	offsetY += putWrappedText(window, description, offsetX, offsetY, 4, 0, pop.W-offsetX+pop.X-1, White)
+	offsetY += putWrappedText(window, description, offsetX, offsetY, 3, 0, pop.W-offsetX+pop.X-1, White)
 
 	return offsetY
 }
 
 func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
-	offsetX := pop.X + 1
+	offsetX := pop.X + 2
 	offsetY := row + 1
 
 	powerString := "Power: "
@@ -114,9 +99,11 @@ func (pop *ItemDetails) renderUsage(window *gterm.Window) {
 	var usageStr string
 	switch pop.Item.Kind {
 	case items.Potion:
-		usageStr = "Actions: (Q)uaff"
+		usageStr = fmt.Sprintf("[%s] Quaff", controls.KeyQ.Keys[0])
 	case items.Warmer:
-		usageStr = "Actions: (A)ctivate"
+		usageStr = fmt.Sprintf("[%s] Activate", controls.KeyA.Keys[0])
+	case items.Weapon:
+		usageStr = fmt.Sprintf("[%s] Equip", controls.KeyE.Keys[0])
 	}
 	if usageStr != "" {
 		window.PutString(pop.X+1, pop.Y+pop.H-2, usageStr, White)

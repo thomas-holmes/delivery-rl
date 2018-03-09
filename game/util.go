@@ -100,7 +100,7 @@ func putWrappedText(window *gterm.Window, content string, x int, y int, firstInd
 		} else {
 			content = strings.TrimSpace(content[cut:])
 		}
-		window.PutString(offsetX, offsetY, printable, color)
+		window.PutStringBg(offsetX, offsetY, printable, color, gterm.NoColor)
 		offsetY++
 		offsetX = x + afterIndent
 	}

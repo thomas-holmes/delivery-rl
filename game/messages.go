@@ -17,7 +17,6 @@ const (
 	FoodSpoiled
 	PlayerQuaffPotion
 	PlayerActivateItem
-	ItemDetailClosed
 	TryMoveCreature
 )
 
@@ -69,10 +68,6 @@ type PlayerQuaffPotionMessage struct {
 
 type PlayerActivateItemMessage struct {
 	Item Item
-}
-
-type ItemDetailClosedMessage struct {
-	CloseInventory bool
 }
 
 type TryMoveCreatureMessage struct {

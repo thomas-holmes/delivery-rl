@@ -9,7 +9,6 @@ import (
 
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Inventory []Item
@@ -57,38 +56,56 @@ func (inventory *Inventory) RemoveItem(item Item) {
 type InventoryPop struct {
 	Inventory
 
+	selectedIndex int
+	itemDetailPop ItemDetails
+
 	PopMenu
 }
 
-func (pop *InventoryPop) tryShowItem(index int) {
-	if index < len(pop.Inventory) {
-		var unsub m.Unsubscribe
-		unsub = m.Subscribe(func(message m.M) {
-			if message.ID == ItemDetailClosed {
-				if d, ok := message.Data.(ItemDetailClosedMessage); ok {
-					if unsub != nil {
-						unsub()
-					}
-					if d.CloseInventory {
-						pop.done = true
-					}
-				}
-			}
-		})
+func (pop *InventoryPop) adjustSelection(delta int) {
+	pop.selectedIndex += delta
+	pop.selectedIndex = max(0, pop.selectedIndex)
+	pop.selectedIndex = min(len(pop.Inventory)-1, pop.selectedIndex)
+}
 
-		menu := ItemDetails{PopMenu: PopMenu{X: 2, Y: 2, W: 50, H: 26}, Item: pop.Inventory[index]}
-		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &menu}})
+func (pop *InventoryPop) selectedItem() (Item, bool) {
+	if len(pop.Inventory) <= 0 {
+		return Item{}, false
 	}
+
+	return pop.Inventory[pop.selectedIndex], true
 }
 
 func (pop *InventoryPop) Update(input controls.InputEvent) {
+	item, itemSelected := pop.selectedItem()
 	pop.CheckCancel(input)
-	switch e := input.Event.(type) {
-	case sdl.KeyDownEvent:
-		k := e.Keysym.Sym
-		switch {
-		case k >= sdl.K_a && k <= sdl.K_z:
-			pop.tryShowItem(int(k - sdl.K_a))
+	switch input.Action() {
+	case controls.Up:
+		pop.adjustSelection(-1)
+	case controls.Down:
+		pop.adjustSelection(1)
+	case controls.SkipUp:
+		pop.adjustSelection(-5)
+	case controls.SkipDown:
+		pop.adjustSelection(5)
+	case controls.Top:
+		pop.adjustSelection(-len(pop.Inventory))
+	case controls.Bottom:
+		pop.adjustSelection(len(pop.Inventory))
+	case controls.Quaff:
+		if itemSelected && item.CanQuaff() {
+			m.Broadcast(m.M{ID: PlayerQuaffPotion, Data: PlayerQuaffPotionMessage{Potion: item}})
+			pop.done = true
+		}
+	case controls.Activate:
+		if itemSelected && item.CanActivate() {
+			m.Broadcast(m.M{ID: PlayerActivateItem, Data: PlayerActivateItemMessage{Item: item}})
+			pop.done = true
+		}
+	case controls.Equip:
+		if itemSelected && item.CanEquip() {
+			m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
+			pop.done = true
 		}
 	}
 }
@@ -99,18 +116,18 @@ func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) in
 
 	item := pop.Inventory[index]
 
-	var selectionStr string
+	prefix := ""
 	if item.Count > 1 {
-		selectionStr = fmt.Sprintf("%v - [%d] ", string('a'+index), item.Count)
-	} else {
-		selectionStr = fmt.Sprintf("%v - ", string('a'+index))
+		prefix = fmt.Sprintf("[%d] ", item.Count)
 	}
 
-	window.PutString(offsetX, offsetY, selectionStr, White)
+	if pop.selectedIndex == index {
+		window.PutRune(offsetX+1, offsetY, rightArrow, White, gterm.NoColor)
+	}
 
 	name := item.Name
 
-	offsetY += putWrappedText(window, name, offsetX, offsetY, len(selectionStr), 2, pop.W-offsetX+pop.X-1, White)
+	offsetY += putWrappedText(window, prefix+name, offsetX, offsetY, 4, 2, pop.W-offsetX+pop.X-1, White)
 	return offsetY
 }
 
@@ -125,5 +142,9 @@ func (pop *InventoryPop) Render(window *gterm.Window) {
 		nextRow = pop.renderItem(i, nextRow, window)
 	}
 
+	if item, ok := pop.selectedItem(); ok {
+		menu := ItemDetails{PopMenu: PopMenu{X: pop.X + pop.W, Y: pop.Y, W: 30, H: 26}, Item: item}
+		menu.Render(window)
+	}
 	pop.DrawBox(window, White)
 }
