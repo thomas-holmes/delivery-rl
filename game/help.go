@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -38,26 +42,16 @@ func (pop HelpPop) Render(window *gterm.Window) {
 	x := pop.X + 2
 	y := pop.Y + 2
 
-	controls := []string{
-		"Left:          h",
-		"Right:         l",
-		"Down:          j",
-		"Up:            k",
-		"Inventory:     i",
-		"Equip Weapon:  e",
-		"Use Ability:   z",
-		"Quit:          CTRL-q",
-		"Game Log:      m",
-		"Toggle FPS:    F12",
-		"Help:          ?",
-	}
-
 	window.PutString(x, y, "DeliveryRL Controls", White)
 
 	y += 2
 
-	for _, s := range controls {
-		window.PutString(x, y, s, White)
+	for _, m := range controls.AllMappings {
+		var padded []string
+		for _, key := range m.Keys {
+			padded = append(padded, fmt.Sprintf("%-8s", key))
+		}
+		window.PutString(x, y, fmt.Sprintf("%-20s %-30s", m.Name, strings.Join(padded, " ")), White)
 		y++
 	}
 }
