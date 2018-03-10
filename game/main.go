@@ -135,6 +135,7 @@ func main() {
 
 	intro := IntroScreen{}
 
+	gl.Append("Press ? for help!")
 	for !quit && !world.QuitGame {
 		for {
 			event, mod := sdl.PollEvent(), sdl.GetModState()
