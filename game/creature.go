@@ -374,8 +374,23 @@ func (creature *Creature) DropItem(item Item, world *World) {
 	}
 }
 
+// ThrowItem chucks a single item across the map. It's a bit weird because of the
+// way removing an item works. So it makes a copy, sets the quantity to 1 so
+// we don't accidentally create a dup bug, but we need to provide the full count
+// so the inventory removeitem function properly treats it as a stack.
+// I could fix this a better way but not right now :()
 func (creature *Creature) ThrowItem(m PlayerThrowItemMessage) {
-
+	singleItem := m.Item
+	singleItem.Count = 1
+	if m.World.PlaceItemAround(singleItem, m.TargetX, m.TargetY) {
+		creature.CompletedExternalAction = true
+		gl.Append("Threw %s", singleItem, singleItem.Name)
+		creature.Inventory.RemoveItem(m.Item)
+		a := NewLinearSpellAnimation(creature.X, creature.Y, m.TargetX, m.TargetY, 20, 0, singleItem.Symbol, singleItem.Color)
+		m.World.AddAnimation(&a)
+	} else {
+		gl.Append("Could not throw %s, there is nowhere for it to land")
+	}
 }
 
 // HandleInput updates player position based on user input

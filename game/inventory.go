@@ -148,7 +148,7 @@ func (pop *InventoryPop) Update(input controls.InputEvent) {
 		pop.adjustSelection(len(pop.Inventory))
 	case controls.Drop:
 		pop.tryDropItem()
-	case controls.Confirm, controls.Quaff, controls.Activate, controls.Equip:
+	case controls.Confirm, controls.Quaff, controls.Activate, controls.Equip, controls.Throw:
 		pop.tryUseSelectedItem(action)
 	}
 }

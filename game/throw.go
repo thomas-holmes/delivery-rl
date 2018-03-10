@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/thomas-holmes/delivery-rl/game/controls"
-	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
+	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -27,14 +27,6 @@ type ThrowPop struct {
 	TargetY int
 
 	targetVisible bool
-	/*
-		creatures     []*Creature
-		creatureIndex int
-	*/
-
-	/*
-		distance int
-	*/
 
 	cursorColor sdl.Color
 	lineColor   sdl.Color
@@ -43,7 +35,8 @@ type ThrowPop struct {
 }
 
 func (pop *ThrowPop) throwItem() {
-	gl.Append("You threw %s!", pop.Item.Name)
+	m.Broadcast(m.M{ID: PlayerThrowItem, Data: PlayerThrowItemMessage{World: pop.World, Item: pop.Item, TargetX: pop.TargetX, TargetY: pop.TargetY}})
+	pop.done = true
 }
 
 func (pop *ThrowPop) adjustTarget(dX, dY int) {

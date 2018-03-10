@@ -238,21 +238,21 @@ func (world *World) Update() {
 	world.CurrentTickDelta = currentTicks - world.CurrentUpdateTicks
 	world.CurrentUpdateTicks = currentTicks
 
+	// Update Menus
+	{
+		if world.tidyMenus() {
+			currentMenu := world.MenuStack[len(world.MenuStack)-1]
+			currentMenu.Update(world.Input)
+			return
+		}
+	}
+
 	// Update Animations
 	{
 		if world.tidyAnimations() {
 			for _, a := range world.Animations {
 				a.Update(world.CurrentTickDelta)
 			}
-			return
-		}
-	}
-
-	// Update Menus
-	{
-		if world.tidyMenus() {
-			currentMenu := world.MenuStack[len(world.MenuStack)-1]
-			currentMenu.Update(world.Input)
 			return
 		}
 	}
