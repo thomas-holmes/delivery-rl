@@ -70,7 +70,6 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	content := "DeliveryRL"
 	x, y := (window.Columns-len(content))/2-3, window.Rows-5
 	window.PutString(x, y, "DeliveryRL", LightBlue)
-	log.Printf("Drawing at %d", x)
 
 	content = "Press any key to begin..."
 	x, y = (window.Columns-len(content))/2-3, y+1
