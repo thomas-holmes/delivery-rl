@@ -362,6 +362,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 				m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
 					Stair: stair,
 				}})
+				return true
 			} else {
 				return false
 			}
@@ -373,6 +374,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 				m.Broadcast(m.M{ID: PlayerFloorChange, Data: PlayerFloorChangeMessage{
 					Stair: stair,
 				}})
+				return true
 			} else {
 				return false
 			}

@@ -238,13 +238,6 @@ func (world *World) Update() {
 	world.CurrentTickDelta = currentTicks - world.CurrentUpdateTicks
 	world.CurrentUpdateTicks = currentTicks
 
-	// Check for Game Over
-	{
-		if world.GameOver {
-			return
-		}
-	}
-
 	// Update Animations
 	{
 		if world.tidyAnimations() {
@@ -267,6 +260,9 @@ func (world *World) Update() {
 	// Update All Actors?
 	{
 		for {
+			if world.GameOver {
+				break
+			}
 			entities := world.CurrentLevel().Entities
 			if world.CurrentLevel().NextEntity >= len(entities) {
 				world.CurrentLevel().NextEntity = 0
@@ -321,7 +317,7 @@ func (world *World) Update() {
 func (world *World) UpdateCamera() {
 	if world.CameraCentered {
 		world.CameraOffsetX = 30
-		world.CameraOffsetY = 15
+		world.CameraOffsetY = 25
 		world.CameraX = world.Player.X
 		world.CameraY = world.Player.Y
 	} else {
@@ -534,6 +530,7 @@ func (world *World) Notify(message m.M) {
 		world.ShowFoodSpoiledMenu()
 	case PlayerFloorChange:
 		if d, ok := message.Data.(PlayerFloorChangeMessage); ok {
+			log.Printf("Level Change: %+v", d)
 			if !d.Connected {
 				break
 			}
@@ -596,7 +593,7 @@ func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 		CameraY:        0,
 		// TODO: Width/Height should probably be some function of the window dimensions
 		CameraWidth:        56,
-		CameraHeight:       25,
+		CameraHeight:       50,
 		CurrentUpdateTicks: sdl.GetTicks(),
 		rng:                rng,
 	}
