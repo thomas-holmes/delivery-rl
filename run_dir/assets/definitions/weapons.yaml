@@ -10,26 +10,33 @@
     description: "A slender weapon, perfect for thrusting."
     glyph: ')'
     color: [0, 255, 0]
-    power: 1d6+2
+    power: 2d4
     kind: weapon
 
   - name: "Warhammer"
     description: "A greusome warhammer. Few problems can't be solved by crushing"
     glyph: ')'
     color: [255, 255, 0]
-    power: 1d8+3
+    power: 1d8+2
     kind: weapon
 
-  - name: "Shortsword named Sting"
-    description: "This shortsword glows blue when orcs are nearby. It is razor sharp."
+  - name: "Short Sword"
+    description: "A short blade, usually used for thrusting. Easier to handle than its larger counterpart."
     glyph: ')'
     color: [0, 0, 255]
-    power: 4d4+4
+    power: 3d4
     kind: weapon
 
-  - name: "Thunderfury, Blessed Blade of the Windseeker"
-    description: "A two-pronged blade that courses with electrical power. You feel unstoppable while holding this weapon."
+  - name: "Long Sword"
+    description: "A sharp long sword. It is quite deadly in the hands of a trained professional."
     glyph: ')'
-    color: [255, 0, 255]
-    power: 4d8+6
+    color: [180, 230, 180]
+    power: 2d8+4
+    kind: weapon
+  
+  - name: "Battle Axe"
+    description: "A gruesome battle axe with two sharp edges. It is covered in the dried blood of beasts and your predecessors."
+    glyph: ')'
+    color: [200, 25, 255]
+    power: 3d8+4
     kind: weapon

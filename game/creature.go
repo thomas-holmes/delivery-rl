@@ -198,10 +198,6 @@ func NewPlayer() *Creature {
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
-	if def, ok := items.GetCollection("weapons").GetByName("Thunderfury, Blessed Blade of the Windseeker"); ok {
-		player.Inventory.Add(produceItem(def))
-	}
-
 	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
 		it := produceItem(def)
 		it.Count = 5
@@ -219,7 +215,14 @@ func NewPlayer() *Creature {
 		it.Count = 5
 		player.Inventory.Add(it)
 	}
+
 	if def, ok := items.GetCollection("consumeables").GetByName("Red Pepper Flakes"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		player.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Breadstick"); ok {
 		it := produceItem(def)
 		it.Count = 5
 		player.Inventory.Add(it)

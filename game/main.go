@@ -134,6 +134,7 @@ func main() {
 	hud := NewHud(world.Player, world, 65, 0)
 
 	intro := IntroScreen{}
+
 	for !quit && !world.QuitGame {
 		for {
 			event, mod := sdl.PollEvent(), sdl.GetModState()

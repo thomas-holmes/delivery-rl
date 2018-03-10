@@ -7,16 +7,16 @@
     kind: warmer
     stacks: true
   
-  - name: "Health Potion"
-    description: "Chug this to heal some HP!"
+  - name: "Healing Potion"
+    description: "A healing potion left behind by some unfortunate adventurer. Maybe it will help you instead."
     glyph: "!"
     color: [255, 0, 0]
     power: 2d6+4
     kind: potion
     stacks: true
 
-  - name: "Power Potion"
-    description: "Boost your max HP."
+  - name: "Heroism Potion"
+    description: "This potion raise your maximum health and stamina. Good luck out there!"
     glyph: "!"
     color: [200, 0, 200]
     power: 1d10
