@@ -227,16 +227,6 @@ func (pop *SpellTargeting) Update(input controls.InputEvent) {
 }
 
 func (pop *SpellTargeting) checkTargetVisibility(newX int, newY int) {
-	/*
-		positions := PlotLine(pop.World.Player.X, pop.World.Player.Y, newX, newY)
-		for _, pos := range positions {
-			if pop.World.CurrentLevel().GetTile(pos.X, pos.Y).IsWall() ||
-				pop.World.CurrentLevel().VisionMap.VisibilityAt(pos.X, pos.Y) != Visible {
-				pop.targetVisible = false
-				return
-			}
-		}
-	*/
 	tile := pop.World.CurrentLevel().GetTile(newX, newY)
 	if tile.IsWall() || pop.World.CurrentLevel().VisionMap.VisibilityAt(newX, newY) != Visible {
 		pop.targetVisible = false
