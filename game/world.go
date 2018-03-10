@@ -530,7 +530,6 @@ func (world *World) Notify(message m.M) {
 		world.ShowFoodSpoiledMenu()
 	case PlayerFloorChange:
 		if d, ok := message.Data.(PlayerFloorChangeMessage); ok {
-			log.Printf("Level Change: %+v", d)
 			if !d.Connected {
 				break
 			}
@@ -600,7 +599,7 @@ func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 
 	m.Subscribe(world.Notify)
 
-	world.GameLog = NewGameLog(0, window.Rows-4, window.Columns, 3, world)
+	world.GameLog = NewGameLog(0, window.Rows-9, window.Columns, 8, world)
 
 	world.BuildLevels()
 
