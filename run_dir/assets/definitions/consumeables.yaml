@@ -23,7 +23,7 @@
     kind: potion
     stacks: true
   
-  - name: Slice of Pizza"
+  - name: "Slice of Pizza"
     description: "A slice of pepperoni pizza."
     glyph: '¥'
     color: [160, 160, 20]

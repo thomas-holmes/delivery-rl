@@ -82,6 +82,13 @@ func euclideanDistance(x0 int, y0 int, x1 int, y1 int) float64 {
 	return math.Sqrt(float64(x*x) + float64(y*y))
 }
 
+func distance(p1, p2 Position) int {
+	dX := p1.X - p2.X
+	dY := p2.Y - p2.Y
+
+	return int(math.Sqrt(float64(dX*dX) + float64(dY*dY)))
+}
+
 func putWrappedText(window *gterm.Window, content string, x int, y int, firstIndent int, afterIndent int, width int, color sdl.Color) int {
 	offsetX := x + firstIndent
 	offsetY := y

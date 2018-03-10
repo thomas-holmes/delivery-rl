@@ -24,14 +24,14 @@
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 2d4
+    power: 2d4+2
     kind: weapon
 
   - name: "Wolf Teeth"
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 1d10
+    power: 1d12
     kind: weapon
 
   - name: "Troll Claws"
