@@ -565,12 +565,35 @@ func (world *World) Notify(message m.M) {
 
 func (world *World) PlaceItem(item Item, x, y int) bool {
 	tile := world.CurrentLevel().GetTile(x, y)
-	if tile.Item.Kind == items.Unknown {
-		tile.Item = item
+	if tile.TileKind == Floor {
+		if tile.Item.Kind == items.Unknown {
+			tile.Item = item
+			return true
+		} else if item.Stacks && tile.Item.Name == item.Name {
+			tile.Item.Count += item.Count
+			return true
+		}
+	}
+
+	return false
+}
+
+func (world *World) PlaceItemAround(item Item, x, y int) bool {
+	if world.PlaceItem(item, x, y) {
 		return true
-	} else if item.Stacks && tile.Item.Name == item.Name {
-		tile.Item.Count += item.Count
-		return true
+	}
+	// Try adjacent space
+	cols, rows := world.CurrentLevel().Columns, world.CurrentLevel().Rows
+	minX, maxX := max(0, x-1), min(cols-1, x+1)
+	minY, maxY := max(0, y-1), min(rows-1, y+1)
+
+	for iy := minY; iy <= maxY; iy++ {
+		for ix := minX; ix <= maxX; ix++ {
+			if world.PlaceItem(item, ix, iy) {
+				return true
+			}
+		}
+
 	}
 
 	return false

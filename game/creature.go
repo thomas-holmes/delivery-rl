@@ -365,7 +365,7 @@ func (creature *Creature) ActivateItem(item Item) {
 }
 
 func (creature *Creature) DropItem(item Item, world *World) {
-	if world.PlaceItem(item, creature.X, creature.Y) {
+	if world.PlaceItemAround(item, creature.X, creature.Y) {
 		creature.CompletedExternalAction = true
 		gl.Append("Dropped %d %s", item.Count, item.Name)
 		creature.Inventory.RemoveAllItem(item)
