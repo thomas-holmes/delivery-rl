@@ -16,7 +16,7 @@ import (
 type IntroScreen struct {
 	PopMenu
 
-	pizza []string
+	splash []string
 }
 
 func (intro *IntroScreen) Update(input controls.InputEvent) {
@@ -26,12 +26,12 @@ func (intro *IntroScreen) Update(input controls.InputEvent) {
 	}
 }
 
-func (intro *IntroScreen) maybeLoadPizza() {
-	if len(intro.pizza) > 0 {
+func (intro *IntroScreen) maybeLoadSplash() {
+	if len(intro.splash) > 0 {
 		return
 	}
 
-	file, err := os.Open(path.Join("assets", "art", "pizza.txt"))
+	file, err := os.Open(path.Join("assets", "art", "splash.txt"))
 	if err != nil {
 		log.Panicln("Could not load opening art", err)
 	}
@@ -41,20 +41,20 @@ func (intro *IntroScreen) maybeLoadPizza() {
 	for {
 		line, err := buf.ReadString('\n')
 		if err == io.EOF {
-			intro.pizza = append(intro.pizza, line)
+			intro.splash = append(intro.splash, line)
 			break
 		} else if err != nil {
-			log.Panicln("Failed during reading of pizza", err)
+			log.Panicln("Failed during reading of splash", err)
 		}
-		intro.pizza = append(intro.pizza, strings.TrimRight(line, "\r\n "))
+		intro.splash = append(intro.splash, strings.TrimRight(line, "\r\n "))
 	}
 }
 
-func (intro *IntroScreen) drawPizza(window *gterm.Window) {
-	x, y := 27, 2
-	for _, line := range intro.pizza {
+func (intro *IntroScreen) drawSplash(window *gterm.Window) {
+	x, y := 0, 0
+	for _, line := range intro.splash {
 		if err := window.PutString(x, y, line, White); err != nil {
-			log.Panicln("Couldn't draw pizza", err)
+			log.Panicln("Couldn't draw splash", err)
 		}
 		y++
 	}
@@ -63,15 +63,16 @@ func (intro *IntroScreen) drawPizza(window *gterm.Window) {
 func (intro *IntroScreen) Render(window *gterm.Window) {
 	window.ClearWindow()
 
-	intro.maybeLoadPizza()
+	intro.maybeLoadSplash()
 
-	intro.drawPizza(window)
+	intro.drawSplash(window)
 
 	content := "DeliveryRL"
-	x, y := (window.Columns-len(content))/2, window.Rows/2+7
+	x, y := (window.Columns-len(content))/2-3, window.Rows-5
 	window.PutString(x, y, "DeliveryRL", LightBlue)
+	log.Printf("Drawing at %d", x)
 
 	content = "Press any key to begin..."
-	x, y = (window.Columns-len(content))/2, y+1
+	x, y = (window.Columns-len(content))/2-3, y+1
 	window.PutString(x, y, "Press any key to begin...", LightGrey)
 }

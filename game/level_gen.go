@@ -289,6 +289,38 @@ func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *Candidate
 
 	level.addItems(items.GetCollection("weapons"), MaxWeaponPlacement)
 	level.addItems(items.GetCollection("consumeables"), MaxConsumeablePlacement)
+	level.addItems(items.GetCollection("shoes"), MaxConsumeablePlacement)
 
 	return level
+}
+
+func ContourBombLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *CandidateLevel {
+	subX := rng.Bounded(uint64(maxX / 4))
+	subY := rng.Bounded(uint64(maxY / 4))
+
+	W := maxX - int(subX)
+	H := maxY - int(subY)
+
+	level := &CandidateLevel{
+		rng:   rng,
+		W:     W,
+		H:     H,
+		flags: flags,
+
+		rooms: make(map[int]*Room),
+		tiles: make([]CandidateTile, W*H, W*H),
+	}
+
+	level.drawInitialContour()
+	level.startBombing()
+
+	return level
+}
+
+func (c *CandidateLevel) drawInitialContour() {
+
+}
+
+func (c CandidateLevel) startBombing() {
+
 }
