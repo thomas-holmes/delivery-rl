@@ -1,7 +1,7 @@
 ---
   - name: "Hand Warmer"
     description: "Activate this small warming pouch to restore a small amount of heat to the pizza"
-    glyph: "*"
+    glyph: "\u0015"
     color: [200, 40, 40]
     power: 3d10+10
     kind: warmer
@@ -23,23 +23,32 @@
     kind: potion
     stacks: true
   
-  - name: "Slice of Pizza"
-    description: "A slice of pepperoni pizza."
-    glyph: '¥'
-    color: [160, 160, 20]
+  - name: "Red Pepper Flakes"
+    description: "A packet of red pepper flakes. It would burn if it got in your eyes or inhaled."
+    glyph: "\u000F"
+    color: [240, 60, 20]
+    kind: food
+    stacks: true
+
+  - name: "Garlic Butter"
+    description: "A small tub of garlic butter. It would be hard to walk over this if it were spilled"
+    glyph: "\u0009"
+    color: [250, 230, 150]
     kind: food
     stacks: true
 
   - name: "Breadstick"
     description: "A long delicious breadstick. Smells like garlic..."
-    glyph: "/"
+    glyph: '/'
     color: [245, 222, 179]
     kind: food
+    power: 2d6+4
     stacks: true
 
   - name: "Chicken Wing"
-    description: "Chicken wings. Awesome! Everyone loves chicken wings... especially the wolves"
-    glyph: "&"
+    description: "Chicken wings. Awesome! Everyone loves chicken wings... especially the wolves."
+    glyph: '√'
     color: [178, 34, 34]
     kind: food
+    power: 4d4+4
     stracks: true

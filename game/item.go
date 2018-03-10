@@ -35,6 +35,10 @@ func (i Item) CanEquip() bool {
 	return i.Kind == items.Weapon
 }
 
+func (i Item) CanThrow() bool {
+	return i.Kind == items.Food
+}
+
 func produceItem(itemDef items.Definition) Item {
 	if itemDef.Name == "" {
 		return Item{}

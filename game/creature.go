@@ -208,6 +208,23 @@ func NewPlayer() *Creature {
 		player.Inventory.Add(it)
 	}
 
+	if def, ok := items.GetCollection("consumeables").GetByName("Chicken Wing"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		player.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Garlic Butter"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		player.Inventory.Add(it)
+	}
+	if def, ok := items.GetCollection("consumeables").GetByName("Red Pepper Flakes"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		player.Inventory.Add(it)
+	}
+
 	return player
 }
 
@@ -403,7 +420,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 	case controls.Get:
 		return player.PickupItem(world)
 	case controls.Inventory:
-		menu := &InventoryPop{PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, Inventory: player.Inventory}
+		menu := &InventoryPop{World: world, PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, Inventory: player.Inventory}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Examine:

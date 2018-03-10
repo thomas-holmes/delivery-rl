@@ -36,6 +36,7 @@ var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: [
 var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}}
 var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
 var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
+var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}}
 
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
@@ -67,6 +68,7 @@ var AllMappings = []*Mapping{
 	&KeyA,
 	&KeyX,
 	&KeyG,
+	&KeyT,
 	&KeyEnter,
 	&KeyQuestion,
 	&KeyCQ,
@@ -98,6 +100,7 @@ const (
 	Inventory
 	Quaff
 	Activate
+	Throw
 	Examine
 	Get
 	Confirm

@@ -56,6 +56,8 @@ func (inventory *Inventory) RemoveItem(item Item) {
 type InventoryPop struct {
 	Inventory
 
+	*World
+
 	selectedIndex int
 	itemDetailPop ItemDetails
 
@@ -97,6 +99,11 @@ func (pop *InventoryPop) tryUseSelectedItem(action controls.Action) {
 			return
 		}
 		m.Broadcast(m.M{ID: EquipItem, Data: EquipItemMessage{item}})
+	case item.CanThrow():
+		if action != controls.Confirm && action != controls.Throw {
+			return
+		}
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewThrowPop(item, pop.World)}})
 	default:
 		return
 	}
