@@ -37,6 +37,7 @@ var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlK
 var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
 var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
 var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}}
+var KeyD = Mapping{Name: "Drop", Action: Drop, Keys: []string{"D"}, SdlKeys: []sdl.Keycode{sdl.K_d}}
 
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
@@ -69,6 +70,7 @@ var AllMappings = []*Mapping{
 	&KeyX,
 	&KeyG,
 	&KeyT,
+	&KeyD,
 	&KeyEnter,
 	&KeyQuestion,
 	&KeyCQ,
@@ -101,6 +103,7 @@ const (
 	Quaff
 	Activate
 	Throw
+	Drop
 	Examine
 	Get
 	Confirm

@@ -540,6 +540,17 @@ func (world *World) Notify(message m.M) {
 			world.SetCurrentLevel(d.DestLevelID)
 			world.AddEntityToCurrentLevel(world.Player)
 		}
+	case PlaceItem:
+		if d, ok := message.Data.(PlaceItemMessage); ok {
+			tile := world.CurrentLevel().GetTile(d.TargetX, d.TargetY)
+			if tile.Item.Kind == items.Unknown {
+				tile.Item = d.Item
+				d.Creature.Inventory.RemoveAllItem(tile.Item)
+			} else if d.Item.Stacks && tile.Item.Name == d.Item.Name {
+				tile.Item.Count += d.Item.Count
+				d.Creature.Inventory.RemoveAllItem(tile.Item)
+			}
+		}
 	case TryMoveCreature:
 		if d, ok := message.Data.(TryMoveCreatureMessage); ok {
 			d.Creature.TryMove(d.X, d.Y, world)
@@ -550,6 +561,19 @@ func (world *World) Notify(message m.M) {
 			world.MenuStack = append(world.MenuStack, d.Menu)
 		}
 	}
+}
+
+func (world *World) PlaceItem(item Item, x, y int) bool {
+	tile := world.CurrentLevel().GetTile(x, y)
+	if tile.Item.Kind == items.Unknown {
+		tile.Item = item
+		return true
+	} else if item.Stacks && tile.Item.Name == item.Name {
+		tile.Item.Count += item.Count
+		return true
+	}
+
+	return false
 }
 
 func (world *World) BuildLevels() {
@@ -585,12 +609,11 @@ func (w *World) LevelByID(id int) *Level {
 
 func NewWorld(window *gterm.Window, centered bool, rng *pcg.PCG64) *World {
 	world := &World{
-		Window:         window,
-		CameraCentered: centered,
-		MaxDepth:       MaxDepth,
-		CameraX:        0,
-		CameraY:        0,
-		// TODO: Width/Height should probably be some function of the window dimensions
+		Window:             window,
+		CameraCentered:     centered,
+		MaxDepth:           MaxDepth,
+		CameraX:            0,
+		CameraY:            0,
 		CameraWidth:        56,
 		CameraHeight:       50,
 		CurrentUpdateTicks: sdl.GetTicks(),

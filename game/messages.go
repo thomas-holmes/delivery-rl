@@ -17,6 +17,9 @@ const (
 	FoodSpoiled
 	PlayerQuaffPotion
 	PlayerActivateItem
+	PlayerThrowItem
+	PlayerDropItem
+	PlaceItem
 	TryMoveCreature
 )
 
@@ -68,6 +71,30 @@ type PlayerQuaffPotionMessage struct {
 
 type PlayerActivateItemMessage struct {
 	Item Item
+}
+
+type PlayerThrowItemMessage struct {
+	Item
+
+	TargetX int
+	TargetY int
+
+	*World
+}
+
+type PlayerDropItemMessage struct {
+	Item
+
+	*World
+}
+
+type PlaceItemMessage struct {
+	Item
+
+	*Creature
+
+	TargetX int
+	TargetY int
 }
 
 type TryMoveCreatureMessage struct {

@@ -364,6 +364,20 @@ func (creature *Creature) ActivateItem(item Item) {
 	creature.Inventory.RemoveItem(item)
 }
 
+func (creature *Creature) DropItem(item Item, world *World) {
+	if world.PlaceItem(item, creature.X, creature.Y) {
+		creature.CompletedExternalAction = true
+		gl.Append("Dropped %d %s", item.Count, item.Name)
+		creature.Inventory.RemoveAllItem(item)
+	} else {
+		gl.Append("Could not drop %s, there was no room")
+	}
+}
+
+func (creature *Creature) ThrowItem(m PlayerThrowItemMessage) {
+
+}
+
 // HandleInput updates player position based on user input
 func (player *Creature) HandleInput(input controls.InputEvent, world *World) bool {
 	newX := player.X
@@ -526,6 +540,14 @@ func (creature *Creature) Notify(message m.M) {
 	case PlayerActivateItem:
 		if d, ok := message.Data.(PlayerActivateItemMessage); ok {
 			creature.ActivateItem(d.Item)
+		}
+	case PlayerThrowItem:
+		if d, ok := message.Data.(PlayerThrowItemMessage); ok {
+			creature.ThrowItem(d)
+		}
+	case PlayerDropItem:
+		if d, ok := message.Data.(PlayerDropItemMessage); ok {
+			creature.DropItem(d.Item, d.World)
 		}
 	}
 }

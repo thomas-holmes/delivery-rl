@@ -39,6 +39,15 @@ func (inventory *Inventory) Add(item Item) {
 	*inventory = append(*inventory, item)
 }
 
+func (inventory *Inventory) RemoveAllItem(item Item) {
+	for i, it := range *inventory {
+		if it.Name == item.Name {
+			*inventory = append((*inventory)[:i], (*inventory)[i+1:]...)
+			return
+		}
+	}
+}
+
 func (inventory *Inventory) RemoveItem(item Item) {
 	for i, it := range *inventory {
 		if it.Name == item.Name {
@@ -111,6 +120,16 @@ func (pop *InventoryPop) tryUseSelectedItem(action controls.Action) {
 	pop.done = true
 }
 
+func (pop *InventoryPop) tryDropItem() {
+	selectedItem, ok := pop.selectedItem()
+	if ok {
+		// x, y := pop.Player.X, pop.Player.Y
+		//m.Broadcast(m.M{ID: PlaceItem, Data: PlaceItemMessage{Creature: pop.World.Player, Item: selectedItem, TargetX: x, TargetY: y}})
+		m.Broadcast(m.M{ID: PlayerDropItem, Data: PlayerDropItemMessage{World: pop.World, Item: selectedItem}})
+		pop.done = true
+	}
+}
+
 func (pop *InventoryPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
 	action := input.Action()
@@ -127,6 +146,8 @@ func (pop *InventoryPop) Update(input controls.InputEvent) {
 		pop.adjustSelection(-len(pop.Inventory))
 	case controls.Bottom:
 		pop.adjustSelection(len(pop.Inventory))
+	case controls.Drop:
+		pop.tryDropItem()
 	case controls.Confirm, controls.Quaff, controls.Activate, controls.Equip:
 		pop.tryUseSelectedItem(action)
 	}
