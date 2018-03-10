@@ -111,7 +111,7 @@ func configureMonstersRepository() {
 
 func main() {
 	// Disable FPS limit, generally, so I can monitor performance.
-	window := gterm.NewWindow(100, 30, path.Join("assets", "font", "MorePerfectDOSVGA.ttf"), FontSize, FontScale, !NoVSync)
+	window := gterm.NewWindow(100, 60, Font, FontW, FontH, !NoVSync)
 
 	pcgRng := pcg.NewPCG64()
 	seed := uint64(Seed)
@@ -168,15 +168,17 @@ func main() {
 
 var NoVSync = true
 var Seed int64
-var FontScale float64
-var FontSize int
+var Font string
+var FontW int
+var FontH int
 
 func init() {
 	go http.ListenAndServe("localhost:6060", nil)
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", time.Now().UnixNano(), "Provide a seed for launching the game")
-	flag.IntVar(&FontSize, "font-size", 32, "Set font size")
-	flag.Float64Var(&FontScale, "font-scale", 0.8, "Multiplier to scale font size")
+	flag.StringVar(&Font, "font-path", "assets/font/cp437_16x16.png", "Set font relative file path")
+	flag.IntVar(&FontW, "font-width", 16, "pixel width per character")
+	flag.IntVar(&FontH, "font-height", 16, "pixel height per character")
 	flag.Parse()
 	log.Println("Starting game with seed", Seed)
 }

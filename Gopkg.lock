@@ -10,17 +10,31 @@
 [[projects]]
   name = "github.com/thomas-holmes/gterm"
   packages = ["."]
-  revision = "f784b83baec040e2f40f6c5f93cd9c11c0c87971"
-  version = "v0.2.5"
+  revision = "358c330baddf16e8c0492b1d0b04cd297cdb164b"
+  version = "v0.3.0"
 
 [[projects]]
   name = "github.com/veandco/go-sdl2"
   packages = [
-    "sdl",
-    "ttf"
+    "img",
+    "sdl"
   ]
   revision = "30f30965227962032c13bd0b12a89e6a5107c768"
   version = "v0.2"
+
+[[projects]]
+  name = "golang.org/x/text"
+  packages = [
+    "encoding",
+    "encoding/charmap",
+    "encoding/internal",
+    "encoding/internal/identifier",
+    "internal/gen",
+    "transform",
+    "unicode/cldr"
+  ]
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "v2"
@@ -31,6 +45,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "13333ab52f33edd3a232c1c5257020b59488bcbf52ede3a6015a25af5a27f7c6"
+  inputs-digest = "884b2191ebc35b8f64f55fa40251edff2835ba7abfab416a2fb95a9de16e38d2"
   solver-name = "gps-cdcl"
   solver-version = 1
