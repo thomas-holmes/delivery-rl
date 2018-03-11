@@ -490,7 +490,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 	case controls.Get:
 		return player.PickupItem(world)
 	case controls.Inventory:
-		menu := &InventoryPop{World: world, PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, Inventory: player.Inventory}
+		menu := &InventoryPop{World: world, PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: 30}, Inventory: player.Inventory}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Examine:

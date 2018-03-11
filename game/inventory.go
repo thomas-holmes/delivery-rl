@@ -188,7 +188,7 @@ func (pop *InventoryPop) Render(window *gterm.Window) {
 	}
 
 	if item, ok := pop.selectedItem(); ok {
-		menu := ItemDetails{PopMenu: PopMenu{X: pop.X + pop.W, Y: pop.Y, W: 30, H: 26}, Item: item}
+		menu := ItemDetails{PopMenu: PopMenu{X: pop.X + pop.W, Y: pop.Y, W: 30, H: 30}, Item: item}
 		menu.Render(window)
 	}
 	pop.DrawBox(window, White)
