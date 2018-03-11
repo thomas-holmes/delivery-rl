@@ -37,8 +37,6 @@ func filterActionableEvents(input controls.InputEvent) controls.InputEvent {
 	return controls.InputEvent{Event: nil}
 }
 
-var showFPS = true
-
 var testMessageCount = 1
 
 func handleInput(input controls.InputEvent, world *World) {
@@ -48,14 +46,7 @@ func handleInput(input controls.InputEvent, world *World) {
 		case sdl.K_BACKSLASH:
 			world.ToggleScentOverlay()
 		case sdl.K_F12:
-			showFPS = !showFPS
-			world.Window.ShouldRenderFps(showFPS)
-		case sdl.K_F10:
-			gl.Append("This is a test message %d", testMessageCount)
-			testMessageCount++
-		case sdl.K_F11:
-			gl.Append("This is a test very long message, its number is %d so you can figure it out", testMessageCount)
-			testMessageCount++
+			log.Printf("\n%s", GenLevel(world.rng, 72, 72, 1, GenUpStairs|GenDownStairs).encodeAsString())
 		}
 		world.Input = input
 	case sdl.QuitEvent:
@@ -110,7 +101,6 @@ func configureMonstersRepository() {
 }
 
 func main() {
-	// Disable FPS limit, generally, so I can monitor performance.
 	window := gterm.NewWindow(100, 60, Font, FontW, FontH, !NoVSync)
 
 	pcgRng := pcg.NewPCG64()
@@ -128,7 +118,6 @@ func main() {
 	configureMonstersRepository()
 
 	seedDice(pcgRng)
-	window.ShouldRenderFps(showFPS)
 	world := MakeNewWorld(window, pcgRng)
 
 	hud := NewHud(world.Player, world, 65, 2)

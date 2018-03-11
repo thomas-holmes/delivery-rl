@@ -59,13 +59,17 @@ func (level *CandidateLevel) genNextRoomID() int {
 func (c *CandidateLevel) chooseStairs() (Position, Position) {
 	diagonalDistance := distance(Position{X: 0, Y: 0}, Position{X: c.W - 1, Y: c.H - 1})
 
+	shuffle(c.rng, len(c.stairCandidates), func(i, j int) {
+		c.stairCandidates[i], c.stairCandidates[j] = c.stairCandidates[j], c.stairCandidates[i]
+	})
+
 	for _, p1 := range c.stairCandidates {
 		for _, p2 := range c.stairCandidates {
 			if p1 == p2 {
 				continue
 			}
 
-			if distance(p1, p2) > diagonalDistance/3 {
+			if distance(p1, p2) > diagonalDistance/2 {
 				return p1, p2
 			}
 		}
@@ -111,12 +115,14 @@ func (level *CandidateLevel) encodeAsString() string {
 			case Wall:
 				levelStr += string(WallGlyph)
 			case Floor:
-				item := level.tiles[y*level.W+x].Item
-				if item != (Item{}) {
-					levelStr += string(item.Symbol)
-				} else {
-					levelStr += string(FloorGlyph)
-				}
+				/*
+					item := level.tiles[y*level.W+x].Item
+					if item != (Item{}) {
+						levelStr += string(item.Symbol)
+					} else {
+				*/
+				levelStr += string(FloorGlyph)
+				//}
 			case DownStair:
 				levelStr += string(DownStairGlyph)
 			case UpStair:
@@ -180,10 +186,10 @@ func (c *CandidateLevel) drawInitialContour() {
 		var rightX, rightY int
 
 		leftX = int(c.rng.Bounded(4) + 3)
-		leftY = int(c.rng.Bounded(uint64(c.H)-1)) + 1
+		leftY = int(c.rng.Bounded(uint64(c.H)-3)) + 2
 
 		rightX = (c.W - 1) - int(c.rng.Bounded(4)+3)
-		rightY = int(c.rng.Bounded(uint64(c.H)-1)) + 1
+		rightY = int(c.rng.Bounded(uint64(c.H)-3)) + 2
 
 		for _, pos := range PlotLine(leftX, leftY, rightX, rightY) {
 			index := pos.Y*c.W + pos.X
@@ -198,10 +204,10 @@ func (c *CandidateLevel) drawInitialContour() {
 		var topX, topY int
 		var botX, botY int
 
-		topX = int(c.rng.Bounded(uint64(c.W)-1)) + 1
+		topX = int(c.rng.Bounded(uint64(c.W)-3)) + 2
 		topY = int(c.rng.Bounded(4) + 3)
 
-		botX = int(c.rng.Bounded(uint64(c.W)-1)) + 1
+		botX = int(c.rng.Bounded(uint64(c.W)-3)) + 2
 		botY = (c.H - 1) - int(c.rng.Bounded(4)+3)
 
 		for _, pos := range PlotLine(topX, topY, botX, botY) {
@@ -263,10 +269,10 @@ func (c *CandidateLevel) startBombing() {
 		tileX, tileY := tile.X, tile.Y
 		tileStack = append(tileStack[:index], tileStack[index+1:]...)
 
-		minX := max(1, tileX-radius)
-		minY := max(1, tileY-radius)
-		maxX := min(c.W-2, tileX+radius)
-		maxY := min(c.H-2, tileY+radius)
+		minX := max(2, tileX-radius)
+		minY := max(2, tileY-radius)
+		maxX := min(c.W-3, tileX+radius)
+		maxY := min(c.H-3, tileY+radius)
 
 		for y := minY; y <= maxY; y++ {
 			for x := minX; x <= maxX; x++ {
