@@ -397,7 +397,6 @@ func (creature *Creature) DropItem(item Item, world *World) {
 }
 func (creature *Creature) ThrowItem(throwMessage PlayerThrowItemMessage) {
 	if ThrowItem(creature, throwMessage.World, throwMessage.Item, throwMessage.TargetX, throwMessage.TargetY) {
-		log.Printf("Throwing this thing %+v", throwMessage.Item)
 		creature.CompletedExternalAction = true
 	}
 }

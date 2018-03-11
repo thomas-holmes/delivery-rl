@@ -18,7 +18,6 @@ func (level *Level) AddCreature(c *Creature) {
 			if !t.IsWall() && !(t.Creature != nil) {
 				c.X = t.X
 				c.Y = t.Y
-				log.Printf("Creature position adjusted to (%v,%v)", c.X, c.Y)
 				break
 			}
 		}

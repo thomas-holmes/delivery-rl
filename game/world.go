@@ -171,14 +171,11 @@ func (world *World) addCreature(creature *Creature, level *Level) {
 	level.AddCreature(creature)
 
 	if creature.IsPlayer {
-		log.Printf("Adding the player")
 		world.addPlayer(creature, level)
-		log.Printf("%+v", level.Entities)
 	}
 }
 
 func (world *World) AddEntityToCurrentLevel(e Entity) {
-	log.Printf("Adding an entity (%v) to (%v)", e.Identity(), world.CurrentLevelID)
 	world.AddEntity(e, world.CurrentLevelID)
 }
 
@@ -186,9 +183,7 @@ func (world *World) AddEntity(e Entity, levelID int) {
 	level := world.LevelByID(levelID)
 	if e.Identity() == 0 {
 		e.SetIdentity(world.GetNextID())
-		log.Printf("giving it an ID! %v", e.Identity())
 	}
-	log.Printf("Adding entity %+v", e)
 
 	if c, ok := e.(*Creature); ok {
 		world.addCreature(c, level)
@@ -388,7 +383,6 @@ var ScentColors = []sdl.Color{
 }
 
 func (world *World) ToggleScentOverlay() {
-	log.Printf("Scent Map Toggle pointer: %p", world.CurrentLevel().ScentMap)
 	world.showScentOverlay = !world.showScentOverlay
 }
 
@@ -552,7 +546,6 @@ func (world *World) Notify(message m.M) {
 		}
 	case ShowMenu:
 		if d, ok := message.Data.(ShowMenuMessage); ok {
-			log.Printf("World: %T %+v", d.Menu, d.Menu)
 			world.MenuStack = append(world.MenuStack, d.Menu)
 		}
 	}

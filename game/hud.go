@@ -39,7 +39,13 @@ func (hud *HUD) GetNextRow() int {
 }
 
 func (hud *HUD) renderPlayerName(world *World) {
-	world.Window.PutString(hud.X+1, hud.GetNextRow(), world.Player.Name, White)
+	content := world.Player.Name
+	color := White
+	if world.Player.HP.Current <= 0 {
+		content += " *DEAD*"
+		color = Red
+	}
+	world.Window.PutString(hud.X+1, hud.GetNextRow(), content, color)
 }
 
 func (hud *HUD) renderPlayerPosition(world *World) {
@@ -90,9 +96,6 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 
 	label := "Health:"
 	hp := fmt.Sprintf("%v/%v", hud.Player.HP.Current, hud.Player.HP.Max)
-	if hud.Player.HP.Current == 0 {
-		hp += " *DEAD*"
-	}
 
 	row := hud.GetNextRow()
 	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {
@@ -126,9 +129,6 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 
 	label := "Stamina:"
 	st := fmt.Sprintf("%v/%v", hud.Player.ST.Current, hud.Player.ST.Max)
-	if hud.Player.HP.Current == 0 {
-		st += " *DEAD*"
-	}
 
 	row := hud.GetNextRow()
 	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {
@@ -162,9 +162,6 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 
 	label := "Heat:"
 	ht := fmt.Sprintf("%v/%v", hud.Player.HT.Current, hud.Player.HT.Max)
-	if hud.Player.HP.Current == 0 {
-		ht += " *DEAD*"
-	}
 
 	row := hud.GetNextRow()
 	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {

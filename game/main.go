@@ -40,14 +40,8 @@ func filterActionableEvents(input controls.InputEvent) controls.InputEvent {
 var testMessageCount = 1
 
 func handleInput(input controls.InputEvent, world *World) {
-	switch e := input.Event.(type) {
+	switch input.Event.(type) {
 	case sdl.KeyDownEvent:
-		switch e.Keysym.Sym {
-		case sdl.K_BACKSLASH:
-			world.ToggleScentOverlay()
-		case sdl.K_F12:
-			log.Printf("\n%s", GenLevel(world.rng, 72, 72, 1, GenUpStairs|GenDownStairs).encodeAsString())
-		}
 		world.Input = input
 	case sdl.QuitEvent:
 		quit = true
