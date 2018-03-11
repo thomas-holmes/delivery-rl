@@ -303,7 +303,10 @@ func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *Candidate
 
 	level.addItems(items.GetCollection("weapons"), MaxWeaponPlacement)
 	level.addItems(items.GetCollection("consumeables"), MaxConsumeablePlacement)
+
+	/* I'm not sure if I'm going to have time to implement these
 	level.addItems(items.GetCollection("shoes"), MaxConsumeablePlacement)
+	*/
 
 	return level
 }
