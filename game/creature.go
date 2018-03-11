@@ -693,13 +693,15 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 			result, data := monster.TryMove(choice.X, choice.Y, world)
 			switch result {
 			case MoveIsInvalid:
-				log.Printf("Invalid? %+v", choice)
 				continue
 			case MoveIsFood:
-				log.Printf("MOVE IS FOOD! %+v", choice)
 				tile := world.CurrentLevel().GetTile(choice.X, choice.Y)
 				if dice.Roll(tile.Item.Power) == 1 {
 					tile.Item.Count--
+					gl.Append("%s eats a whole %s!", monster.Name, tile.Item.Name)
+				} else {
+
+					gl.Append("%s takes a bite out of a %s!", monster.Name, tile.Item.Name)
 				}
 				if tile.Item.Count == 0 {
 					tile.Item = Item{}
