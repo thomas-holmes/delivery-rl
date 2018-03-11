@@ -10,12 +10,14 @@ import (
 func QuaffPotion(creature *Creature, potion Item) {
 	power := dice.Roll(potion.Power)
 	switch potion.Name {
-	case "Health Potion":
+	case "Healing Potion":
 		gl.Append("%s quaffs a %s and regains %d health!", creature.Name, potion.Name, power)
 		creature.Heal(power)
-	case "Power Potion":
-		gl.Append("%s quaffs a %s and gains %d max health!", creature.Name, potion.Name, power)
+	case "Heroism Potion":
 		creature.BoostMaxHP(power)
+		stGain := max(1, (dice.Roll(potion.Power))/2)
+		creature.BoostMaxST(stGain)
+		gl.Append("%s quaffs a %s and gains %d max HP and %d max ST!", creature.Name, potion.Name, power, stGain)
 	}
 }
 

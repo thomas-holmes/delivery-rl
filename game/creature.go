@@ -208,6 +208,39 @@ func NewCreature(level int, maxHP int) *Creature {
 	}
 }
 
+func (p *Creature) AddStartingItems() {
+	p.AddStartingItems()
+	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		p.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Chicken Wing"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		p.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Garlic Butter"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		p.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Red Pepper Flakes"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		p.Inventory.Add(it)
+	}
+
+	if def, ok := items.GetCollection("consumeables").GetByName("Breadstick"); ok {
+		it := produceItem(def)
+		it.Count = 5
+		p.Inventory.Add(it)
+	}
+}
+
 func NewPlayer() *Creature {
 	player := NewCreature(1, 20)
 	player.Team = PlayerTeam
@@ -216,39 +249,13 @@ func NewPlayer() *Creature {
 	player.IsPlayer = true
 	player.Spells = DefaultSpells
 	player.VisionDistance = 12
+	player.HP.RegenRate = 0.15
+	player.ST = Resource{Current: 4, Max: 4, RegenRate: 0.10}
 	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.2}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
-	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		player.Inventory.Add(it)
-	}
-
-	if def, ok := items.GetCollection("consumeables").GetByName("Chicken Wing"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		player.Inventory.Add(it)
-	}
-
-	if def, ok := items.GetCollection("consumeables").GetByName("Garlic Butter"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		player.Inventory.Add(it)
-	}
-
-	if def, ok := items.GetCollection("consumeables").GetByName("Red Pepper Flakes"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		player.Inventory.Add(it)
-	}
-
-	if def, ok := items.GetCollection("consumeables").GetByName("Breadstick"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		player.Inventory.Add(it)
-	}
+	player.AddStartingItems()
 
 	return player
 }
@@ -275,10 +282,14 @@ func (player *Creature) LevelUp() {
 	gl.Append("You are now level %d", player.Level)
 }
 
+const HasLevelUps bool = false
+
 func (player *Creature) GainExp(exp int) {
-	player.Experience += exp
-	if player.Experience >= player.NextLevelCost() {
-		player.LevelUp()
+	if HasLevelUps {
+		player.Experience += exp
+		if player.Experience >= player.NextLevelCost() {
+			player.LevelUp()
+		}
 	}
 }
 
@@ -296,6 +307,11 @@ func (player *Creature) Heal(amount int) {
 func (player *Creature) BoostMaxHP(amount int) {
 	player.HP.Max += amount
 	player.HP.Current += amount
+}
+
+func (player *Creature) BoostMaxST(amount int) {
+	player.ST.Max += amount
+	player.ST.Current += amount
 }
 
 func (player *Creature) RestoreHeat(amount int) {

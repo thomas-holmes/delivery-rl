@@ -179,7 +179,7 @@ func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
 	level.Rows = candidate.H
 	level.Tiles = tiles
 	level.Stairs = stairs
-	level.MonsterDensity = 10
+	level.MonsterDensity = 30
 
 	level.VisionMap = NewVisionMap(level.Columns, level.Rows)
 	level.ScentMap = NewScentMap(level.Columns, level.Rows)

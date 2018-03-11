@@ -31,20 +31,21 @@ type Spell struct {
 }
 
 var DefaultSpells = []Spell{
-	// Hits 1
-	Spell{Name: "Fire Bolt", Description: "Launches a small ball of fire at an oponnent", Range: 8, Power: 2, Cost: 1, Shape: Square, Size: 0, Hits: 1},
+	/*
+		// Hits 1
+		Spell{Name: "Fire Bolt", Description: "Launches a small ball of fire at an oponnent", Range: 8, Power: 2, Cost: 1, Shape: Square, Size: 0, Hits: 1},
 
-	// Hits 1, 3 times
-	Spell{Name: "Magic Missile", Description: "Fires 3 magic missiles, which are guaranteed to strike their target", Range: 8, Power: 1, Cost: 2, Shape: Square, Size: 0, Hits: 3},
+		// Hits 1, 3 times
+		Spell{Name: "Magic Missile", Description: "Fires 3 magic missiles, which are guaranteed to strike their target", Range: 8, Power: 1, Cost: 2, Shape: Square, Size: 0, Hits: 3},
 
-	// Hits 7 wide cone
-	Spell{Name: "Cone of Cold", Description: "A cone of ice extends from your hands, damaging and chilling all in front of you", Range: 1, Power: 3, Cost: 3, Shape: Cone, Size: 3, Hits: 1},
+		// Hits 7 wide cone
+		Spell{Name: "Cone of Cold", Description: "A cone of ice extends from your hands, damaging and chilling all in front of you", Range: 1, Power: 3, Cost: 3, Shape: Cone, Size: 3, Hits: 1},
 
-	// Hits 5x5
-	Spell{Name: "Fire Ball", Description: "Hurls a large ball of fire at a group of oponnents", Range: 8, Power: 4, Cost: 4, Shape: Square, Size: 2, Hits: 1},
-
+		// Hits 5x5
+		Spell{Name: "Fire Ball", Description: "Hurls a large ball of fire at a group of oponnents", Range: 8, Power: 4, Cost: 4, Shape: Square, Size: 2, Hits: 1},
+	*/
 	// Movement Spell
-	Spell{Name: "Blink", Description: "Teleport to a nearby unoccupied space you can see", Range: 8, Power: 0, Cost: 1, Shape: Point, Size: 1, Hits: 0},
+	Spell{Name: "Dash", Description: "Teleport to a nearby unoccupied space you can see", Range: 8, Power: 4, Cost: 1, Shape: Point, Size: 1, Hits: 0},
 }
 
 type SpellPop struct {

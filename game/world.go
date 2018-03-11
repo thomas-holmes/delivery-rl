@@ -145,7 +145,6 @@ func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
 	if levels > 1 {
 		connectTwoLevels(&world.Levels[levelIndex-1], &world.Levels[levelIndex])
 	}
-	log.Println("Adding monsters to level with depth", world.Levels[levelIndex].Depth)
 	world.addInitialMonsters(&world.Levels[levelIndex])
 
 	if levels == world.MaxDepth {
