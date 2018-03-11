@@ -32,7 +32,7 @@ func (i Item) CanActivate() bool {
 }
 
 func (i Item) CanEquip() bool {
-	return i.Kind == items.Weapon
+	return i.Kind == items.Weapon || i.Kind == items.Armour
 }
 
 func (i Item) CanThrow() bool {

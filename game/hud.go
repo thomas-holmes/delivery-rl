@@ -197,12 +197,24 @@ func (hud *HUD) renderTurnCount(world *World) {
 func (hud *HUD) renderEquippedWeapon(world *World) {
 	equipName := hud.Player.Equipment.Weapon.Name
 
+	hud.nextFreeRow++
 	offsetY := hud.GetNextRow()
 	offsetX := hud.X + 1
 
-	weaponStr := fmt.Sprintf("Weapon: %v", equipName)
+	weaponStr := fmt.Sprintf("Weapon: %s (%s)", equipName, hud.Player.Equipment.Weapon.Power.String())
 
-	hud.nextFreeRow += putWrappedText(world.Window, weaponStr, offsetX, offsetY, 0, 2, world.Window.Columns-offsetX, White)
+	hud.nextFreeRow += (putWrappedText(world.Window, weaponStr, offsetX, offsetY, 0, 2, world.Window.Columns-offsetX, White) - 1)
+}
+
+func (hud *HUD) renderEquippedArmour(world *World) {
+	equipName := hud.Player.Equipment.Armour.Name
+
+	offsetY := hud.GetNextRow()
+	offsetX := hud.X + 1
+
+	armourStr := fmt.Sprintf("Armour: %s (%s)", equipName, hud.Player.Equipment.Armour.Power.String())
+
+	hud.nextFreeRow += putWrappedText(world.Window, armourStr, offsetX, offsetY, 0, 2, world.Window.Columns-offsetX, White)
 }
 
 func (hud *HUD) renderItemDisplay(world *World) {
@@ -245,5 +257,6 @@ func (hud *HUD) Render(world *World) {
 	hud.renderPlayerLevel(world)
 	hud.renderTurnCount(world)
 	hud.renderEquippedWeapon(world)
+	hud.renderEquippedArmour(world)
 	hud.renderItemDisplay(world)
 }

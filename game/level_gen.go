@@ -45,8 +45,9 @@ const (
 	MaxRoomWidth            = 20
 	MaxRoomHeight           = 20
 	MaxRoomIterations       = 200
-	MaxWeaponPlacement      = 10 // Let's go overboard at first.
-	MaxConsumeablePlacement = 10
+	MaxWeaponPlacement      = 5
+	MaxConsumeablePlacement = 20
+	MaxArmourPlacement      = 5
 )
 
 func (level *CandidateLevel) genNextRoomID() int {
@@ -306,6 +307,7 @@ func GenLevel(rng *pcg.PCG64, maxX int, maxY int, depth int, flags LevelGenFlag)
 
 	level.addItems(items.GetCollection("weapons"), MaxWeaponPlacement)
 	level.addItems(items.GetCollection("consumeables"), MaxConsumeablePlacement)
+	level.addItems(items.GetCollection("armour"), MaxArmourPlacement)
 
 	return level
 }

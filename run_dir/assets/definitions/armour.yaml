@@ -1,0 +1,48 @@
+---
+  - name: "Worn Boots"
+    description: "Some worn leather boots. They might protect you from vermin."
+    glyph: "τ"
+    color: [250, 240, 200]
+    power: 1d2
+    level: 1
+    kind: armour
+
+  - name: "Wooden Shield"
+    description: "Effective against slightly larger foes, this wooden shield might just help you survive!"
+    glyph: "Θ"
+    color: [182, 155, 76]
+    level: 2
+    power: 1d5
+    kind: armour
+
+  - name: "Bronze Shield"
+    description: "A sturdy bronze shield. While its owner didn't survive, maybe you will fare better."
+    glyph: "Θ"
+    color: [205, 127, 50]
+    level: 3
+    power: 1d8
+    kind: armour
+
+  - name: "Leather Jerkin"
+    description: "A leather shirt, only slightly bloodied. It looks like it offers decent protection."
+    glyph: "Ω"
+    color: [68, 55, 36]
+    level: 4
+    power: 2d3+2
+    kind: armour
+
+  - name: "Tower Shield"
+    description: "A large metal shield, ideal for deflecting all types of oncoming attacks."
+    glyph: "Θ"
+    level: 6
+    color: [68, 55, 36]
+    power: 5d2+2
+    kind: armour
+
+  - name: "Breastplate"
+    description: "A solid steel breastplate. You don't think you could get much more protected than this."
+    glyph: "Ω"
+    color: [68, 55, 36]
+    level: 7
+    power: 2d8+2
+    kind: armour

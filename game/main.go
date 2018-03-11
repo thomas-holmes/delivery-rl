@@ -94,7 +94,7 @@ func configureItemsRepository() {
 		log.Fatalln("Could not configure items repository", err)
 	}
 
-	if err := items.EnsureLoaded("consumeables", "weapons", "shoes", "natural_weapons"); err != nil {
+	if err := items.EnsureLoaded("consumeables", "weapons", "armour", "natural_weapons"); err != nil {
 		log.Fatalln("Failed to load all item repositories", err)
 	}
 }

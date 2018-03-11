@@ -245,6 +245,8 @@ func (p *Creature) AddStartingItems() {
 		it.Count = 5
 		p.Inventory.Add(it)
 	}
+
+	p.Equipment.Armour = TShirt
 }
 
 func NewPlayer() *Creature {
@@ -575,14 +577,22 @@ func (creature *Creature) Notify(message m.M) {
 		if d, ok := message.Data.(EquipItemMessage); ok {
 			creature.CompletedExternalAction = true
 
-			// Put it back in my inventory
-			if creature.Equipment.Weapon.Name != "Bare Hands" {
-				creature.Inventory.Add(creature.Equipment.Weapon)
-			}
+			switch d.Item.Kind {
+			case items.Weapon:
+				// Put it back in my inventory
+				if creature.Equipment.Weapon.Name != "Bare Hands" {
+					creature.Inventory.Add(creature.Equipment.Weapon)
+				}
 
-			creature.Equipment.Weapon = d.Item
-			gl.Append("%s equips %s", creature.Name, d.Item.Name)
-			creature.Inventory.RemoveItem(d.Item)
+				creature.Equipment.Weapon = d.Item
+				gl.Append("%s equips %s", creature.Name, d.Item.Name)
+				creature.Inventory.RemoveItem(d.Item)
+			case items.Armour:
+				creature.Inventory.Add(creature.Equipment.Armour)
+				creature.Equipment.Armour = d.Item
+				gl.Append("%s equips %s", creature.Name, d.Item.Name)
+				creature.Inventory.RemoveItem(d.Item)
+			}
 		}
 	case PlayerQuaffPotion:
 		if d, ok := message.Data.(PlayerQuaffPotionMessage); ok {
