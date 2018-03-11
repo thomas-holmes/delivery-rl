@@ -20,6 +20,7 @@ const (
 	PlayerThrowItem
 	PlayerDropItem
 	PlaceItem
+	SplashGrease
 	TryMoveCreature
 )
 
@@ -95,6 +96,13 @@ type PlaceItemMessage struct {
 
 	TargetX int
 	TargetY int
+}
+
+type SplashGreaseMessage struct {
+	Item
+
+	X int
+	Y int
 }
 
 type TryMoveCreatureMessage struct {

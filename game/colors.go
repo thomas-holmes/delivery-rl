@@ -13,3 +13,5 @@ var Black = sdl.Color{R: 0, G: 0, B: 0, A: 255}
 var Purple = sdl.Color{R: 200, G: 0, B: 200, A: 255}
 var Blue = sdl.Color{R: 0, G: 0, B: 200, A: 255}
 var LightBlue = sdl.Color{R: 215, G: 215, B: 255, A: 255}
+
+var GarlicGrease = sdl.Color{R: 250, G: 230, B: 150, A: 255}

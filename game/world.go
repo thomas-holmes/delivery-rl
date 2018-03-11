@@ -541,6 +541,7 @@ func (world *World) Notify(message m.M) {
 			world.AddEntityToCurrentLevel(world.Player)
 		}
 	case PlaceItem:
+		// TODO: Remove this
 		if d, ok := message.Data.(PlaceItemMessage); ok {
 			tile := world.CurrentLevel().GetTile(d.TargetX, d.TargetY)
 			if tile.Item.Kind == items.Unknown {
@@ -554,6 +555,10 @@ func (world *World) Notify(message m.M) {
 	case TryMoveCreature:
 		if d, ok := message.Data.(TryMoveCreatureMessage); ok {
 			d.Creature.TryMove(d.X, d.Y, world)
+		}
+	case SplashGrease:
+		if d, ok := message.Data.(SplashGreaseMessage); ok {
+			world.SplashGrease(d.Item, d.X, d.Y)
 		}
 	case ShowMenu:
 		if d, ok := message.Data.(ShowMenuMessage); ok {
@@ -597,6 +602,21 @@ func (world *World) PlaceItemAround(item Item, x, y int) bool {
 	}
 
 	return false
+}
+
+func (world *World) SplashGrease(item Item, x, y int) {
+	cols, rows := world.CurrentLevel().Columns, world.CurrentLevel().Rows
+	minX, maxX := max(0, x-1), min(cols-1, x+1)
+	minY, maxY := max(0, y-1), min(rows-1, y+1)
+
+	for iy := minY; iy <= maxY; iy++ {
+		for ix := minX; ix <= maxX; ix++ {
+			tile := world.CurrentLevel().GetTile(ix, iy)
+			if tile.TileKind == Floor {
+				tile.TileEffect = Greasy
+			}
+		}
+	}
 }
 
 func (world *World) BuildLevels() {

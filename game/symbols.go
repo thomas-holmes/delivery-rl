@@ -15,3 +15,5 @@ var rightArrow = rune(16) // 0x25BA ►
 var partialBlockLeft = rune('▌')  // 0x258C
 var partialBlockRight = rune('▐') // 0x2590
 var fullBlock = rune('█')         // 0x2588
+
+var grease = rune('≈')

@@ -14,6 +14,14 @@ const (
 	DownStair
 )
 
+type TileEffect int
+
+const (
+	None TileEffect = iota
+	Greasy
+	Peppery
+)
+
 const (
 	WallGlyph      = '#'
 	FloorGlyph     = '.'
@@ -55,6 +63,8 @@ type Tile struct {
 
 	TileGlyph rune
 	TileKind
+
+	TileEffect
 }
 
 func (tile Tile) IsWall() bool {
@@ -76,10 +86,22 @@ func (tile *Tile) Render(world *World, visibility Visibility) {
 func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 	var glyph rune
 	var color sdl.Color
+	renderFloor := true
+	if visibility == Visible {
+		switch tile.TileEffect {
+		case Greasy:
+			glyph = grease
+			color = GarlicGrease
+			color.A /= 2
+			renderFloor = false
+			world.RenderRuneAt(tile.X, tile.Y, glyph, color, gterm.NoColor)
+		}
+	}
 
 	if tile.Item.Symbol != 0 {
 		glyph = tile.Item.Symbol
 		color = tile.Item.Color
+		renderFloor = true
 	} else {
 		glyph = tile.TileGlyph
 		color = tile.Color
@@ -91,5 +113,7 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 		color.B /= 2
 	}
 
-	world.RenderRuneAt(tile.X, tile.Y, glyph, color, gterm.NoColor)
+	if renderFloor {
+		world.RenderRuneAt(tile.X, tile.Y, glyph, color, gterm.NoColor)
+	}
 }
