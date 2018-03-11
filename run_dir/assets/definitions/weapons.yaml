@@ -42,7 +42,7 @@
   - name: "Maul"
     description: "This giant hammer is perfect for crushing!"
     glyph: ')'
-    color: [180, 230, 180]
+    color: [185, 45, 160]
     power: 3d6+2 # 12.5
     level: 6
     kind: weapon

@@ -216,12 +216,6 @@ func NewCreature(level int, maxHP int) *Creature {
 }
 
 func (p *Creature) AddStartingItems() {
-	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
-		it := produceItem(def)
-		it.Count = 5
-		p.Inventory.Add(it)
-	}
-
 	if def, ok := items.GetCollection("consumeables").GetByName("Chicken Wing"); ok {
 		it := produceItem(def)
 		it.Count = 5
@@ -258,7 +252,7 @@ func NewPlayer() *Creature {
 	player.VisionDistance = 12
 	player.HP.RegenRate = 0.15
 	player.ST = Resource{Current: 4, Max: 4, RegenRate: 0.10}
-	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.1}
+	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.10}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
@@ -427,9 +421,9 @@ func (creature *Creature) HasStatus(effect StatusEffect) bool {
 
 func (creature *Creature) ApplyStatusEffect(effect StatusEffect) {
 	if remaining, ok := creature.Effects[effect]; ok {
-		creature.Effects[effect] = remaining + 5
+		creature.Effects[effect] = remaining + 10
 	} else {
-		creature.Effects[effect] = 5
+		creature.Effects[effect] = 10
 	}
 }
 

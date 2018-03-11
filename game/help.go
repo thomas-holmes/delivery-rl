@@ -61,7 +61,7 @@ func (pop HelpPop) Render(window *gterm.Window) {
 
 	objective2 := "Race to the depths of the caverns and deliver the pizza to the Dragon who is waiting. " +
 		"Survive by avoiding monsters, fighting for your life, and distracting them with some extra food " +
-		"you brought along. You also have a one special trick up your sleeve, the ability to warp a short distance. " +
+		"you brought along. You also have a special trick up your sleeve, the ability to warp a short distance. " +
 		"It tires you out but don't let that slow you down; time is of the essence, after all! Maybe you can " +
 		"scrounge up something useful from past adventurers, but remember: even though you can teleport you're no warrior!"
 

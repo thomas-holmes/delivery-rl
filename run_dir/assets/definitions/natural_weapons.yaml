@@ -10,33 +10,33 @@
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 1d4
+    power: 1d4+1
     kind: weapon
 
   - name: "Goblin Claws"
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 1d6
+    power: 1d6+2
     kind: weapon
 
   - name: "Orcish Axe"
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 2d4
+    power: 2d4+2
     kind: weapon
 
   - name: "Wolf Teeth"
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 1d12
+    power: 1d12+2
     kind: weapon
 
   - name: "Troll Claws"
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 4d6
+    power: 4d6+4
     kind: weapon
