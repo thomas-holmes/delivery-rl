@@ -84,6 +84,25 @@ func (level *Level) GetVisibleCreatures(originX int, originY int) []*Creature {
 	return creatures
 }
 
+// ClampedXY takes an origin point and a riuds to expand. Clamps to level dimensions
+// Because I've written this 10000 times and I hate it
+func (l *Level) ClampedXY(x, y, radius int) []Position {
+	cols, rows := l.Columns, l.Rows
+	minX, maxX := max(0, x-radius), min(cols-1, x+radius)
+	minY, maxY := max(0, y-radius), min(rows-1, y+radius)
+
+	positions := make([]Position, 0, radius*radius)
+
+	for iy := minY; iy <= maxY; iy++ {
+		for ix := minX; ix <= maxX; ix++ {
+			pos := Position{X: ix, Y: iy}
+			positions = append(positions, pos)
+		}
+	}
+
+	return positions
+}
+
 type Stair struct {
 	Down bool
 	X    int

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -147,6 +149,11 @@ func (c *Creature) Damage(damage int) {
 
 func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interface{}) {
 	confused := c.HasStatus(Confused)
+
+	tile := world.CurrentLevel().GetTile(newX, newY)
+	if !c.IsPlayer && tile.Item.Kind == items.Food {
+		return MoveIsFood, nil
+	}
 
 	if world.CurrentLevel().CanStandOnTile(newX, newY) {
 		return MoveIsSuccess, nil
@@ -414,6 +421,7 @@ func (creature *Creature) DropItem(item Item, world *World) {
 }
 func (creature *Creature) ThrowItem(throwMessage PlayerThrowItemMessage) {
 	if ThrowItem(creature, throwMessage.World, throwMessage.Item, throwMessage.TargetX, throwMessage.TargetY) {
+		log.Printf("Throwing this thing %+v", throwMessage.Item)
 		creature.CompletedExternalAction = true
 	}
 }
@@ -639,19 +647,43 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 	confused := monster.HasStatus(Confused)
 
 	if confused {
-		cols, rows := world.CurrentLevel().Columns, world.CurrentLevel().Rows
-		minX, maxX := max(0, monster.X-1), min(cols-1, monster.X+1)
-		minY, maxY := max(0, monster.Y-1), min(rows-1, monster.Y+1)
-
-		for iy := minY; iy <= maxY; iy++ {
-			for ix := minX; ix <= maxX; ix++ {
-				candidates = append(candidates, TrackCandidate{Position: Position{X: ix, Y: iy}, Scent: 0})
-			}
+		for _, pos := range world.CurrentLevel().ClampedXY(monster.X, monster.Y, 1) {
+			candidates = append(candidates, TrackCandidate{Position: pos, Scent: 0})
 		}
 		shuffle(world.rng, len(candidates), func(i, j int) { candidates[i], candidates[j] = candidates[j], candidates[i] })
 	} else {
+		var closeFood []TrackCandidate
+		for _, pos := range world.CurrentLevel().ClampedXY(monster.X, monster.Y, 5) {
+			if world.CurrentLevel().GetTile(pos.X, pos.Y).Item.Kind == items.Food {
+				closeFood = append(closeFood, TrackCandidate{Position: pos, Scent: euclideanDistance(monster.X, monster.Y, pos.X, pos.Y)})
+			}
+		}
+
+		var visibleFood []TrackCandidate
+		for _, tc := range closeFood {
+			path := PlotLine(monster.X, monster.Y, tc.X, tc.Y)
+			for _, pos := range path {
+				if world.CurrentLevel().GetTile(pos.X, pos.Y).IsWall() {
+					break
+				}
+			}
+			visibleFood = append(visibleFood, tc)
+		}
+
+		sort.Slice(visibleFood, func(i, j int) bool { return visibleFood[i].Scent < visibleFood[j].Scent })
+
 		scent := world.CurrentLevel().ScentMap
 		candidates = scent.track(turn, monster.X, monster.Y)
+		if len(visibleFood) > 0 {
+			closestFood := visibleFood[0]
+			pathToFood := PlotLine(monster.X, monster.Y, closestFood.X, closestFood.Y)
+			if len(pathToFood) > 1 {
+				closestTile := pathToFood[1]
+				foodCandidate := TrackCandidate{Position: closestTile, Scent: math.MaxFloat64}
+				candidates = append(candidates, foodCandidate)
+				sort.Slice(candidates, func(i, j int) bool { return candidates[i].Scent > candidates[j].Scent })
+			}
+		}
 	}
 
 	if len(candidates) > 0 {
@@ -659,7 +691,15 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 			result, data := monster.TryMove(choice.X, choice.Y, world)
 			switch result {
 			case MoveIsInvalid:
+				log.Printf("Invalid? %+v", choice)
 				continue
+			case MoveIsFood:
+				log.Printf("MOVE IS FOOD! %+v", choice)
+				tile := world.CurrentLevel().GetTile(choice.X, choice.Y)
+				tile.Item.Count--
+				if tile.Item.Count == 0 {
+					tile.Item = Item{}
+				}
 			case MoveIsSuccess:
 				oldX := monster.X
 				oldY := monster.Y
@@ -693,6 +733,7 @@ type MoveResult int
 const (
 	MoveIsInvalid MoveResult = iota
 	MoveIsSuccess
+	MoveIsFood
 	MoveIsEnemy
 	MoveIsVictory
 )

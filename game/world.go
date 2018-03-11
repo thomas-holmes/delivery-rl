@@ -586,7 +586,6 @@ func (world *World) PlaceItemAround(item Item, x, y int) bool {
 				return true
 			}
 		}
-
 	}
 
 	return false

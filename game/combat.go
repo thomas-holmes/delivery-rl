@@ -35,6 +35,9 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	reduction := max(0, dice.Roll(dice.Notation{Num: 1, Sides: defender.Level})-1)
 	actual := max(0, damage-reduction)
 	defender.Damage(actual)
+	if defender.Identity() == attacker.Identity() {
+		gl.Append("%s flails around and hurts itself!!", attacker.Name)
+	}
 	gl.Append("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
 	// This should be done by the entity instead of here, I think?
