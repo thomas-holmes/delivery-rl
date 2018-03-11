@@ -51,4 +51,4 @@
     color: [178, 34, 34]
     kind: food
     power: 1d6
-    stracks: true
+    stacks: true
