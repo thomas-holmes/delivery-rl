@@ -12,7 +12,7 @@
     description: "A healing potion left behind by some unfortunate adventurer. Maybe it will help you instead."
     glyph: "!"
     color: [255, 0, 0]
-    power: 2d6+4
+    power: 3d6+6
     kind: potion
     level: 1
     stacks: true
@@ -21,7 +21,7 @@
     description: "This potion raise your maximum health and stamina. Good luck out there!"
     glyph: "!"
     color: [200, 0, 200]
-    power: 1d10
+    power: 2d8
     kind: potion
     level: 1
     stacks: true
