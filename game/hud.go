@@ -179,13 +179,6 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 	drawBar(world.Window, playerHT, width, xOffset, row, htColor)
 }
 
-func (hud *HUD) renderPlayerLevel(world *World) {
-	if HasLevelUps {
-		level := fmt.Sprintf("Level: %v (%v / %v)", hud.Player.Level, hud.Player.Experience, hud.Player.NextLevelCost())
-		world.Window.PutString(hud.X+1, hud.GetNextRow(), level, White)
-	}
-}
-
 func (hud *HUD) renderTurnCount(world *World) {
 	turnCount := fmt.Sprintf("Turn: %v", world.turnCount)
 	world.Window.PutString(hud.X+1, hud.GetNextRow(), turnCount, White)
@@ -251,7 +244,6 @@ func (hud *HUD) Render(world *World) {
 	hud.renderPlayerHealth(world)
 	hud.renderPlayerStamina(world)
 	hud.renderPlayerHeat(world)
-	hud.renderPlayerLevel(world)
 	hud.renderTurnCount(world)
 	hud.renderEquippedWeapon(world)
 	hud.renderEquippedArmour(world)

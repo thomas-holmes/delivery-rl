@@ -55,8 +55,6 @@ type Creature struct {
 	IsDragon       bool
 	VisionDistance int
 
-	Experience int
-
 	RenderGlyph rune
 	RenderColor sdl.Color
 
@@ -271,30 +269,6 @@ func NewMonster(xPos int, yPos int, level int, hp int) *Creature {
 	monster.RenderGlyph = []rune(strconv.Itoa(monster.Level))[0]
 
 	return monster
-}
-
-func (player *Creature) LevelUp() {
-	player.Experience = max(0, player.Experience-player.NextLevelCost())
-	player.Level++
-	player.HP.Max = player.HP.Max + max(1, int(float64(player.HP.Max)*0.1))
-	player.HP.Current = player.HP.Max
-	player.ST.Max = player.ST.Max + max(1, int(float64(player.ST.Max)*0.1))
-	player.ST.Current = player.ST.Max
-}
-
-const HasLevelUps bool = false
-
-func (player *Creature) GainExp(exp int) {
-	if HasLevelUps {
-		player.Experience += exp
-		if player.Experience >= player.NextLevelCost() {
-			player.LevelUp()
-		}
-	}
-}
-
-func (player *Creature) NextLevelCost() int {
-	return player.Level * 10
 }
 
 func (player *Creature) Heal(amount int) {
@@ -537,13 +511,6 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 	return true
 }
 
-func computeExperience(attacker *Creature, defender *Creature) int {
-	axp := attacker.Level * attacker.Level
-	dxp := defender.Level * defender.Level
-	diff := max(defender.Level, dxp-axp)
-	return diff
-}
-
 func (creature *Creature) Notify(message m.M) {
 	switch message.ID {
 	case KillEntity:
@@ -564,9 +531,6 @@ func (creature *Creature) Notify(message m.M) {
 			if attacker.ID != creature.ID {
 				return
 			}
-			expGain := computeExperience(attacker, defender)
-			gl.Append("Gained %d experience for killing %s", expGain, defender.Name)
-			attacker.GainExp(computeExperience(attacker, defender))
 		}
 	case EquipItem:
 		if d, ok := message.Data.(EquipItemMessage); ok {

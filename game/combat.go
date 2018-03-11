@@ -39,10 +39,6 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 	gl.Append("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
-	// This should be done by the entity instead of here, I think?
-	// I think this used to attribute the experience gain on death. Maybe
-	// need a more sophisticated combat/exp tracking system instead based
-	// on damage dealt & proximity?
 	if defender.HP.Current == 0 {
 		m.Broadcast(m.M{ID: KillEntity, Data: KillEntityMessage{Attacker: a, Defender: d}})
 	}
