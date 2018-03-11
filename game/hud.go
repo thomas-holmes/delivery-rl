@@ -106,7 +106,7 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 		log.Fatalln("Couldn't write HUD hp", err)
 	}
 
-	width := 16
+	width := 18
 	xOffset := hud.X + hud.W - width - 1
 	playerHP := hud.Player.HP.Percentage()
 
@@ -139,7 +139,7 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 		log.Fatalln("Couldn't write HUD st", err)
 	}
 
-	width := 16
+	width := 18
 	xOffset := hud.X + hud.W - width - 1
 	playerST := hud.Player.ST.Percentage()
 
@@ -172,7 +172,7 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 		log.Fatalln("Couldn't write HUD ht", err)
 	}
 
-	width := 16
+	width := 18
 	xOffset := hud.X + hud.W - width - 1
 	playerHT := hud.Player.HT.Percentage()
 
