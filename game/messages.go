@@ -19,7 +19,6 @@ const (
 	PlayerActivateItem
 	PlayerThrowItem
 	PlayerDropItem
-	PlaceItem
 	SplashGrease
 	TryMoveCreature
 )
@@ -87,15 +86,6 @@ type PlayerDropItemMessage struct {
 	Item
 
 	*World
-}
-
-type PlaceItemMessage struct {
-	Item
-
-	*Creature
-
-	TargetX int
-	TargetY int
 }
 
 type SplashGreaseMessage struct {

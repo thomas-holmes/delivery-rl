@@ -540,18 +540,6 @@ func (world *World) Notify(message m.M) {
 			world.SetCurrentLevel(d.DestLevelID)
 			world.AddEntityToCurrentLevel(world.Player)
 		}
-	case PlaceItem:
-		// TODO: Remove this
-		if d, ok := message.Data.(PlaceItemMessage); ok {
-			tile := world.CurrentLevel().GetTile(d.TargetX, d.TargetY)
-			if tile.Item.Kind == items.Unknown {
-				tile.Item = d.Item
-				d.Creature.Inventory.RemoveAllItem(tile.Item)
-			} else if d.Item.Stacks && tile.Item.Name == d.Item.Name {
-				tile.Item.Count += d.Item.Count
-				d.Creature.Inventory.RemoveAllItem(tile.Item)
-			}
-		}
 	case TryMoveCreature:
 		if d, ok := message.Data.(TryMoveCreatureMessage); ok {
 			d.Creature.TryMove(d.X, d.Y, world)
