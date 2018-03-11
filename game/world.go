@@ -592,15 +592,30 @@ func (world *World) PlaceItemAround(item Item, x, y int) bool {
 }
 
 func (world *World) SplashGrease(item Item, x, y int) {
-	cols, rows := world.CurrentLevel().Columns, world.CurrentLevel().Rows
-	minX, maxX := max(0, x-1), min(cols-1, x+1)
-	minY, maxY := max(0, y-1), min(rows-1, y+1)
+	var greasedPositions []Position
+	for _, pos := range world.CurrentLevel().ClampedXY(x, y, 1) {
+		tile := world.CurrentLevel().GetTile(pos.X, pos.Y)
+		if tile.TileKind == Floor {
+			tile.TileEffect = Greasy
+			greasedPositions = append(greasedPositions, pos)
+		}
+	}
 
-	for iy := minY; iy <= maxY; iy++ {
-		for ix := minX; ix <= maxX; ix++ {
-			tile := world.CurrentLevel().GetTile(ix, iy)
-			if tile.TileKind == Floor {
-				tile.TileEffect = Greasy
+	for {
+		if len(greasedPositions) == 0 {
+			break
+		}
+
+		greasedPos := greasedPositions[0]
+		greasedPositions = greasedPositions[1:]
+
+		for _, pos := range world.CurrentLevel().ClampedXY(greasedPos.X, greasedPos.Y, 1) {
+			tile := world.CurrentLevel().GetTile(pos.X, pos.Y)
+			if tile.TileKind == Floor && tile.TileEffect != Greasy {
+				if world.rng.Bounded(9) == 0 {
+					tile.TileEffect = Greasy
+					greasedPositions = append(greasedPositions, pos)
+				}
 			}
 		}
 	}
