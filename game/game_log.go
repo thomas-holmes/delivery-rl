@@ -51,7 +51,7 @@ func (gameLog *GameLog) Render(window *gterm.Window) {
 func (gameLog *GameLog) Notify(message m.M) {
 	switch message.ID {
 	case ShowFullGameLog:
-		menu := &FullGameLog{PopMenu: PopMenu{X: 0, Y: 0, W: gameLog.world.CameraWidth, H: gameLog.world.Window.Rows}, GameLog: gameLog}
+		menu := &FullGameLog{PopMenu: PopMenu{X: 2, Y: 2, W: gameLog.world.CameraWidth - 1, H: gameLog.world.Window.Rows - 4}, GameLog: gameLog}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{menu}})
 	}
 }

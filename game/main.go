@@ -131,7 +131,7 @@ func main() {
 	window.ShouldRenderFps(showFPS)
 	world := MakeNewWorld(window, pcgRng)
 
-	hud := NewHud(world.Player, world, 65, 0)
+	hud := NewHud(world.Player, world, 65, 2)
 
 	intro := IntroScreen{}
 

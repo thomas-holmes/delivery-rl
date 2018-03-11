@@ -48,26 +48,26 @@ func (pop *FullGameLog) Update(input controls.InputEvent) {
 
 func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
 	messages := gl.Messages()
-	barSpace := float64(pop.H - 2)
+	barSpace := float64(pop.H - 4)
 
 	percentageShown := float64(min(pop.H, len(messages))) / float64(len(messages))
 	scrollBarWidth := int(math.Ceil(barSpace * percentageShown))
 
 	topOfBar := int(float64(barSpace) * float64(pop.ScrollPosition) / float64(len(messages)))
 
-	window.PutRune(pop.X, pop.Y, upArrow, Yellow, gterm.NoColor)
+	window.PutRune(pop.X+1, pop.Y+1, upArrow, Yellow, gterm.NoColor)
 
 	barRunesDrawn := 0
-	for row := pop.Y + 1; row < (pop.Y + pop.H - 1); row++ {
+	for row := pop.Y + 2; row < (pop.Y + 1 + pop.H - 3); row++ {
 		if (row >= topOfBar) && (barRunesDrawn <= scrollBarWidth) {
-			window.PutRune(pop.X, row, fullBlock, Yellow, gterm.NoColor)
+			window.PutRune(pop.X+1, row, fullBlock, Yellow, gterm.NoColor)
 			barRunesDrawn++
 		} else {
-			window.PutRune(pop.X, row, vertical, Grey, gterm.NoColor)
+			window.PutRune(pop.X+1, row, vertical, Grey, gterm.NoColor)
 		}
 	}
 
-	window.PutRune(pop.X, pop.Y+pop.H-1, downArrow, Yellow, gterm.NoColor)
+	window.PutRune(pop.X+1, pop.Y+1+pop.H-3, downArrow, Yellow, gterm.NoColor)
 }
 
 func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
@@ -77,11 +77,7 @@ func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
 	yPos := pop.Y
 	for i := messagesToRender - 1; i >= 0 && yPos+1 < pop.Y+pop.H; i-- {
 		message := messages[i]
-		yPos += putWrappedText(window, message, pop.X+1, yPos, 0, 2, pop.W-2, White)
-		/*
-			window.PutString(pop.X+1, pop.Y+yOffset, message, White)
-			yOffset++
-		*/
+		yPos += putWrappedText(window, message, pop.X+3, yPos+2, 0, 2, pop.W-4, White)
 	}
 
 }
@@ -90,6 +86,7 @@ func (pop *FullGameLog) Render(window *gterm.Window) {
 	if err := window.ClearRegion(pop.X, pop.Y, pop.W, pop.H); err != nil {
 		log.Println("Got an error clearing FullGameLog region", err)
 	}
+	pop.DrawBox(window, White)
 	pop.RenderScrollBar(window)
 
 	pop.RenderVisibleLines(window)

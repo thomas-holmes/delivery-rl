@@ -11,22 +11,22 @@ import (
 type HUD struct {
 	World  *World
 	Player *Creature
-	XPos   int
-	YPos   int
-	Width  int
-	Height int
+
+	PopMenu
 
 	nextFreeRow int
 }
 
 func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
 	hud := &HUD{
-		Player:      player,
-		World:       world,
-		XPos:        xPos,
-		YPos:        yPos,
-		Width:       world.Window.Columns - xPos,
-		Height:      world.Window.Rows - yPos,
+		Player: player,
+		World:  world,
+		PopMenu: PopMenu{
+			X: xPos,
+			Y: yPos,
+			W: world.Window.Columns - xPos,
+			H: world.Window.Rows / 2,
+		},
 		nextFreeRow: 0,
 	}
 
@@ -35,16 +35,16 @@ func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
 
 func (hud *HUD) GetNextRow() int {
 	hud.nextFreeRow++
-	return hud.nextFreeRow + hud.YPos - 1
+	return hud.nextFreeRow + hud.Y - 1
 }
 
 func (hud *HUD) renderPlayerName(world *World) {
-	world.Window.PutString(hud.XPos, hud.GetNextRow(), world.Player.Name, Yellow)
+	world.Window.PutString(hud.X+1, hud.GetNextRow(), world.Player.Name, White)
 }
 
 func (hud *HUD) renderPlayerPosition(world *World) {
 	position := fmt.Sprintf("(%v, %v) - Level %v", hud.Player.X, hud.Player.Y, hud.Player.Depth+1)
-	world.Window.PutString(hud.XPos, hud.GetNextRow(), position, Yellow)
+	world.Window.PutString(hud.X+1, hud.GetNextRow(), position, White)
 }
 
 func drawBar(window *gterm.Window, pct float64, width int, x int, y int, color sdl.Color) {
@@ -81,7 +81,7 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 	case pct >= 0.8:
 		hpColor = Green
 	case pct >= 0.6:
-		hpColor = Yellow
+		hpColor = White
 	case pct >= 0.4:
 		hpColor = Orange
 	default:
@@ -95,16 +95,16 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 	}
 
 	row := hud.GetNextRow()
-	if err := world.Window.PutString(hud.XPos, row, label, Yellow); err != nil {
+	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {
 		log.Fatalln("Couldn't write HUD hp label", err)
 	}
 
-	if err := world.Window.PutString(hud.XPos+len(label)+1, row, hp, hpColor); err != nil {
+	if err := world.Window.PutString(hud.X+len(label)+1, row, hp, hpColor); err != nil {
 		log.Fatalln("Couldn't write HUD hp", err)
 	}
 
 	width := 20
-	xOffset := hud.XPos + hud.Width - width - 1
+	xOffset := hud.X + hud.W - width - 1
 	playerHP := hud.Player.HP.Percentage()
 
 	drawBar(world.Window, playerHP, width, xOffset, row, hpColor)
@@ -131,16 +131,16 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 	}
 
 	row := hud.GetNextRow()
-	if err := world.Window.PutString(hud.XPos, row, label, Yellow); err != nil {
+	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {
 		log.Fatalln("Couldn't write HUD st label", err)
 	}
 
-	if err := world.Window.PutString(hud.XPos+len(label)+1, row, st, stColor); err != nil {
+	if err := world.Window.PutString(hud.X+len(label)+1, row, st, stColor); err != nil {
 		log.Fatalln("Couldn't write HUD st", err)
 	}
 
 	width := 20
-	xOffset := hud.XPos + hud.Width - width - 1
+	xOffset := hud.X + hud.W - width - 1
 	playerST := hud.Player.ST.Percentage()
 
 	drawBar(world.Window, playerST, width, xOffset, row, stColor)
@@ -167,16 +167,16 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 	}
 
 	row := hud.GetNextRow()
-	if err := world.Window.PutString(hud.XPos, row, label, Yellow); err != nil {
+	if err := world.Window.PutString(hud.X+1, row, label, White); err != nil {
 		log.Fatalln("Couldn't write HUD ht label", err)
 	}
 
-	if err := world.Window.PutString(hud.XPos+len(label)+1, row, ht, htColor); err != nil {
+	if err := world.Window.PutString(hud.X+len(label)+1, row, ht, htColor); err != nil {
 		log.Fatalln("Couldn't write HUD ht", err)
 	}
 
 	width := 20
-	xOffset := hud.XPos + hud.Width - width - 1
+	xOffset := hud.X + hud.W - width - 1
 	playerHT := hud.Player.HT.Percentage()
 
 	drawBar(world.Window, playerHT, width, xOffset, row, htColor)
@@ -184,30 +184,29 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 
 func (hud *HUD) renderPlayerLevel(world *World) {
 	level := fmt.Sprintf("Level: %v (%v / %v)", hud.Player.Level, hud.Player.Experience, hud.Player.NextLevelCost())
-	world.Window.PutString(hud.XPos, hud.GetNextRow(), level, Yellow)
+	world.Window.PutString(hud.X+1, hud.GetNextRow(), level, White)
 }
 
 func (hud *HUD) renderTurnCount(world *World) {
 	turnCount := fmt.Sprintf("Turn: %v", world.turnCount)
-	world.Window.PutString(hud.XPos, hud.GetNextRow(), turnCount, Yellow)
+	world.Window.PutString(hud.X+1, hud.GetNextRow(), turnCount, White)
 }
 
 func (hud *HUD) renderEquippedWeapon(world *World) {
 	equipName := hud.Player.Equipment.Weapon.Name
 
 	offsetY := hud.GetNextRow()
-	offsetX := hud.XPos
+	offsetX := hud.X + 1
 
 	weaponStr := fmt.Sprintf("Weapon: %v", equipName)
 
-	offsetX = hud.XPos
-	hud.nextFreeRow += putWrappedText(world.Window, weaponStr, offsetX, offsetY, 0, 2, world.Window.Columns-offsetX, Yellow)
+	hud.nextFreeRow += putWrappedText(world.Window, weaponStr, offsetX, offsetY, 0, 2, world.Window.Columns-offsetX, White)
 }
 
 func (hud *HUD) renderItemDisplay(world *World) {
 	hud.nextFreeRow += 3
 	offsetY := hud.GetNextRow()
-	offsetX := hud.XPos
+	offsetX := hud.X + 2
 
 	items := make([]Item, 0)
 	for y := 0; y < world.CurrentLevel().Rows; y++ {
@@ -221,20 +220,21 @@ func (hud *HUD) renderItemDisplay(world *World) {
 		}
 	}
 	for _, item := range items {
-		world.Window.PutRune(hud.XPos, offsetY, item.Symbol, item.Color, gterm.NoColor)
-		offsetX = hud.XPos
+		world.Window.PutRune(hud.X+1, offsetY, item.Symbol, item.Color, gterm.NoColor)
+		offsetX = hud.X + 2
 		itemText := item.Name
 		if item.Count > 1 {
 			itemText = fmt.Sprintf("[%d] %s", item.Count, item.Name)
 		}
-		hud.nextFreeRow += (putWrappedText(world.Window, itemText, offsetX, offsetY, 2, 4, world.Window.Columns-offsetX, Yellow) - 1)
+		hud.nextFreeRow += (putWrappedText(world.Window, itemText, offsetX, offsetY, 2, 4, world.Window.Columns-offsetX, White) - 1)
 		offsetY = hud.GetNextRow()
 	}
-	offsetX = hud.XPos
+	offsetX = hud.X
 }
 
 func (hud *HUD) Render(world *World) {
-	hud.nextFreeRow = 0
+	hud.DrawBox(world.Window, White)
+	hud.nextFreeRow = 1
 	hud.renderPlayerName(world)
 	hud.renderPlayerPosition(world)
 	hud.renderPlayerHealth(world)
