@@ -209,7 +209,6 @@ func NewCreature(level int, maxHP int) *Creature {
 }
 
 func (p *Creature) AddStartingItems() {
-	p.AddStartingItems()
 	if def, ok := items.GetCollection("consumeables").GetByName("Hand Warmer"); ok {
 		it := produceItem(def)
 		it.Count = 5
