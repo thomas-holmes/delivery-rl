@@ -11,6 +11,8 @@ import (
 	"github.com/thomas-holmes/gterm"
 )
 
+const MaxInventory = 28
+
 type Inventory []Item
 
 func (inventory *Inventory) Filter(filter items.Kind) []Item {
@@ -25,18 +27,25 @@ func (inventory *Inventory) Filter(filter items.Kind) []Item {
 	return filtered
 }
 
-func (inventory *Inventory) Add(item Item) {
+// Add Returns false if there was no room
+func (inventory *Inventory) Add(item Item) bool {
+	if len(*inventory) >= MaxInventory {
+		return false
+	}
+
 	if !item.Stacks {
 		*inventory = append(*inventory, item)
-		return
+		return true
 	}
 	for i, it := range *inventory {
 		if it.Name == item.Name {
 			(*inventory)[i].Count += item.Count
-			return
+			return true
 		}
 	}
 	*inventory = append(*inventory, item)
+
+	return true
 }
 
 func (inventory *Inventory) RemoveAllItem(item Item) {

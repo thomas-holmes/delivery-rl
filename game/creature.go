@@ -333,9 +333,11 @@ func (player *Creature) PickupItem(world *World) bool {
 		return false
 	}
 
-	player.Inventory.Add(tile.Item)
-	tile.Item = Item{}
-	return true
+	if player.Inventory.Add(tile.Item) {
+		tile.Item = Item{}
+		return true
+	}
+	return false
 }
 
 func (creature *Creature) IsFoodRuined() bool {
@@ -580,18 +582,25 @@ func (creature *Creature) Notify(message m.M) {
 			switch d.Item.Kind {
 			case items.Weapon:
 				// Put it back in my inventory
+				creature.Inventory.RemoveItem(d.Item)
+
 				if creature.Equipment.Weapon.Name != "Bare Hands" {
-					creature.Inventory.Add(creature.Equipment.Weapon)
+					if ok := creature.Inventory.Add(creature.Equipment.Weapon); !ok {
+						// Shouldn't happen
+						log.Printf("Failed to add a weapon to inventory when equipping. There should have been space.")
+					}
 				}
 
 				creature.Equipment.Weapon = d.Item
 				gl.Append("%s equips %s", creature.Name, d.Item.Name)
-				creature.Inventory.RemoveItem(d.Item)
 			case items.Armour:
-				creature.Inventory.Add(creature.Equipment.Armour)
+				creature.Inventory.RemoveItem(d.Item)
+				if ok := creature.Inventory.Add(creature.Equipment.Armour); !ok {
+					// Shouldn't happen
+					log.Printf("Failed to add an armour to inventory when equipping. There should have been space.")
+				}
 				creature.Equipment.Armour = d.Item
 				gl.Append("%s equips %s", creature.Name, d.Item.Name)
-				creature.Inventory.RemoveItem(d.Item)
 			}
 		}
 	case PlayerQuaffPotion:
