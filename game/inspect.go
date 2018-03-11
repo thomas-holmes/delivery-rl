@@ -57,26 +57,26 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 	if pop.World.CurrentLevel().VisionMap.VisibilityAt(tile.X, tile.Y) == Unseen {
 		return
 	}
-	yOffset := 0
+	yOffset := 1
 	if c := tile.Creature; c != nil {
 		xOffset := 0
-		pop.World.Window.PutRune(pop.X+xOffset, pop.Y+yOffset, c.RenderGlyph, c.RenderColor, gterm.NoColor)
+		pop.World.Window.PutRune(pop.X+1+xOffset, pop.Y+yOffset, c.RenderGlyph, c.RenderColor, gterm.NoColor)
 		xOffset += 2
 
 		creatureLine1 := fmt.Sprintf("%v (%v/%v)", c.Name, c.HP.Current, c.HP.Max)
-		pop.World.Window.PutString(pop.X+xOffset, pop.Y+yOffset, creatureLine1, Yellow)
+		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine1, Yellow)
 
 		yOffset++
 
 		creatureLine2 := fmt.Sprintf("Weapon: %s", c.Equipment.Weapon.Name)
-		pop.World.Window.PutString(pop.X+xOffset, pop.Y+yOffset, creatureLine2, Yellow)
+		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine2, Yellow)
 
 		yOffset++
 
 	}
 	if i := tile.Item; i != (Item{}) {
 		xOffset := 0
-		pop.World.Window.PutRune(pop.X+xOffset, pop.Y+yOffset, i.Symbol, i.Color, gterm.NoColor)
+		pop.World.Window.PutRune(pop.X+1+xOffset, pop.Y+yOffset, i.Symbol, i.Color, gterm.NoColor)
 
 		var itemLine1 string
 		if i.Power.Num > 0 {
@@ -84,7 +84,7 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		} else {
 			itemLine1 = fmt.Sprintf("- %v", i.Name)
 		}
-		yOffset += putWrappedText(pop.World.Window, itemLine1, pop.X, pop.Y+yOffset, 2, 4, pop.W-xOffset, Yellow)
+		yOffset += putWrappedText(pop.World.Window, itemLine1, pop.X+1, pop.Y+yOffset, 2, 4, pop.W-xOffset, Yellow)
 	}
 	{
 		terrainLine1 := ""
@@ -100,7 +100,7 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		}
 
 		if len(terrainLine1) > 0 {
-			pop.World.Window.PutString(pop.X, pop.Y+yOffset, terrainLine1, Yellow)
+			pop.World.Window.PutString(pop.X+1, pop.Y+yOffset, terrainLine1, Yellow)
 			yOffset++
 		}
 	}
@@ -121,6 +121,7 @@ func (pop *InspectionPop) RenderCursor(window *gterm.Window) {
 
 func (pop *InspectionPop) Render(window *gterm.Window) {
 	window.ClearRegion(pop.X, pop.Y, pop.W, pop.H)
+	pop.DrawBox(window, White)
 
 	pop.RenderCursor(window)
 

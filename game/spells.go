@@ -45,7 +45,7 @@ var DefaultSpells = []Spell{
 		Spell{Name: "Fire Ball", Description: "Hurls a large ball of fire at a group of oponnents", Range: 8, Power: 4, Cost: 4, Shape: Square, Size: 2, Hits: 1},
 	*/
 	// Movement Spell
-	Spell{Name: "Dash", Description: "Teleport to a nearby unoccupied space you can see", Range: 8, Power: 4, Cost: 1, Shape: Point, Size: 1, Hits: 0},
+	Spell{Name: "Dash", Description: "Teleport to a nearby unoccupied space you can see", Range: 8, Power: 1, Cost: 4, Shape: Point, Size: 1, Hits: 0},
 }
 
 type SpellPop struct {

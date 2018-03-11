@@ -24,7 +24,7 @@ func NewHud(player *Creature, world *World, xPos int, yPos int) *HUD {
 		PopMenu: PopMenu{
 			X: xPos,
 			Y: yPos,
-			W: world.Window.Columns - xPos,
+			W: world.Window.Columns - xPos - 1,
 			H: world.Window.Rows / 2,
 		},
 		nextFreeRow: 0,
@@ -81,7 +81,7 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 	case pct >= 0.8:
 		hpColor = Green
 	case pct >= 0.6:
-		hpColor = White
+		hpColor = Yellow
 	case pct >= 0.4:
 		hpColor = Orange
 	default:
@@ -103,7 +103,7 @@ func (hud *HUD) renderPlayerHealth(world *World) {
 		log.Fatalln("Couldn't write HUD hp", err)
 	}
 
-	width := 20
+	width := 16
 	xOffset := hud.X + hud.W - width - 1
 	playerHP := hud.Player.HP.Percentage()
 
@@ -139,7 +139,7 @@ func (hud *HUD) renderPlayerStamina(world *World) {
 		log.Fatalln("Couldn't write HUD st", err)
 	}
 
-	width := 20
+	width := 16
 	xOffset := hud.X + hud.W - width - 1
 	playerST := hud.Player.ST.Percentage()
 
@@ -175,7 +175,7 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 		log.Fatalln("Couldn't write HUD ht", err)
 	}
 
-	width := 20
+	width := 16
 	xOffset := hud.X + hud.W - width - 1
 	playerHT := hud.Player.HT.Percentage()
 

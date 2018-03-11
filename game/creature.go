@@ -103,7 +103,7 @@ func (c *Creature) CheckTerrain(world *World) {
 	case None:
 		c.SpeedModifier = 1
 	case Greasy:
-		c.SpeedModifier = 3
+		c.SpeedModifier = 4
 	}
 }
 
@@ -259,7 +259,7 @@ func NewPlayer() *Creature {
 	player.VisionDistance = 12
 	player.HP.RegenRate = 0.15
 	player.ST = Resource{Current: 4, Max: 4, RegenRate: 0.10}
-	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.2}
+	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.1}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
@@ -489,7 +489,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 			}
 		}
 	case controls.Help:
-		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewHelpPop(2, 1, 50, world.Window.Rows-2)}})
+		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: NewHelpPop(2, 2, 50, world.Window.Rows-4)}})
 		return false
 	case controls.Left:
 		newX = player.X - 1
@@ -516,11 +516,11 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Examine:
-		menu := &InspectionPop{PopMenu: PopMenu{X: 60, Y: 20, W: 30, H: 5}, World: world, InspectX: player.X, InspectY: player.Y}
+		menu := &InspectionPop{PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 26}, World: world, InspectX: player.X, InspectY: player.Y}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Cast:
-		menu := &SpellPop{PopMenu: PopMenu{X: 10, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
+		menu := &SpellPop{PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Messages:
