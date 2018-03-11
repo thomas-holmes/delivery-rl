@@ -248,7 +248,7 @@ func (p *Creature) AddStartingItems() {
 }
 
 func NewPlayer() *Creature {
-	player := NewCreature(1, 20)
+	player := NewCreature(1, 30)
 	player.Team = PlayerTeam
 	player.RenderGlyph = '@'
 	player.RenderColor = Red
@@ -284,7 +284,6 @@ func (player *Creature) LevelUp() {
 	player.HP.Current = player.HP.Max
 	player.ST.Max = player.ST.Max + max(1, int(float64(player.ST.Max)*0.1))
 	player.ST.Current = player.ST.Max
-	gl.Append("You are now level %d", player.Level)
 }
 
 const HasLevelUps bool = false
