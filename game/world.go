@@ -614,7 +614,7 @@ func (world *World) SplashGrease(item Item, x, y int) {
 		for _, pos := range world.CurrentLevel().ClampedXY(greasedPos.X, greasedPos.Y, 1) {
 			tile := world.CurrentLevel().GetTile(pos.X, pos.Y)
 			if tile.TileKind == Floor && tile.TileEffect != Greasy {
-				if world.rng.Bounded(9) == 0 {
+				if world.rng.Bounded(8) == 0 {
 					tile.TileEffect = Greasy
 					greasedPositions = append(greasedPositions, pos)
 				}
