@@ -3,7 +3,7 @@
     description: "Some worn leather boots. They might protect you from vermin."
     glyph: "τ"
     color: [250, 240, 200]
-    power: 1d2
+    power: 1d2 # 1.5
     level: 1
     kind: armour
 
@@ -12,7 +12,7 @@
     glyph: "Θ"
     color: [182, 155, 76]
     level: 2
-    power: 1d5
+    power: 1d4 # 2.5
     kind: armour
 
   - name: "Bronze Shield"
@@ -20,7 +20,7 @@
     glyph: "Θ"
     color: [205, 127, 50]
     level: 3
-    power: 1d8
+    power: 1d6 # 3.5
     kind: armour
 
   - name: "Leather Jerkin"
@@ -28,15 +28,15 @@
     glyph: "Ω"
     color: [98, 75, 56]
     level: 4
-    power: 2d3+2
+    power: 2d3+1 # 6
     kind: armour
 
   - name: "Tower Shield"
     description: "A large metal shield, ideal for deflecting all types of oncoming attacks."
     glyph: "Θ"
-    level: 6
+    level: 5
     color: [68, 55, 36]
-    power: 5d2+2
+    power: 1d12 # 6.5
     kind: armour
 
   - name: "Breastplate"
@@ -44,5 +44,5 @@
     glyph: "Ω"
     color: [68, 55, 36]
     level: 7
-    power: 2d8+2
+    power: 3d4+2 # 9.5
     kind: armour

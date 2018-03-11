@@ -21,7 +21,7 @@
     description: "This potion raise your maximum health and stamina. Good luck out there!"
     glyph: "!"
     color: [200, 0, 200]
-    power: 2d8
+    power: 2d6
     kind: potion
     level: 1
     stacks: true

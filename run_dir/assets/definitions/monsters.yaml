@@ -11,22 +11,21 @@
 - name: "Goblin"
   description: "A hungry little goblin."
   weapon: goblin claws
-  armour: worn boots
   glyph: "g"
   color: [0, 255, 0]
   level: 2
   power: 2
-  hp: 15 
+  hp: 18 
 
 - name: "Orc"
   description: "A furious orc."
   weapon: orcish axe
-  armour: wooden shield
+  armour: worn boots
   glyph: "o"
   color: [25, 225, 10]
   level: 3
   power: 3
-  hp: 24 
+  hp: 30
 
 - name: "Wolf"
   description: "A starving wolf."
@@ -35,13 +34,14 @@
   color: [180, 240, 240]
   level: 3
   power: 4
-  hp: 7
+  hp: 16
 
 - name: "Troll"
   description: "A huge lumbering troll."
   weapon: troll claws
+  armour: wooden shield
   glyph: "T"
   color: [0, 255, 0]
   level: 5
   power: 8
-  hp: 44
+  hp: 60

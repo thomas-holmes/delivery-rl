@@ -24,7 +24,7 @@
     description: ""
     glyph: "w"
     color: [255, 0, 0]
-    power: 2d4+2
+    power: 2d4
     kind: weapon
 
   - name: "Wolf Teeth"
