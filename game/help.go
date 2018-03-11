@@ -70,4 +70,7 @@ func (pop HelpPop) Render(window *gterm.Window) {
 
 	window.PutString(x, y, "Good Luck!", White)
 
+	content := "2018 7DRL by Keipra"
+	window.PutString(pop.X+pop.W-1-len(content), pop.Y+pop.H-2, content, Grey)
+
 }
