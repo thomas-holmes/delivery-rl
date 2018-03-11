@@ -74,7 +74,8 @@ type Creature struct {
 
 	Equipment
 
-	Speed int
+	BaseSpeed     int
+	SpeedModifier int
 
 	HP Resource // health
 	ST Resource // stamina
@@ -90,14 +91,24 @@ type Creature struct {
 	m.Unsubscribe
 }
 
+func (c *Creature) CheckTerrain(world *World) {
+	tile := world.CurrentLevel().GetTile(c.X, c.Y)
+	switch tile.TileEffect {
+	case None:
+		c.SpeedModifier = 1
+	case Greasy:
+		c.SpeedModifier = 3
+	}
+}
+
 func (c *Creature) StartTurn() {
 	if !c.GainedEnergy {
 		c.Energy.AddEnergy(100)
 		c.GainedEnergy = true
-	}
 
-	if c.Energy.Current >= 100 {
-		c.CurrentlyActing = true
+		if c.Energy.Current >= c.BaseSpeed {
+			c.CurrentlyActing = true
+		}
 	}
 }
 
@@ -112,7 +123,7 @@ func (c Creature) IsDead() bool {
 }
 
 func (c Creature) CanAct() bool {
-	return !c.IsDragon && !c.IsDead() && (c.Energy.Current >= 100 || (c.CurrentlyActing && c.Energy.Current >= c.Speed))
+	return !c.IsDragon && !c.IsDead() && (c.CurrentlyActing && c.Energy.Current >= c.BaseSpeed)
 }
 
 func (c Creature) XPos() int {
@@ -121,6 +132,10 @@ func (c Creature) XPos() int {
 
 func (c Creature) YPos() int {
 	return c.Y
+}
+
+func (c Creature) Speed() int {
+	return c.BaseSpeed * c.SpeedModifier
 }
 
 func (c *Creature) Damage(damage int) {
@@ -181,7 +196,7 @@ func NewCreature(level int, maxHP int) *Creature {
 		},
 		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
 		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.15},
-		Speed:     100,
+		BaseSpeed: 100,
 		Equipment: NewEquipment(),
 	}
 }
@@ -304,6 +319,8 @@ func (creature *Creature) EndGame() {
 
 // Update returns true if an action that would constitute advancing the turn took place
 func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *World) bool {
+	creature.CheckTerrain(world)
+
 	success := false
 	if creature.IsPlayer {
 		if creature.IsFoodRuined() {
@@ -316,7 +333,7 @@ func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *
 	}
 
 	if success {
-		creature.Energy.Current -= creature.Speed
+		creature.Energy.Current -= creature.Speed()
 		return true
 	}
 

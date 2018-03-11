@@ -283,7 +283,7 @@ func (world *World) Update() {
 				continue
 			}
 
-			advancedTurn := a.Update(world.turnCount, world.Input, world)
+			acted := a.Update(world.turnCount, world.Input, world)
 
 			// bit of a hack, copied from below instead of rewritten
 			if world.LevelChanged {
@@ -295,7 +295,7 @@ func (world *World) Update() {
 
 			if c, ok := a.(*Creature); ok {
 				if c.IsPlayer {
-					if advancedTurn {
+					if acted {
 						world.turnCount++
 					}
 					world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
@@ -307,6 +307,7 @@ func (world *World) Update() {
 				// Needs more input
 				return
 			} else {
+				a.EndTurn()
 				world.CurrentLevel().NextEntity++
 				world.Input = controls.InputEvent{}
 			}
