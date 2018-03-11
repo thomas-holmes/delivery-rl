@@ -39,12 +39,25 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 	switch singleItem.Name {
 	case "Garlic Butter":
 		gl.Append("Threw %s", singleItem.Name)
+		creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
 		a := NewLinearSpellAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
 		world.AddAnimation(&a)
-		if singleItem.Name == "Garlic Butter" {
-			m.Broadcast(m.M{ID: SplashGrease, Data: SplashGreaseMessage{Item: singleItem, X: targetX, Y: targetY}})
-		}
+		m.Broadcast(m.M{ID: SplashGrease, Data: SplashGreaseMessage{Item: singleItem, X: targetX, Y: targetY}})
 		return true
+	case "Red Pepper Flakes":
+		// TODO: Figure this out during targeting
+		if tC, ok := world.CurrentLevel().GetCreatureAtTile(targetX, targetY); ok {
+			gl.Append("Threw %s at %s, driving them blind with rage!", singleItem.Name, tC.Name)
+
+			creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
+			animation := NewLinearSpellAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
+			world.AddAnimation(&animation)
+			tC.ApplyStatusEffect(Confused)
+
+			return true
+		} else {
+			gl.Append("You don't want to waste your %s just throwing them at nothing!", item.Name)
+		}
 	default:
 		if world.PlaceItemAround(singleItem, targetX, targetY) {
 			gl.Append("Threw %s", singleItem.Name)

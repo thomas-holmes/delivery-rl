@@ -70,6 +70,8 @@ type Creature struct {
 	GainedEnergy    bool
 	Energy
 
+	Effects map[StatusEffect]int
+
 	Inventory
 
 	Equipment
@@ -116,6 +118,7 @@ func (c *Creature) EndTurn() {
 	c.CurrentlyActing = false
 	c.GainedEnergy = false
 	c.Regen()
+	c.TickEffects()
 }
 
 func (c Creature) IsDead() bool {
@@ -143,6 +146,8 @@ func (c *Creature) Damage(damage int) {
 }
 
 func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interface{}) {
+	confused := c.HasStatus(Confused)
+
 	if world.CurrentLevel().CanStandOnTile(newX, newY) {
 		return MoveIsSuccess, nil
 	}
@@ -151,7 +156,8 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 		if c.IsPlayer && defender.IsDragon {
 			return MoveIsVictory, nil
 		}
-		if (c.Team != NeutralTeam) && (c.Team != defender.Team) {
+		// Attack friendlies if confused
+		if confused || (c.Team != NeutralTeam) && (c.Team != defender.Team) {
 			// Check if I still need to get entity, I think this isn't necessary any more
 			a, aOk := world.GetEntity(c.ID)
 			d, dOk := world.GetEntity(defender.ID)
@@ -196,6 +202,7 @@ func NewCreature(level int, maxHP int) *Creature {
 		},
 		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
 		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.15},
+		Effects:   make(map[StatusEffect]int),
 		BaseSpeed: 100,
 		Equipment: NewEquipment(),
 	}
@@ -396,6 +403,31 @@ func (creature *Creature) ThrowItem(throwMessage PlayerThrowItemMessage) {
 	}
 }
 
+func (creature *Creature) TickEffects() {
+	for k, v := range creature.Effects {
+		if v-1 == 0 {
+			delete(creature.Effects, k)
+		} else {
+			creature.Effects[k] = v - 1
+		}
+	}
+}
+
+func (creature *Creature) HasStatus(effect StatusEffect) bool {
+	if _, ok := creature.Effects[effect]; ok {
+		return ok
+	}
+	return false
+}
+
+func (creature *Creature) ApplyStatusEffect(effect StatusEffect) {
+	if remaining, ok := creature.Effects[effect]; ok {
+		creature.Effects[effect] = remaining + 5
+	} else {
+		creature.Effects[effect] = 5
+	}
+}
+
 // HandleInput updates player position based on user input
 func (player *Creature) HandleInput(input controls.InputEvent, world *World) bool {
 	newX := player.X
@@ -588,11 +620,24 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 		return true
 	}
 
-	scent := world.CurrentLevel().ScentMap
+	var candidates []TrackCandidate
+	confused := monster.HasStatus(Confused)
 
-	// TODO: Maybe short circuit tracking here and just attack the player instead
-	// if in range?
-	candidates := scent.track(turn, monster.X, monster.Y)
+	if confused {
+		cols, rows := world.CurrentLevel().Columns, world.CurrentLevel().Rows
+		minX, maxX := max(0, monster.X-1), min(cols-1, monster.X+1)
+		minY, maxY := max(0, monster.Y-1), min(rows-1, monster.Y+1)
+
+		for iy := minY; iy <= maxY; iy++ {
+			for ix := minX; ix <= maxX; ix++ {
+				candidates = append(candidates, TrackCandidate{Position: Position{X: ix, Y: iy}, Scent: 0})
+			}
+		}
+		shuffle(world.rng, len(candidates), func(i, j int) { candidates[i], candidates[j] = candidates[j], candidates[i] })
+	} else {
+		scent := world.CurrentLevel().ScentMap
+		candidates = scent.track(turn, monster.X, monster.Y)
+	}
 
 	if len(candidates) > 0 {
 		for _, choice := range candidates {
@@ -641,6 +686,12 @@ type MoveEnemy struct {
 	Attacker Entity
 	Defender Entity
 }
+
+type StatusEffect int
+
+const (
+	Confused StatusEffect = iota
+)
 
 type MonsterBehavior int
 
