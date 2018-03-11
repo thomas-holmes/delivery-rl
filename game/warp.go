@@ -1,49 +1,42 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// This whole thing is going to duplicate spells pretty badly
+const WarpCost int = 4
 
-func NewThrowPop(item Item, world *World) Menu {
-	return &ThrowPop{
-		Item:    item,
-		World:   world,
-		TargetX: world.Player.X,
-		TargetY: world.Player.Y,
-
-		PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 3},
-	}
-}
-
-type ThrowPop struct {
-	Item
-
+type WarpPop struct {
 	*World
 
-	TargetX int
-	TargetY int
-
 	targetVisible bool
+	TargetX       int
+	TargetY       int
 
-	cursorColor sdl.Color
 	lineColor   sdl.Color
+	cursorColor sdl.Color
 
 	PopMenu
 }
 
-func (pop *ThrowPop) throwItem() {
-	m.Broadcast(m.M{ID: PlayerThrowItem, Data: PlayerThrowItemMessage{World: pop.World, Item: pop.Item, TargetX: pop.TargetX, TargetY: pop.TargetY}})
+func NewWarpPop(world *World) Menu {
+	return &WarpPop{
+		World:   world,
+		TargetX: world.Player.X,
+		TargetY: world.Player.Y,
+		PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 3},
+	}
+}
+
+func (pop *WarpPop) warp() {
+	m.Broadcast(m.M{ID: PlayerWarp, Data: PlayerWarpMessage{World: pop.World, TargetX: pop.TargetX, TargetY: pop.TargetY}})
 	pop.done = true
 }
 
-func (pop *ThrowPop) adjustTarget(dX, dY int) {
+func (pop *WarpPop) adjustTarget(dX, dY int) {
 	newX := pop.TargetX + dX
 	newX = min(pop.World.CurrentLevel().Columns-1, max(0, newX))
 
@@ -64,7 +57,7 @@ func (pop *ThrowPop) adjustTarget(dX, dY int) {
 	pop.TargetY = newY
 }
 
-func (pop *ThrowPop) Update(input controls.InputEvent) {
+func (pop *WarpPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
 
 	switch input.Action() {
@@ -85,11 +78,11 @@ func (pop *ThrowPop) Update(input controls.InputEvent) {
 	case controls.UpLeft:
 		pop.adjustTarget(-1, -1)
 	case controls.Confirm:
-		pop.throwItem()
+		pop.warp()
 	}
 }
 
-func (pop *ThrowPop) drawCursor(window *gterm.Window) {
+func (pop *WarpPop) drawCursor(window *gterm.Window) {
 	lineColor := pop.lineColor
 
 	positions := PlotLine(pop.World.Player.X, pop.World.Player.Y, pop.TargetX, pop.TargetY)
@@ -99,17 +92,15 @@ func (pop *ThrowPop) drawCursor(window *gterm.Window) {
 	}
 
 	pop.World.RenderRuneAt(pop.TargetX, pop.TargetY, ' ', gterm.NoColor, pop.lineColor)
-
 }
 
-func (pop *ThrowPop) RenderTooltip(window *gterm.Window) {
-	window.PutString(pop.X+1, pop.Y+1, fmt.Sprintf("Throwing %s...", pop.Item.Name), White)
+func (pop *WarpPop) RenderTooltip(window *gterm.Window) {
+	window.PutString(pop.X+1, pop.Y+1, "Casting Warp...", White)
 }
 
-func (pop *ThrowPop) Render(window *gterm.Window) {
+func (pop *WarpPop) Render(window *gterm.Window) {
 	pop.drawCursor(window)
 
 	pop.DrawBox(window, White)
-
 	pop.RenderTooltip(window)
 }

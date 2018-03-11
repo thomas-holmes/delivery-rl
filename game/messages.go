@@ -16,6 +16,7 @@ const (
 	PlayerQuaffPotion
 	PlayerActivateItem
 	PlayerThrowItem
+	PlayerWarp
 	PlayerDropItem
 	SplashGrease
 	TryMoveCreature
@@ -62,6 +63,13 @@ type PlayerActivateItemMessage struct {
 type PlayerThrowItemMessage struct {
 	Item
 
+	TargetX int
+	TargetY int
+
+	*World
+}
+
+type PlayerWarpMessage struct {
 	TargetX int
 	TargetY int
 

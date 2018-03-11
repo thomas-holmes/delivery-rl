@@ -49,14 +49,6 @@ func (combat CombatSystem) fight(a Entity, d Entity) {
 	}
 }
 
-/*
-func (combat CombatSystem) MovementSpell(launch SpellLaunchMessage) {
-	if c, ok := launch.Caster.(*Creature); ok {
-		c.TryTeleport(launch.X, launch.Y, combat.World)
-	}
-}
-*/
-
 func (combat CombatSystem) Notify(message m.M) {
 	switch message.ID {
 	case AttackEntity:
