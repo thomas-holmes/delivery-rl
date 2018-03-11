@@ -26,7 +26,7 @@
   - name: "Leather Jerkin"
     description: "A leather shirt, only slightly bloodied. It looks like it offers decent protection."
     glyph: "Ω"
-    color: [68, 55, 36]
+    color: [98, 75, 56]
     level: 4
     power: 2d3+2
     kind: armour

@@ -76,10 +76,9 @@ func (tile *Tile) Render(world *World, visibility Visibility) {
 		return
 	}
 
+	tile.RenderBackground(world, visibility)
 	if tile.Creature != nil && visibility == Visible {
 		tile.Creature.Render(world)
-	} else {
-		tile.RenderBackground(world, visibility) // bad API, refactor
 	}
 }
 
@@ -87,6 +86,11 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 	var glyph rune
 	var color sdl.Color
 	renderFloor := true
+
+	if tile.Creature != nil && visibility == Visible {
+		renderFloor = false
+	}
+
 	if visibility == Visible {
 		switch tile.TileEffect {
 		case Greasy:
@@ -98,7 +102,7 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 		}
 	}
 
-	if tile.Item.Symbol != 0 {
+	if tile.Item.Symbol != 0 && tile.Creature == nil {
 		glyph = tile.Item.Symbol
 		color = tile.Item.Color
 		renderFloor = true
