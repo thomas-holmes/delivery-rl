@@ -155,7 +155,7 @@ func (pop *InventoryPop) Update(input controls.InputEvent) {
 
 func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) int {
 	offsetY := row
-	offsetX := pop.X + 1
+	offsetX := pop.X
 
 	item := pop.Inventory[index]
 
@@ -167,7 +167,7 @@ func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) in
 	color := Grey
 	if pop.selectedIndex == index {
 		color = White
-		window.PutRune(offsetX+1, offsetY, rightArrow, White, gterm.NoColor)
+		window.PutRune(offsetX+2, offsetY, rightArrow, White, gterm.NoColor)
 	}
 
 	name := item.Name
