@@ -30,7 +30,7 @@
   description: "A starving wolf."
   weapon: wolf teeth
   glyph: "w"
-  color: [200, 200, 200]
+  color: [180, 240, 240]
   level: 3
   power: 4
   hp: 7

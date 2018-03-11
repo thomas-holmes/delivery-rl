@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/thomas-holmes/delivery-rl/game/dice"
+
 	"github.com/thomas-holmes/delivery-rl/game/items"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
@@ -696,7 +698,9 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 			case MoveIsFood:
 				log.Printf("MOVE IS FOOD! %+v", choice)
 				tile := world.CurrentLevel().GetTile(choice.X, choice.Y)
-				tile.Item.Count--
+				if dice.Roll(tile.Item.Power) == 1 {
+					tile.Item.Count--
+				}
 				if tile.Item.Count == 0 {
 					tile.Item = Item{}
 				}

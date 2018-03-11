@@ -18,6 +18,7 @@ const (
 	Warmer
 	Weapon
 	Shoe
+	Missile
 	Food
 )
 
@@ -46,6 +47,8 @@ func parseKind(kind string) (Kind, bool) {
 		return Weapon, true
 	case "shoe":
 		return Shoe, true
+	case "missile":
+		return Missile, true
 	case "food":
 		return Food, true
 	}

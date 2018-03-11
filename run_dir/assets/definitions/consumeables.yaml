@@ -27,14 +27,14 @@
     description: "A packet of red pepper flakes. It would burn if it got in your eyes or inhaled."
     glyph: "\u000F"
     color: [240, 60, 20]
-    kind: food
+    kind: missile
     stacks: true
 
   - name: "Garlic Butter"
     description: "A small tub of garlic butter. It would be hard to walk over this if it were spilled"
     glyph: "\u0009"
     color: [250, 230, 150]
-    kind: food
+    kind: missile
     stacks: true
 
   - name: "Breadstick"
@@ -42,7 +42,7 @@
     glyph: '/'
     color: [245, 222, 179]
     kind: food
-    power: 2d6+4
+    power: 1d3
     stacks: true
 
   - name: "Chicken Wing"
@@ -50,5 +50,5 @@
     glyph: '√'
     color: [178, 34, 34]
     kind: food
-    power: 4d4+4
+    power: 1d6
     stracks: true

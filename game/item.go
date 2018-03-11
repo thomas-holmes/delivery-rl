@@ -36,7 +36,7 @@ func (i Item) CanEquip() bool {
 }
 
 func (i Item) CanThrow() bool {
-	return i.Kind == items.Food
+	return i.Kind == items.Food || i.Kind == items.Missile
 }
 
 func produceItem(itemDef items.Definition) Item {
