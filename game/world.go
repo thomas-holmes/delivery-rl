@@ -109,12 +109,12 @@ func buildMonsterFromDefinition(def monsters.Definition) *Creature {
 func (world *World) addInitialMonsters(level *Level) {
 	monsterCollection := monsters.GetCollection("monsters")
 
-	for tries := 0; tries < level.MonsterDensity; tries++ {
+	for tries := 0; tries < level.MonsterDensity+level.Depth; tries++ {
 		x := int(world.rng.Bounded(uint64(level.Columns)))
 		y := int(world.rng.Bounded(uint64(level.Rows)))
 
 		if level.CanStandOnTile(x, y) {
-			def := monsters.GetPowerBoundedMonster(world.rng, monsterCollection, level.Depth+1)
+			def := monsters.GetPowerBoundedMonster(world.rng, monsterCollection, level.Depth)
 			monster := buildMonsterFromDefinition(def)
 			monster.X = x
 			monster.Y = y
@@ -135,7 +135,6 @@ func (world *World) addDragonToLevel(level *Level) {
 func (world *World) AddLevelFromCandidate(level *CandidateLevel) {
 	loadedLevel := LoadCandidateLevel(world.nextLevelID, level)
 	world.nextLevelID++
-	loadedLevel.Depth = len(world.Levels)
 
 	world.Levels = append(world.Levels, loadedLevel)
 
@@ -633,7 +632,7 @@ func (world *World) BuildLevels() {
 			genFlags = GenDownStairs | GenUpStairs
 		}
 
-		level := GenLevel(world.rng, 72, 72, genFlags)
+		level := GenLevel(world.rng, 72, 72, i+1, genFlags)
 		world.AddLevelFromCandidate(level)
 	}
 	world.SetCurrentLevel(0)

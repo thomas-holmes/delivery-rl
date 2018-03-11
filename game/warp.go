@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/thomas-holmes/delivery-rl/game/controls"
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 )
-
-const WarpCost int = 4
 
 type WarpPop struct {
 	*World
@@ -15,6 +16,9 @@ type WarpPop struct {
 	targetVisible bool
 	TargetX       int
 	TargetY       int
+
+	distance int
+	cost     int
 
 	lineColor   sdl.Color
 	cursorColor sdl.Color
@@ -32,8 +36,12 @@ func NewWarpPop(world *World) Menu {
 }
 
 func (pop *WarpPop) warp() {
-	m.Broadcast(m.M{ID: PlayerWarp, Data: PlayerWarpMessage{World: pop.World, TargetX: pop.TargetX, TargetY: pop.TargetY}})
-	pop.done = true
+	if pop.Player.ST.Current >= pop.cost {
+		m.Broadcast(m.M{ID: PlayerWarp, Data: PlayerWarpMessage{World: pop.World, TargetX: pop.TargetX, TargetY: pop.TargetY, Cost: pop.cost}})
+		pop.done = true
+	} else {
+		gl.Append("Destination is too far away. Requires %d ST", pop.cost)
+	}
 }
 
 func (pop *WarpPop) adjustTarget(dX, dY int) {
@@ -45,7 +53,12 @@ func (pop *WarpPop) adjustTarget(dX, dY int) {
 
 	pop.targetVisible = pop.World.CurrentLevel().VisionMap.VisibilityAt(newX, newY) == Visible
 
-	if pop.targetVisible {
+	pop.distance = int(euclideanDistance(pop.Player.X, pop.Player.Y, newX, newY))
+	pop.cost = 1 + pop.distance/2
+
+	outOfRange := pop.cost > pop.Player.ST.Current
+
+	if pop.targetVisible && !outOfRange {
 		pop.cursorColor = Yellow
 		pop.lineColor = Yellow
 	} else {
@@ -95,7 +108,7 @@ func (pop *WarpPop) drawCursor(window *gterm.Window) {
 }
 
 func (pop *WarpPop) RenderTooltip(window *gterm.Window) {
-	window.PutString(pop.X+1, pop.Y+1, "Casting Warp...", White)
+	window.PutString(pop.X+1, pop.Y+1, fmt.Sprintf("Casting Warp... %dU %dST", pop.distance, pop.cost), White)
 }
 
 func (pop *WarpPop) Render(window *gterm.Window) {

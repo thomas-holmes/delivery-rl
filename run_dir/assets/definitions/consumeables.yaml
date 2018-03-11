@@ -5,6 +5,7 @@
     color: [200, 40, 40]
     power: 3d10+10
     kind: warmer
+    level: 1
     stacks: true
   
   - name: "Healing Potion"
@@ -13,6 +14,7 @@
     color: [255, 0, 0]
     power: 2d6+4
     kind: potion
+    level: 1
     stacks: true
 
   - name: "Heroism Potion"
@@ -21,6 +23,7 @@
     color: [200, 0, 200]
     power: 1d10
     kind: potion
+    level: 1
     stacks: true
   
   - name: "Red Pepper Flakes"
@@ -28,6 +31,7 @@
     glyph: "\u000F"
     color: [240, 60, 20]
     kind: missile
+    level: 1
     stacks: true
 
   - name: "Garlic Butter"
@@ -35,6 +39,7 @@
     glyph: "\u0009"
     color: [250, 230, 150]
     kind: missile
+    level: 1
     stacks: true
 
   - name: "Breadstick"
@@ -43,6 +48,7 @@
     color: [245, 222, 179]
     kind: food
     power: 1d3
+    level: 1
     stacks: true
 
   - name: "Chicken Wing"
@@ -51,4 +57,5 @@
     color: [178, 34, 34]
     kind: food
     power: 1d6
+    level: 1
     stacks: true

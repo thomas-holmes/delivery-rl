@@ -29,6 +29,8 @@ type CandidateLevel struct {
 
 	stairCandidates []Position
 
+	depth int // One Indexed
+
 	nextRoomID int
 
 	flags LevelGenFlag
@@ -225,7 +227,7 @@ func (level *CandidateLevel) addContourStairs() {
 
 func (level *CandidateLevel) addItems(collection items.Collection, max int) {
 	for i := 0; i < max; i++ {
-		itemDef := collection.Sample(level.rng)
+		itemDef := items.GetLevelBoundedItem(level.rng, collection, level.depth)
 
 		randomItem := produceItem(itemDef)
 
@@ -271,7 +273,7 @@ const (
 	GenDownStairs
 )
 
-func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *CandidateLevel {
+func GenLevel(rng *pcg.PCG64, maxX int, maxY int, depth int, flags LevelGenFlag) *CandidateLevel {
 	subX := rng.Bounded(uint64(maxX / 4))
 	subY := rng.Bounded(uint64(maxY / 4))
 
@@ -292,6 +294,7 @@ func GenLevel(rng *pcg.PCG64, maxX int, maxY int, flags LevelGenFlag) *Candidate
 		W:     W,
 		H:     H,
 		flags: flags,
+		depth: depth,
 
 		rooms: make(map[int]*Room),
 		tiles: tiles,

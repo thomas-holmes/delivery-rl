@@ -126,7 +126,7 @@ type Level struct {
 
 	MonsterDensity int
 
-	Depth int
+	Depth int // One Indexed
 
 	NextEntity int
 	Entities   []Entity
@@ -161,7 +161,7 @@ func connectTwoLevels(upper *Level, lower *Level) {
 }
 
 func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
-	level := Level{ID: id}
+	level := Level{ID: id, Depth: candidate.depth}
 
 	tiles := make([]Tile, 0, len(candidate.tiles))
 
@@ -198,7 +198,7 @@ func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
 	level.Rows = candidate.H
 	level.Tiles = tiles
 	level.Stairs = stairs
-	level.MonsterDensity = 30
+	level.MonsterDensity = 15
 
 	level.VisionMap = NewVisionMap(level.Columns, level.Rows)
 	level.ScentMap = NewScentMap(level.Columns, level.Rows)

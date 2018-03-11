@@ -183,8 +183,10 @@ func (hud *HUD) renderPlayerHeat(world *World) {
 }
 
 func (hud *HUD) renderPlayerLevel(world *World) {
-	level := fmt.Sprintf("Level: %v (%v / %v)", hud.Player.Level, hud.Player.Experience, hud.Player.NextLevelCost())
-	world.Window.PutString(hud.X+1, hud.GetNextRow(), level, White)
+	if HasLevelUps {
+		level := fmt.Sprintf("Level: %v (%v / %v)", hud.Player.Level, hud.Player.Experience, hud.Player.NextLevelCost())
+		world.Window.PutString(hud.X+1, hud.GetNextRow(), level, White)
+	}
 }
 
 func (hud *HUD) renderTurnCount(world *World) {

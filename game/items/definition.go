@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/MichaelTJones/pcg"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 
 	yaml "gopkg.in/yaml.v2"
@@ -21,6 +22,15 @@ const (
 	Missile
 	Food
 )
+
+func GetLevelBoundedItem(rng *pcg.PCG64, collection Collection, levelBound int) Definition {
+	for {
+		def := collection.Sample(rng)
+		if def.Level <= levelBound {
+			return def
+		}
+	}
+}
 
 func (i *Kind) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var kindStr string
@@ -62,6 +72,7 @@ type Definition struct {
 	Glyph       string
 	Color       []int
 	Stacks      bool
+	Level       int
 	Power       dice.Notation
 	Kind        Kind
 }

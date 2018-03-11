@@ -176,7 +176,7 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 	return MoveIsInvalid, nil
 }
 
-func (player *Creature) TryWarp(world *World, newX, newY int) bool {
+func (player *Creature) TryWarp(world *World, newX, newY, cost int) bool {
 	if newX != player.X || newY != player.Y {
 		result, _ := player.TryMove(newX, newY, world)
 		switch result {
@@ -187,7 +187,7 @@ func (player *Creature) TryWarp(world *World, newX, newY int) bool {
 			oldY := player.Y
 			player.X = newX
 			player.Y = newY
-			player.ST.Current -= WarpCost
+			player.ST.Current -= cost
 			m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
 		case MoveIsEnemy:
 			return false
@@ -496,11 +496,11 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Warp:
-		if player.ST.Current >= WarpCost {
+		if player.ST.Current >= 1 {
 			menu := NewWarpPop(world)
 			m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		} else {
-			gl.Append("Costs %d ST to Warp.", player.ST.Current)
+			gl.Append("Costs at least 1 ST to Warp.")
 		}
 		return false
 	case controls.Messages:
@@ -603,7 +603,7 @@ func (creature *Creature) Notify(message m.M) {
 
 	case PlayerWarp:
 		if d, ok := message.Data.(PlayerWarpMessage); ok {
-			creature.TryWarp(d.World, d.TargetX, d.TargetY)
+			creature.TryWarp(d.World, d.TargetX, d.TargetY, d.Cost)
 		}
 	}
 }

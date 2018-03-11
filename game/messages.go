@@ -73,6 +73,8 @@ type PlayerWarpMessage struct {
 	TargetX int
 	TargetY int
 
+	Cost int
+
 	*World
 }
 
