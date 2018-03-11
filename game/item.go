@@ -105,14 +105,20 @@ func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
 
 func (pop *ItemDetails) renderUsage(window *gterm.Window) {
 	var usageStr string
-	switch pop.Item.Kind {
-	case items.Potion:
+	item := pop.Item
+	switch {
+	case item.CanQuaff():
 		usageStr = fmt.Sprintf("[%s] Quaff", controls.KeyQ.Keys[0])
-	case items.Warmer:
+	case item.CanActivate():
 		usageStr = fmt.Sprintf("[%s] Activate", controls.KeyA.Keys[0])
-	case items.Weapon:
+	case item.CanEquip():
 		usageStr = fmt.Sprintf("[%s] Equip", controls.KeyE.Keys[0])
+	case item.CanThrow():
+		usageStr = fmt.Sprintf("[%s] Throw", controls.KeyT.Keys[0])
 	}
+
+	usageStr = fmt.Sprintf("[%s] Drop %s", controls.KeyD.Keys[0], usageStr)
+
 	if usageStr != "" {
 		window.PutString(pop.X+1, pop.Y+pop.H-2, usageStr, White)
 	}

@@ -30,14 +30,14 @@ var KeyQuestion = Mapping{Name: "Help", Action: Help, Keys: []string{"?"}, SdlKe
 
 var KeyM = Mapping{Name: "Messages", Action: Messages, Keys: []string{"M"}, SdlKeys: []sdl.Keycode{sdl.K_m}}
 var KeyZ = Mapping{Name: "Cast", Action: Cast, Keys: []string{"Z"}, SdlKeys: []sdl.Keycode{sdl.K_z}}
-var KeyE = Mapping{Name: "Equip", Action: Equip, Keys: []string{"E"}, SdlKeys: []sdl.Keycode{sdl.K_e}}
+var KeyE = Mapping{Name: "Equip", Action: Equip, Keys: []string{"E"}, SdlKeys: []sdl.Keycode{sdl.K_e}, HideHelp: true}
 var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I"}, SdlKeys: []sdl.Keycode{sdl.K_i}}
-var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}}
-var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}}
+var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, HideHelp: true}
+var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}, HideHelp: true}
 var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
 var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
-var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}}
-var KeyD = Mapping{Name: "Drop", Action: Drop, Keys: []string{"D"}, SdlKeys: []sdl.Keycode{sdl.K_d}}
+var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}, HideHelp: true}
+var KeyD = Mapping{Name: "Drop", Action: Drop, Keys: []string{"D"}, SdlKeys: []sdl.Keycode{sdl.K_d}, HideHelp: true}
 
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
