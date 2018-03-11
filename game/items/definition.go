@@ -17,6 +17,7 @@ const (
 	Potion  Kind = 1 << iota
 	Warmer
 	Weapon
+	Shoe
 	Food
 )
 
@@ -43,6 +44,8 @@ func parseKind(kind string) (Kind, bool) {
 		return Warmer, true
 	case "weapon":
 		return Weapon, true
+	case "shoe":
+		return Shoe, true
 	case "food":
 		return Food, true
 	}

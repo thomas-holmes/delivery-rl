@@ -370,7 +370,7 @@ func (creature *Creature) DropItem(item Item, world *World) {
 		gl.Append("Dropped %d %s", item.Count, item.Name)
 		creature.Inventory.RemoveAllItem(item)
 	} else {
-		gl.Append("Could not drop %s, there was no room")
+		gl.Append("Could not drop %s, there was no room", item.Name)
 	}
 }
 
@@ -384,12 +384,12 @@ func (creature *Creature) ThrowItem(m PlayerThrowItemMessage) {
 	singleItem.Count = 1
 	if m.World.PlaceItemAround(singleItem, m.TargetX, m.TargetY) {
 		creature.CompletedExternalAction = true
-		gl.Append("Threw %s", singleItem, singleItem.Name)
+		gl.Append("Threw %s", singleItem.Name)
 		creature.Inventory.RemoveItem(m.Item)
 		a := NewLinearSpellAnimation(creature.X, creature.Y, m.TargetX, m.TargetY, 20, 0, singleItem.Symbol, singleItem.Color)
 		m.World.AddAnimation(&a)
 	} else {
-		gl.Append("Could not throw %s, there is nowhere for it to land")
+		gl.Append("Could not throw %s, there is nowhere for it to land", singleItem.Name)
 	}
 }
 
