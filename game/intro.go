@@ -68,10 +68,10 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	intro.drawSplash(window)
 
 	content := "DeliveryRL"
-	x, y := (window.Columns-len(content))/2-3, window.Rows-5
+	x, y := (window.Columns-len(content))/2, window.Rows-5
 	window.PutString(x, y, "DeliveryRL", LightBlue)
 
 	content = "Press any key to begin..."
-	x, y = (window.Columns-len(content))/2-3, y+1
+	x, y = (window.Columns-len(content))/2, y+1
 	window.PutString(x, y, "Press any key to begin...", LightGrey)
 }
