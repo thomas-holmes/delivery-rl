@@ -3,7 +3,7 @@
     description: "Just some bare hands"
     glyph: "m"
     color: [255, 0, 0]
-    power: 1d1
+    power: 1d2+1
     kind: weapon
 
   - name: "Rat Teeth"
@@ -20,7 +20,7 @@
     power: 1d6
     kind: weapon
 
-  - name: "Orc Fists"
+  - name: "Orcish Axe"
     description: ""
     glyph: "w"
     color: [255, 0, 0]

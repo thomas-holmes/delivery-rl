@@ -19,7 +19,7 @@
 
 - name: "Orc"
   description: "A furious orc."
-  weapon: orc fists
+  weapon: orcish axe
   glyph: "o"
   color: [25, 225, 10]
   level: 3
