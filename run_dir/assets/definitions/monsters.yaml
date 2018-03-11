@@ -11,6 +11,7 @@
 - name: "Goblin"
   description: "A hungry little goblin."
   weapon: goblin claws
+  armour: worn boots
   glyph: "g"
   color: [0, 255, 0]
   level: 2
@@ -20,6 +21,7 @@
 - name: "Orc"
   description: "A furious orc."
   weapon: orcish axe
+  armour: wooden shield
   glyph: "o"
   color: [25, 225, 10]
   level: 3

@@ -28,6 +28,7 @@ type color struct {
 }
 
 type MonsterWeapon items.Definition
+type MonsterArmour items.Definition
 
 type Definition struct {
 	Name        string
@@ -35,6 +36,7 @@ type Definition struct {
 	Glyph       string
 	Color       color
 	Weapon      MonsterWeapon
+	Armour      MonsterArmour
 
 	Level int
 	Power int
@@ -61,6 +63,21 @@ func (m *MonsterWeapon) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return errors.New("Could not lookup monster weapon")
 	}
 	*m = MonsterWeapon(def)
+
+	return nil
+}
+
+func (m *MonsterArmour) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var armourName string
+	if err := unmarshal(&armourName); err != nil {
+		return err
+	}
+	naturalWeapons := items.GetCollection("armour")
+	def, ok := naturalWeapons.GetByName(armourName)
+	if !ok {
+		return errors.New("Could not lookup monster armour")
+	}
+	*m = MonsterArmour(def)
 
 	return nil
 }

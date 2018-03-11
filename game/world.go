@@ -102,6 +102,9 @@ func buildMonsterFromDefinition(def monsters.Definition) *Creature {
 	if def.Weapon.Name != "" {
 		monster.Equipment.Weapon = produceItem(items.Definition(def.Weapon))
 	}
+	if def.Armour.Name != "" {
+		monster.Equipment.Armour = produceItem(items.Definition(def.Armour))
+	}
 
 	return monster
 }
