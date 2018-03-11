@@ -222,9 +222,12 @@ func (hud *HUD) renderItemDisplay(world *World) {
 	}
 	for _, item := range items {
 		world.Window.PutRune(hud.XPos, offsetY, item.Symbol, item.Color, gterm.NoColor)
-		name := item.Name
 		offsetX = hud.XPos
-		hud.nextFreeRow += (putWrappedText(world.Window, name, offsetX, offsetY, 2, 4, world.Window.Columns-offsetX, Yellow) - 1)
+		itemText := item.Name
+		if item.Count > 1 {
+			itemText = fmt.Sprintf("[%d] %s", item.Count, item.Name)
+		}
+		hud.nextFreeRow += (putWrappedText(world.Window, itemText, offsetX, offsetY, 2, 4, world.Window.Columns-offsetX, Yellow) - 1)
 		offsetY = hud.GetNextRow()
 	}
 	offsetX = hud.XPos
