@@ -34,7 +34,7 @@ func ActivateItem(creature *Creature, item Item) {
 // way removing an item works. So it makes a copy, sets the quantity to 1 so
 // we don't accidentally create a dup bug, but we need to provide the full count
 // so the inventory removeitem function properly treats it as a stack.
-// I could fix this a better way but not right now :()
+// I could fix this a better way but not right now :(
 func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int) bool {
 	singleItem := item
 	singleItem.Count = 1
@@ -42,7 +42,7 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 	case "Garlic Butter":
 		gl.Append("Threw %s", singleItem.Name)
 		creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
-		a := NewLinearSpellAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
+		a := NewLinearAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
 		world.AddAnimation(&a)
 		m.Broadcast(m.M{ID: SplashGrease, Data: SplashGreaseMessage{Item: singleItem, X: targetX, Y: targetY}})
 		return true
@@ -52,7 +52,7 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 			gl.Append("Threw %s at %s, driving them blind with rage!", singleItem.Name, tC.Name)
 
 			creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
-			animation := NewLinearSpellAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
+			animation := NewLinearAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
 			world.AddAnimation(&animation)
 			tC.ApplyStatusEffect(Confused)
 
@@ -64,7 +64,7 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 		if world.PlaceItemAround(singleItem, targetX, targetY) {
 			gl.Append("Threw %s", singleItem.Name)
 			creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
-			animation := NewLinearSpellAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
+			animation := NewLinearAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
 			world.AddAnimation(&animation)
 			return true
 		} else {

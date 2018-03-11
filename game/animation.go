@@ -12,7 +12,7 @@ type Animation interface {
 }
 
 // Maybe make a LinearAnimation instead?
-type LinearSpellAnimation struct {
+type LinearAnimation struct {
 	x int
 	y int
 
@@ -28,13 +28,13 @@ type LinearSpellAnimation struct {
 	Glyph rune
 }
 
-func (a *LinearSpellAnimation) Start(time uint32) {
+func (a *LinearAnimation) Start(time uint32) {
 	a.startTime = time
 	a.accumulatedTime = time
 }
 
-func NewLinearSpellAnimation(startX, startY, endX, endY int, speed uint32, delay uint32, glyph rune, color sdl.Color) LinearSpellAnimation {
-	return LinearSpellAnimation{
+func NewLinearAnimation(startX, startY, endX, endY int, speed uint32, delay uint32, glyph rune, color sdl.Color) LinearAnimation {
+	return LinearAnimation{
 		Speed: speed,
 		Color: color,
 		Glyph: glyph,
@@ -43,12 +43,12 @@ func NewLinearSpellAnimation(startX, startY, endX, endY int, speed uint32, delay
 	}
 }
 
-func (a *LinearSpellAnimation) Done() bool {
+func (a *LinearAnimation) Done() bool {
 	// Doing this math with int64 due to uint32 underflows making this misbehave
 	return (int64(a.accumulatedTime) - int64((a.startTime + a.Delay))) >= int64((a.Speed * uint32(len(a.path))))
 }
 
-func (a *LinearSpellAnimation) Update(delta uint32) {
+func (a *LinearAnimation) Update(delta uint32) {
 	if a.startTime == 0 {
 		log.Panicf("You must first call start on the animation before running it")
 	}
@@ -58,12 +58,12 @@ func (a *LinearSpellAnimation) Update(delta uint32) {
 	a.step = int((elapsed) / a.Speed)
 }
 
-func (a *LinearSpellAnimation) Ready() bool {
+func (a *LinearAnimation) Ready() bool {
 	return a.accumulatedTime > a.startTime+a.Delay
 }
 
 // Interp?
-func (a *LinearSpellAnimation) Render(world *World) {
+func (a *LinearAnimation) Render(world *World) {
 	if a.Done() || !a.Ready() {
 		return
 	}

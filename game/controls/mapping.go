@@ -29,9 +29,9 @@ var KeyLesser = Mapping{Name: "Ascend", Action: Ascend, Keys: []string{"<"}, Sdl
 var KeyQuestion = Mapping{Name: "Help", Action: Help, Keys: []string{"?"}, SdlKeys: []sdl.Keycode{sdl.K_SLASH}, Shift: true}
 
 var KeyM = Mapping{Name: "Messages", Action: Messages, Keys: []string{"M"}, SdlKeys: []sdl.Keycode{sdl.K_m}}
-var KeyZ = Mapping{Name: "Cast", Action: Cast, Keys: []string{"Z"}, SdlKeys: []sdl.Keycode{sdl.K_z}}
 var KeyE = Mapping{Name: "Equip", Action: Equip, Keys: []string{"E"}, SdlKeys: []sdl.Keycode{sdl.K_e}, HideHelp: true}
 var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I"}, SdlKeys: []sdl.Keycode{sdl.K_i}}
+var KeyB = Mapping{Name: "Warp", Action: Warp, Keys: []string{"W", "KP_+"}, SdlKeys: []sdl.Keycode{sdl.K_w, sdl.K_KP_PLUS}}
 var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, HideHelp: true}
 var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}, HideHelp: true}
 var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
@@ -62,9 +62,9 @@ var AllMappings = []*Mapping{
 	&KeyFive,
 	&KeyEsc,
 	&KeyM,
-	&KeyZ,
 	&KeyE,
 	&KeyI,
+	&KeyB,
 	&KeyQ,
 	&KeyA,
 	&KeyX,
@@ -97,9 +97,9 @@ const (
 	Wait
 	Cancel
 	Messages
-	Cast
 	Equip
 	Inventory
+	Warp
 	Quaff
 	Activate
 	Throw

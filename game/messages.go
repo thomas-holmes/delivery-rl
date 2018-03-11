@@ -5,8 +5,6 @@ type Message int
 const (
 	MoveEntity Message = iota
 	AttackEntity
-	SpellTarget
-	SpellLaunch
 	PlayerDead
 	KillEntity
 	PlayerFloorChange
@@ -34,18 +32,6 @@ type MoveEntityMessage struct {
 type AttackEntityMesasge struct {
 	Attacker Entity
 	Defender Entity
-}
-
-type SpellTargetMessage struct {
-	Spell Spell
-	World *World
-}
-
-type SpellLaunchMessage struct {
-	Caster Entity
-	X      int
-	Y      int
-	Spell  Spell
 }
 
 type KillEntityMessage struct {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"sort"
@@ -87,8 +86,6 @@ type Creature struct {
 	ST Resource // stamina
 
 	HT Resource // heat
-
-	Spells []Spell
 
 	Level int
 
@@ -255,7 +252,6 @@ func NewPlayer() *Creature {
 	player.RenderGlyph = '@'
 	player.RenderColor = Red
 	player.IsPlayer = true
-	player.Spells = DefaultSpells
 	player.VisionDistance = 12
 	player.HP.RegenRate = 0.15
 	player.ST = Resource{Current: 4, Max: 4, RegenRate: 0.10}
@@ -369,26 +365,6 @@ func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *
 	}
 
 	return false
-}
-
-func (creature *Creature) TargetSpell(spell Spell, world *World) {
-	menu := &SpellTargeting{PopMenu: PopMenu{X: 0, Y: 0, W: 0, H: 0}, TargetX: creature.X, TargetY: creature.Y, World: world, Spell: spell}
-	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-}
-
-func (creature *Creature) CanCast(spell Spell) bool {
-	if spell.Cost <= creature.ST.Current {
-		return true
-	}
-	return false
-}
-
-func (creature *Creature) CastSpell(spell Spell, world *World, targetX int, targetY int) {
-	fmt.Printf("Firing at (%v,%v) with %+v", targetX, targetY, spell)
-	creature.CompletedExternalAction = true
-	creature.ST.Current -= spell.Cost
-	// Can attack self. Do we care?
-	m.Broadcast(m.M{ID: SpellLaunch, Data: SpellLaunchMessage{Caster: creature, Spell: spell, X: targetX, Y: targetY}})
 }
 
 func (creature *Creature) Quaff(potion Item) {
@@ -519,10 +495,8 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 		menu := &InspectionPop{PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 26}, World: world, InspectX: player.X, InspectY: player.Y}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
-	case controls.Cast:
-		menu := &SpellPop{PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: world.Window.Rows - 4}, World: world}
-		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-		return false
+	case controls.Warp:
+		// Do warp shit
 	case controls.Messages:
 		m.Broadcast(m.M{ID: ShowFullGameLog})
 		return false
@@ -603,10 +577,6 @@ func (creature *Creature) Notify(message m.M) {
 			creature.Equipment.Weapon = d.Item
 			gl.Append("%s equips %s", creature.Name, d.Item.Name)
 			creature.Inventory.RemoveItem(d.Item)
-		}
-	case SpellTarget:
-		if d, ok := message.Data.(SpellTargetMessage); ok {
-			creature.TargetSpell(d.Spell, d.World)
 		}
 	case PlayerQuaffPotion:
 		if d, ok := message.Data.(PlayerQuaffPotionMessage); ok {
