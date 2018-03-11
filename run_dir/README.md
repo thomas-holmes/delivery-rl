@@ -13,7 +13,7 @@ Running delivery-rl.exe in this directory should be sufficient to start.
 Linux
 -----
 
-Install sdl2 and sdl2_img from your package manager, that is all you should need to run delivery-rl.
+If you have SDL2, SDL2_image, and libpng installed you should be able to just run delivery-rl. If not, you can try running with the bundled shared objects by running delivery-rl.sh instead which will prepend them to your LD_LIBRARY_PATH and then launch delivery-rl. You can also install SDL2, SDL2_image, and libpng via your package manager and run delivery-rl as normal.
 
 OSX
 ---
