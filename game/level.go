@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"sort"
 )
@@ -197,10 +198,16 @@ func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
 	level.Rows = candidate.H
 	level.Tiles = tiles
 	level.Stairs = stairs
-	level.MonsterDensity = 12
+	level.MonsterDensity = MonsterDensity
 
 	level.VisionMap = NewVisionMap(level.Columns, level.Rows)
 	level.ScentMap = NewScentMap(level.Columns, level.Rows)
 
 	return level
+}
+
+var MonsterDensity int
+
+func init() {
+	flag.IntVar(&MonsterDensity, "monster-density", 15, "Base value of monsters to spawn per level")
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+
 	"github.com/MichaelTJones/pcg"
 	"github.com/thomas-holmes/delivery-rl/game/items"
 )
@@ -38,17 +40,6 @@ type CandidateLevel struct {
 	rooms map[int]*Room
 	tiles []CandidateTile
 }
-
-const (
-	MinRoomWidth            = 3
-	MinRoomHeight           = 3
-	MaxRoomWidth            = 20
-	MaxRoomHeight           = 20
-	MaxRoomIterations       = 200
-	MaxWeaponPlacement      = 5
-	MaxConsumeablePlacement = 20
-	MaxArmourPlacement      = 5
-)
 
 func (level *CandidateLevel) genNextRoomID() int {
 	id := level.nextRoomID
@@ -294,4 +285,14 @@ func (c *CandidateLevel) startBombing() {
 			}
 		}
 	}
+}
+
+var MaxWeaponPlacement int = 4
+var MaxConsumeablePlacement int = 14
+var MaxArmourPlacement int = 4
+
+func init() {
+	flag.IntVar(&MaxWeaponPlacement, "weapon-density", 4, "Number of weapons to attempt to place per level")
+	flag.IntVar(&MaxConsumeablePlacement, "consumeable-density", 12, "Number of weapons to attempt to place per level")
+	flag.IntVar(&MaxArmourPlacement, "armour-density", 4, "Number of weapons to attempt to place per level")
 }

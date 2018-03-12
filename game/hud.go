@@ -230,6 +230,9 @@ func (hud *HUD) renderItemDisplay(world *World) {
 		if item.Count > 1 {
 			itemText = fmt.Sprintf("[%d] %s", item.Count, item.Name)
 		}
+		if item.CanEquip() {
+			itemText += fmt.Sprintf(" (%s)", item.Power.String())
+		}
 		hud.nextFreeRow += (putWrappedText(world.Window, itemText, offsetX, offsetY, 2, 4, world.Window.Columns-offsetX, White) - 1)
 		offsetY = hud.GetNextRow()
 	}

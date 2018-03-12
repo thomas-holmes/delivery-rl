@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"math"
 	"sort"
@@ -214,27 +215,35 @@ func NewCreature(level int, maxHP int) *Creature {
 }
 
 func (p *Creature) AddStartingItems() {
-	if def, ok := items.GetCollection("consumeables").GetByName("Chicken Wing"); ok {
+	consumeables := items.GetCollection("consumeables")
+
+	if def, ok := consumeables.GetByName("Hand Warmer"); ok && InitialWarmers > 0 {
 		it := produceItem(def)
-		it.Count = 5
+		it.Count = InitialWarmers
 		p.Inventory.Add(it)
 	}
 
-	if def, ok := items.GetCollection("consumeables").GetByName("Garlic Butter"); ok {
+	if def, ok := consumeables.GetByName("Chicken Wing"); ok && InitialWings > 0 {
 		it := produceItem(def)
-		it.Count = 5
+		it.Count = InitialWings
 		p.Inventory.Add(it)
 	}
 
-	if def, ok := items.GetCollection("consumeables").GetByName("Red Pepper Flakes"); ok {
+	if def, ok := consumeables.GetByName("Garlic Butter"); ok && InitialButter > 0 {
 		it := produceItem(def)
-		it.Count = 5
+		it.Count = InitialButter
 		p.Inventory.Add(it)
 	}
 
-	if def, ok := items.GetCollection("consumeables").GetByName("Breadstick"); ok {
+	if def, ok := consumeables.GetByName("Red Pepper Flakes"); ok && InitialPepper > 0 {
 		it := produceItem(def)
-		it.Count = 5
+		it.Count = InitialPepper
+		p.Inventory.Add(it)
+	}
+
+	if def, ok := consumeables.GetByName("Breadstick"); ok && InitialBread > 0 {
+		it := produceItem(def)
+		it.Count = InitialBread
 		p.Inventory.Add(it)
 	}
 
@@ -248,9 +257,9 @@ func NewPlayer() *Creature {
 	player.RenderColor = Red
 	player.IsPlayer = true
 	player.VisionDistance = 12
-	player.HP.RegenRate = 0.15
-	player.ST = Resource{Current: 4, Max: 4, RegenRate: 0.10}
-	player.HT = Resource{Current: 125, Max: 125, RegenRate: -0.10}
+	player.HP.RegenRate = HPRegen
+	player.ST = Resource{Current: 4, Max: 4, RegenRate: STRegen}
+	player.HT = Resource{Current: 125, Max: 125, RegenRate: -HeatDecay}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
@@ -718,3 +727,25 @@ const (
 	Idle MonsterBehavior = iota
 	Pursuing
 )
+
+var InitialWarmers int
+var InitialWings int
+var InitialBread int
+var InitialPepper int
+var InitialButter int
+
+var HeatDecay float64
+var HPRegen float64
+var STRegen float64
+
+func init() {
+	flag.IntVar(&InitialWarmers, "starting-warmers", 0, "Starting amount of Hand Warmers.")
+	flag.IntVar(&InitialWings, "starting-wings", 3, "Starting amount of Chicken Wings.")
+	flag.IntVar(&InitialBread, "starting-bread", 3, "Starting amount of Breadsticks.")
+	flag.IntVar(&InitialPepper, "starting-pepper", 3, "Starting amount of Red Pepper Flakes.")
+	flag.IntVar(&InitialButter, "starting-Butter", 3, "Starting amount of Garlic Butter.")
+
+	flag.Float64Var(&HeatDecay, "heat-decay", 0.10, "Amount of heat lost per turn.")
+	flag.Float64Var(&HPRegen, "hp-regen", 0.15, "HP regen per turn.")
+	flag.Float64Var(&STRegen, "st-regen", 0.10, "ST regen per turn.")
+}
