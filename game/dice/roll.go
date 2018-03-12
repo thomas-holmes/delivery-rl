@@ -61,7 +61,7 @@ func (r Roller) Roll(notation Notation) int {
 		total += (int(r.rng.Bounded(uint64(sides))) + 1)
 	}
 
-	return total
+	return total + notation.Bonus
 }
 
 var diceRegex = regexp.MustCompile(`(?P<num>\d+)d(?P<sides>\d+)(\s*\+\s*(?P<bonus>\d+))?`)
