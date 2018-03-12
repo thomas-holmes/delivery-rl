@@ -25,7 +25,11 @@ runv: build
 runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
 
-dist: test build buildwin
+distclean:
+	rm run_dir/$(BINARY) || true
+	rm run_dir_$(BINARY).exe || true
+
+dist: distclean test build buildwin
 	echo $(SHA) > run_dir/COMMIT
 	cp README.md run_dir/
 	mv run_dir deliveryrl
