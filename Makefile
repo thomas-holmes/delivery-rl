@@ -5,6 +5,7 @@ GOPKG='github.com/thomas-holmes/delivery-rl/game'
 MKFILE_PATH=$(abspath $(lastword $(MAKEFILE_LIST)))
 ROOT=$(shell git rev-parse --show-toplevel)
 SHA=$(shell git rev-parse HEAD)
+VERSION=$(shell git describe --tags --always)
 BINARY=delivery-rl
 
 all: test build
@@ -28,7 +29,7 @@ dist: test build buildwin
 	echo $(SHA) > run_dir/COMMIT
 	cp README.md run_dir/
 	mv run_dir deliveryrl
-	tar -czf deliveryrl.tgz deliveryrl
+	tar -czf deliveryrl-$(VERSION)-7drl.tgz deliveryrl
 	mv deliveryrl run_dir
 	rm run_dir/COMMIT
 	rm run_dir/README.md
