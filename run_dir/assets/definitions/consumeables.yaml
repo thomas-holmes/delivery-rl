@@ -3,7 +3,7 @@
     description: "Activate this small warming pouch to restore a small amount of heat to the pizza"
     glyph: "\u0015"
     color: [200, 40, 40]
-    power: 3d10+10
+    power: 2d10+10
     kind: warmer
     level: 1
     stacks: true
@@ -21,7 +21,7 @@
     description: "This potion raise your maximum health and stamina. Good luck out there!"
     glyph: "!"
     color: [200, 0, 200]
-    power: 2d6
+    power: 2d4
     kind: potion
     level: 1
     stacks: true
