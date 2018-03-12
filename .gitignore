@@ -8,3 +8,4 @@ run_dir/deliveryrl
 run_dir/delivery-rl
 game/game
 deliveryrl*.tgz
+dist/

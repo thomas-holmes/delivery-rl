@@ -6,6 +6,7 @@ MKFILE_PATH=$(abspath $(lastword $(MAKEFILE_LIST)))
 ROOT=$(shell git rev-parse --show-toplevel)
 SHA=$(shell git rev-parse HEAD)
 VERSION=$(shell git describe --tags --always)
+BUILDPATH=dist/deliveryrl-$(VERSION)
 BINARY=delivery-rl
 
 all: test build
@@ -25,18 +26,20 @@ runv: build
 runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
 
-distclean:
-	rm run_dir/$(BINARY) || true
-	rm run_dir_$(BINARY).exe || true
+binclean:
+	rm run_dir/$(BINARY) | true
+	rm run_dir/$(BINARY).exe | true
 
-dist: distclean test build buildwin
-	echo $(SHA) > run_dir/COMMIT
-	cp README.md run_dir/
-	mv run_dir deliveryrl
-	tar -czf deliveryrl-$(VERSION)-7drl.tgz deliveryrl
-	mv deliveryrl run_dir
-	rm run_dir/COMMIT
-	rm run_dir/README.md
+distclean:
+	rm -rf dist
+
+dist: binclean distclean test build buildwin
+	mkdir -p $(BUILDPATH)
+	echo $(SHA) > $(BUILDPATH)/COMMIT
+	cp README.md $(BUILDPATH)
+	cp CHANGELOG.md $(BUILDPATH)
+	cp -r run_dir/* $(BUILDPATH)
+	cd dist && tar -czf ../deliveryrl-$(VERSION).tgz deliveryrl-$(VERSION)
 
 test:
 	$(GO_BIN) test ./...

@@ -1,6 +1,8 @@
 Changelog
 ---------
 
+* 1.0.3
+	* Update help screen with information about the dragon's location
 * 1.0.2
 	* Accidentally built 1.0.1 with an unsaved file missing a few minor balance tweaks. Hand warmers are now slightly less effective to offset the gain in power from adding their flat +10 bonus.
 * 1.0.1
