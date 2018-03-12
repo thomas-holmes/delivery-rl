@@ -66,9 +66,12 @@ func (pop HelpPop) Render(window *gterm.Window) {
 		"scrounge up something useful from past adventurers, but remember: even though you can teleport you're no warrior!"
 
 	y += putWrappedText(window, objective2, x, y, 2, 0, pop.W-3, White)
-	y++
 
+	y++
 	window.PutString(x, y, "Good Luck!", White)
+
+	y += 2
+	window.PutString(x, y, "You will find the dragon on the 10th floor.", Red)
 
 	content := "2018 7DRL by Keipra"
 	window.PutString(pop.X+pop.W-1-len(content), pop.Y+pop.H-2, content, Grey)
