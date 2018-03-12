@@ -26,10 +26,12 @@ runrv: build
 
 dist: test build buildwin
 	echo $(SHA) > run_dir/COMMIT
+	cp README.md run_dir/
 	mv run_dir deliveryrl
 	tar -czf deliveryrl.tgz deliveryrl
 	mv deliveryrl run_dir
 	rm run_dir/COMMIT
+	rm run_dir/README.md
 
 test:
 	$(GO_BIN) test ./...
