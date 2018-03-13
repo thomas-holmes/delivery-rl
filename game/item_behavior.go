@@ -58,7 +58,7 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 
 			return true
 		} else {
-			gl.Append("You don't want to waste your %s just throwing them at nothing!", item.Name)
+			gl.Append("You don't want to waste your %s, throw them at an enemy!", item.Name)
 		}
 	default:
 		if world.PlaceItemAround(singleItem, targetX, targetY) {

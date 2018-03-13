@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
+	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
@@ -39,8 +40,12 @@ type ThrowPop struct {
 }
 
 func (pop *ThrowPop) throwItem() {
-	m.Broadcast(m.M{ID: PlayerThrowItem, Data: PlayerThrowItemMessage{World: pop.World, Item: pop.Item, TargetX: pop.TargetX, TargetY: pop.TargetY}})
-	pop.done = true
+	if pop.targetVisible {
+		m.Broadcast(m.M{ID: PlayerThrowItem, Data: PlayerThrowItemMessage{World: pop.World, Item: pop.Item, TargetX: pop.TargetX, TargetY: pop.TargetY}})
+		pop.done = true
+	} else {
+		gl.Append("Target a space you can see!")
+	}
 }
 
 func (pop *ThrowPop) adjustTarget(dX, dY int) {
@@ -50,7 +55,8 @@ func (pop *ThrowPop) adjustTarget(dX, dY int) {
 	newY := pop.TargetY + dY
 	newY = min(pop.World.CurrentLevel().Rows-1, max(0, newY))
 
-	pop.targetVisible = pop.World.CurrentLevel().VisionMap.VisibilityAt(newX, newY) == Visible
+	pop.targetVisible = pop.World.CurrentLevel().VisionMap.VisibilityAt(newX, newY) == Visible &&
+		!pop.World.CurrentLevel().GetTile(newX, newY).IsWall()
 
 	if pop.targetVisible {
 		pop.cursorColor = Yellow
