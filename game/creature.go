@@ -602,6 +602,29 @@ func (creature *Creature) Render(world *World) {
 	world.RenderRuneAt(creature.X, creature.Y, creature.RenderGlyph, creature.RenderColor, gterm.NoColor)
 }
 
+func (monster *Creature) FindFood(world *World) []TrackCandidate {
+
+	var closeFood []TrackCandidate
+	for _, pos := range world.CurrentLevel().ClampedXY(monster.X, monster.Y, 5) {
+		if world.CurrentLevel().GetTile(pos.X, pos.Y).Item.Kind == items.Food {
+			closeFood = append(closeFood, TrackCandidate{Position: pos, Scent: euclideanDistance(monster.X, monster.Y, pos.X, pos.Y)})
+		}
+	}
+
+	var visibleFood []TrackCandidate
+	for _, tc := range closeFood {
+		path := PlotLine(monster.X, monster.Y, tc.X, tc.Y)
+		for _, pos := range path {
+			if world.CurrentLevel().GetTile(pos.X, pos.Y).IsWall() {
+				break
+			}
+		}
+		visibleFood = append(visibleFood, tc)
+	}
+
+	return visibleFood
+}
+
 func (monster *Creature) Pursue(turn uint64, world *World) bool {
 	if world.CurrentLevel().VisionMap.VisibilityAt(monster.X, monster.Y) == Visible {
 		monster.State = Pursuing
@@ -620,23 +643,7 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 		}
 		shuffle(world.rng, len(candidates), func(i, j int) { candidates[i], candidates[j] = candidates[j], candidates[i] })
 	} else {
-		var closeFood []TrackCandidate
-		for _, pos := range world.CurrentLevel().ClampedXY(monster.X, monster.Y, 5) {
-			if world.CurrentLevel().GetTile(pos.X, pos.Y).Item.Kind == items.Food {
-				closeFood = append(closeFood, TrackCandidate{Position: pos, Scent: euclideanDistance(monster.X, monster.Y, pos.X, pos.Y)})
-			}
-		}
-
-		var visibleFood []TrackCandidate
-		for _, tc := range closeFood {
-			path := PlotLine(monster.X, monster.Y, tc.X, tc.Y)
-			for _, pos := range path {
-				if world.CurrentLevel().GetTile(pos.X, pos.Y).IsWall() {
-					break
-				}
-			}
-			visibleFood = append(visibleFood, tc)
-		}
+		visibleFood := monster.FindFood(world)
 
 		sort.Slice(visibleFood, func(i, j int) bool { return visibleFood[i].Scent < visibleFood[j].Scent })
 
@@ -644,9 +651,16 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 		candidates = scent.track(turn, monster.X, monster.Y)
 		if len(visibleFood) > 0 {
 			closestFood := visibleFood[0]
+
 			pathToFood := PlotLine(monster.X, monster.Y, closestFood.X, closestFood.Y)
-			if len(pathToFood) > 1 {
-				closestTile := pathToFood[1]
+			if len(pathToFood) >= 0 {
+				var closestTile Position
+				if len(pathToFood) > 1 {
+					closestTile = pathToFood[1]
+				} else {
+					closestTile = pathToFood[0]
+
+				}
 				foodCandidate := TrackCandidate{Position: closestTile, Scent: math.MaxFloat64}
 				candidates = append(candidates, foodCandidate)
 				sort.Slice(candidates, func(i, j int) bool { return candidates[i].Scent > candidates[j].Scent })
