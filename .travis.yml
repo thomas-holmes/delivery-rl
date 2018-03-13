@@ -1,8 +1,19 @@
 ---
+matrix:
+  allow_failures:
+    - os: osx
+os:
+  - linux
+  - osx
+compile:
+  - gcc
+  - clang
 sudo: required
 language: go
 before_install:
-  - sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev libsdl2-dev libsdl2-image-dev
+  - if [[ "$TRAVIS_OS_NAME"== "linux" ]]; sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev libsdl2-dev libsdl2-image-dev; fi
+  - if [[ "$TRAVIS_OS_NAME"== "osx" ]]; then brew update ;fi
+  - if [[ "$TRAVIS_OS_NAME"== "osx" ]]; then brew install sdl2 sdl2_image ;fi
 go:
   - "1.10"
 script:
