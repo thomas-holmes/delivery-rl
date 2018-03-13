@@ -39,7 +39,7 @@ dist: binclean distclean test build buildwin
 	cp README.md $(BUILDPATH)
 	cp CHANGELOG.md $(BUILDPATH)
 	cp -r run_dir/* $(BUILDPATH)
-	cd dist && tar -czf ../deliveryrl-$(VERSION).tgz deliveryrl-$(VERSION)
+	cd dist && zip -r ../deliveryrl-$(VERSION).zip deliveryrl-$(VERSION)
 
 test:
 	$(GO_BIN) test ./...
