@@ -108,7 +108,12 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 		renderFloor = true
 	} else {
 		glyph = tile.TileGlyph
-		color = tile.Color
+		if tile.TileKind == UpStair || tile.TileKind == DownStair {
+			color = Orange
+		} else {
+			color = tile.Color
+		}
+
 	}
 
 	if visibility == Seen {
