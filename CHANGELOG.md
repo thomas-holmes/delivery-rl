@@ -1,6 +1,20 @@
 Changelog
 ---------
 
+* 1.0.4
+	* Balance
+		* Rearrange weapon progression slightly to be more sensible
+		* Slightly reduced effectieness of armour
+		* Make certain items only spawn deeper
+	* UI
+		* Examine cursor now works with numpad and arrows.
+		* Examine interface shows if a monster is slowed or confused.
+		* HUD shows if the player is slowed.
+		* Throwing target selection inspect selection now more like the warp interface.
+		* Stairs are now colored orange instead of white.
+		* Inventory cursor can wrap around.
+	* Gameplay
+		* Grease slows monsters while in it instead of if they were in it last turn.
 * 1.0.3
 	* Update help screen with information about the dragon's location
 * 1.0.2
