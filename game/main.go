@@ -17,7 +17,6 @@ import (
 	"github.com/thomas-holmes/gterm"
 	"github.com/veandco/go-sdl2/sdl"
 
-	"net/http"
 	_ "net/http/pprof"
 )
 
@@ -158,7 +157,6 @@ var FontW int
 var FontH int
 
 func init() {
-	go http.ListenAndServe("localhost:6060", nil)
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", time.Now().UnixNano(), "Provide a seed for launching the game")
 	flag.StringVar(&Font, "font-path", "assets/font/cp437_16x16.png", "Set font relative file path")

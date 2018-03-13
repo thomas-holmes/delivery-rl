@@ -1,6 +1,7 @@
 Changelog
 ---------
-
+* 1.0.5
+	* Update version of gterm rendering library, reducing CPU usage by approximately half.
 * 1.0.4
 	* Balance
 		* Rearrange weapon progression slightly to be more sensible
