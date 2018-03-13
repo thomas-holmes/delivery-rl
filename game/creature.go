@@ -97,13 +97,14 @@ func (c *Creature) CheckTerrain(world *World) {
 	tile := world.CurrentLevel().GetTile(c.X, c.Y)
 	switch tile.TileEffect {
 	case None:
-		c.SpeedModifier = 1
+		c.RemoveStatusEffect(Slow)
 	case Greasy:
-		c.SpeedModifier = 4
+		c.ApplyStatusEffect(Slow, 10, false)
 	}
 }
 
-func (c *Creature) StartTurn() {
+func (c *Creature) StartTurn(world *World) {
+	c.CheckTerrain(world)
 	if !c.GainedEnergy {
 		c.Energy.AddEnergy(100)
 		c.GainedEnergy = true
@@ -138,6 +139,11 @@ func (c Creature) YPos() int {
 }
 
 func (c Creature) Speed() int {
+	if c.HasStatus(Slow) {
+		c.SpeedModifier = 4
+	} else {
+		c.SpeedModifier = 1
+	}
 	return c.BaseSpeed * c.SpeedModifier
 }
 
@@ -206,11 +212,12 @@ func NewCreature(level int, maxHP int) *Creature {
 			Current: 100,
 			Max:     100,
 		},
-		HP:        Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
-		ST:        Resource{Current: 2, Max: 2, RegenRate: 0.15},
-		Effects:   make(map[StatusEffect]int),
-		BaseSpeed: 100,
-		Equipment: NewEquipment(),
+		HP:            Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
+		ST:            Resource{Current: 2, Max: 2, RegenRate: 0.15},
+		Effects:       make(map[StatusEffect]int),
+		BaseSpeed:     100,
+		SpeedModifier: 1,
+		Equipment:     NewEquipment(),
 	}
 }
 
@@ -327,9 +334,8 @@ func (creature *Creature) EndGame() {
 
 // Update returns true if an action that would constitute advancing the turn took place
 func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *World) bool {
-	creature.CheckTerrain(world)
-
 	success := false
+
 	if creature.IsPlayer {
 		if creature.IsFoodRuined() {
 			creature.EndGame()
@@ -339,6 +345,8 @@ func (creature *Creature) Update(turn uint64, input controls.InputEvent, world *
 	} else {
 		success = creature.Pursue(turn, world)
 	}
+
+	creature.CheckTerrain(world)
 
 	if success {
 		creature.Energy.Current -= creature.Speed()
@@ -401,11 +409,18 @@ func (creature *Creature) HasStatus(effect StatusEffect) bool {
 	return false
 }
 
-func (creature *Creature) ApplyStatusEffect(effect StatusEffect) {
+func (creature *Creature) RemoveStatusEffect(effect StatusEffect) {
+	delete(creature.Effects, effect)
+}
+
+func (creature *Creature) ApplyStatusEffect(effect StatusEffect, count int, stacks bool) {
 	if remaining, ok := creature.Effects[effect]; ok {
-		creature.Effects[effect] = remaining + 10
+		if stacks {
+			creature.Effects[effect] = remaining + count
+			log.Printf("Stacking Effect, now has %d", remaining+count)
+		}
 	} else {
-		creature.Effects[effect] = 10
+		creature.Effects[effect] = count
 	}
 }
 
@@ -472,7 +487,7 @@ func (player *Creature) HandleInput(input controls.InputEvent, world *World) boo
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Examine:
-		menu := &InspectionPop{PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 26}, World: world, InspectX: player.X, InspectY: player.Y}
+		menu := &InspectionPop{PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 26}, World: world, TargetX: player.X, TargetY: player.Y}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
 	case controls.Warp:
@@ -733,6 +748,7 @@ type StatusEffect int
 
 const (
 	Confused StatusEffect = iota
+	Slow
 )
 
 type MonsterBehavior int

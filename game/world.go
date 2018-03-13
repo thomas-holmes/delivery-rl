@@ -271,7 +271,7 @@ func (world *World) Update() {
 				world.CurrentLevel().NextEntity++
 				continue
 			}
-			a.StartTurn()
+			a.StartTurn(world)
 
 			if !a.CanAct() {
 				a.EndTurn()

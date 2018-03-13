@@ -13,43 +13,56 @@ type InspectionPop struct {
 
 	PopMenu
 
-	InspectX int
-	InspectY int
+	TargetX int
+	TargetY int
+
+	targetVisible bool
+
+	lineColor   sdl.Color
+	cursorColor sdl.Color
+}
+
+func (pop *InspectionPop) adjustTarget(dX, dY int) {
+	newX := pop.TargetX + dX
+	newX = min(pop.World.CurrentLevel().Columns-1, max(0, newX))
+
+	newY := pop.TargetY + dY
+	newY = min(pop.World.CurrentLevel().Rows-1, max(0, newY))
+
+	pop.targetVisible = pop.World.CurrentLevel().VisionMap.VisibilityAt(newX, newY) == Visible
+
+	if pop.targetVisible {
+		pop.cursorColor = Yellow
+		pop.lineColor = Yellow
+	} else {
+		pop.cursorColor = Red
+		pop.lineColor = Red
+	}
+
+	pop.TargetX = newX
+	pop.TargetY = newY
 }
 
 func (pop *InspectionPop) Update(input controls.InputEvent) {
 	pop.CheckCancel(input)
-	newX, newY := pop.InspectX, pop.InspectY
-	switch e := input.Event.(type) {
-	case sdl.KeyDownEvent:
-		switch e.Keysym.Sym {
-		case sdl.K_ESCAPE:
-			pop.done = true
-		case sdl.K_h:
-			newX = pop.InspectX - 1
-		case sdl.K_j:
-			newY = pop.InspectY + 1
-		case sdl.K_k:
-			newY = pop.InspectY - 1
-		case sdl.K_l:
-			newX = pop.InspectX + 1
-		case sdl.K_b:
-			newX, newY = pop.InspectX-1, pop.InspectY+1
-		case sdl.K_n:
-			newX, newY = pop.InspectX+1, pop.InspectY+1
-		case sdl.K_y:
-			newX, newY = pop.InspectX-1, pop.InspectY-1
-		case sdl.K_u:
-			newX, newY = pop.InspectX+1, pop.InspectY-1
-		}
-	}
 
-	if (newX != pop.InspectX || newY != pop.InspectY) &&
-		(newX > 0 && newX < pop.World.CurrentLevel().Columns) &&
-		(newY > 0 && newY < pop.World.CurrentLevel().Rows) {
-		// Guard against level boundaries
-		pop.InspectX = newX
-		pop.InspectY = newY
+	switch input.Action() {
+	case controls.Up:
+		pop.adjustTarget(0, -1)
+	case controls.UpRight:
+		pop.adjustTarget(1, -1)
+	case controls.Right:
+		pop.adjustTarget(1, 0)
+	case controls.DownRight:
+		pop.adjustTarget(1, 1)
+	case controls.Down:
+		pop.adjustTarget(0, 1)
+	case controls.DownLeft:
+		pop.adjustTarget(-1, 1)
+	case controls.Left:
+		pop.adjustTarget(-1, 0)
+	case controls.UpLeft:
+		pop.adjustTarget(-1, -1)
 	}
 }
 
@@ -64,12 +77,26 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		xOffset += 2
 
 		creatureLine1 := fmt.Sprintf("%v (%v/%v)", c.Name, c.HP.Current, c.HP.Max)
-		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine1, Yellow)
+		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine1, White)
+		xOffset += len(creatureLine1)
+
+		if c.HasStatus(Confused) {
+			status := "(Conf)"
+			pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, status, Red)
+			xOffset += len(status)
+		}
+		if c.HasStatus(Slow) {
+			status := "(Slow)"
+			pop.World.Window.PutString(pop.X+xOffset+1, pop.Y+yOffset, status, GarlicGrease)
+			xOffset += len(status)
+		}
 
 		yOffset++
 
+		xOffset = 0
+
 		creatureLine2 := fmt.Sprintf("Weapon: %s", c.Equipment.Weapon.Name)
-		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine2, Yellow)
+		pop.World.Window.PutString(pop.X+1+xOffset, pop.Y+yOffset, creatureLine2, White)
 
 		yOffset++
 
@@ -84,7 +111,8 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		} else {
 			itemLine1 = fmt.Sprintf("- %v", i.Name)
 		}
-		yOffset += putWrappedText(pop.World.Window, itemLine1, pop.X+1, pop.Y+yOffset, 2, 4, pop.W-xOffset, Yellow)
+		yOffset += putWrappedText(pop.World.Window, itemLine1, pop.X+1, pop.Y+yOffset, 2, 4, pop.W-xOffset, White)
+		yOffset++
 	}
 	{
 		terrainLine1 := ""
@@ -100,7 +128,7 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 		}
 
 		if len(terrainLine1) > 0 {
-			pop.World.Window.PutString(pop.X+1, pop.Y+yOffset, terrainLine1, Yellow)
+			pop.World.Window.PutString(pop.X+1, pop.Y+yOffset, terrainLine1, White)
 			yOffset++
 		}
 	}
@@ -108,15 +136,14 @@ func (pop *InspectionPop) RenderTileDescription(tile *Tile) {
 
 // Maybe should interact with world/tiles than window directly
 func (pop *InspectionPop) RenderCursor(window *gterm.Window) {
-	white := White
-	white.A = 50
-	yellow := Yellow
-	yellow.A = 200
-	positions := PlotLine(pop.World.Player.X, pop.World.Player.Y, pop.InspectX, pop.InspectY)
+	lineColor := pop.lineColor
+
+	positions := PlotLine(pop.World.Player.X, pop.World.Player.Y, pop.TargetX, pop.TargetY)
+	lineColor.A = 50
 	for _, pos := range positions {
-		pop.World.RenderRuneAt(pos.X, pos.Y, ' ', gterm.NoColor, white)
+		pop.World.RenderRuneAt(pos.X, pos.Y, ' ', gterm.NoColor, lineColor)
 	}
-	pop.World.RenderRuneAt(pop.InspectX, pop.InspectY, ' ', gterm.NoColor, yellow)
+	pop.World.RenderRuneAt(pop.TargetX, pop.TargetY, ' ', gterm.NoColor, pop.lineColor)
 }
 
 func (pop *InspectionPop) Render(window *gterm.Window) {
@@ -125,7 +152,7 @@ func (pop *InspectionPop) Render(window *gterm.Window) {
 
 	pop.RenderCursor(window)
 
-	tile := pop.World.CurrentLevel().GetTile(pop.InspectX, pop.InspectY)
+	tile := pop.World.CurrentLevel().GetTile(pop.TargetX, pop.TargetY)
 
 	pop.RenderTileDescription(tile)
 }

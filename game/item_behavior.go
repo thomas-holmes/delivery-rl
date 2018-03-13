@@ -54,7 +54,7 @@ func ThrowItem(creature *Creature, world *World, item Item, targetX, targetY int
 			creature.Inventory.RemoveItem(item) // This one is "item" so it just reduces by one. Ugh
 			animation := NewLinearAnimation(creature.X, creature.Y, targetX, targetY, 20, 0, singleItem.Symbol, singleItem.Color)
 			world.AddAnimation(&animation)
-			tC.ApplyStatusEffect(Confused)
+			tC.ApplyStatusEffect(Confused, 10, true)
 
 			return true
 		} else {

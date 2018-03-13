@@ -9,6 +9,6 @@ type Actor interface {
 	// another pass through the game loop
 	Update(turn uint64, input controls.InputEvent, world *World) bool
 
-	StartTurn()
+	StartTurn(world *World)
 	EndTurn()
 }
