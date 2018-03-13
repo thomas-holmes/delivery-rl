@@ -13,6 +13,7 @@ Changelog
 		* Throwing target selection inspect selection now more like the warp interface.
 		* Stairs are now colored orange instead of white.
 		* Inventory cursor can wrap around.
+		* Fixed coloration of Inspect UI.
 	* Gameplay
 		* Grease slows monsters while in it instead of if they were in it last turn.
 * 1.0.3
