@@ -82,6 +82,15 @@ type InventoryPop struct {
 	PopMenu
 }
 
+func (pop *InventoryPop) adjustSelectionWrap(delta int) {
+	pop.selectedIndex += delta
+	if pop.selectedIndex < 0 {
+		pop.selectedIndex = max(0, len(pop.Inventory)-1)
+	} else if pop.selectedIndex >= len(pop.Inventory) {
+		pop.selectedIndex = 0
+	}
+}
+
 func (pop *InventoryPop) adjustSelection(delta int) {
 	pop.selectedIndex += delta
 	pop.selectedIndex = max(0, pop.selectedIndex)
@@ -144,9 +153,9 @@ func (pop *InventoryPop) Update(input controls.InputEvent) {
 	action := input.Action()
 	switch action {
 	case controls.Up:
-		pop.adjustSelection(-1)
+		pop.adjustSelectionWrap(-1)
 	case controls.Down:
-		pop.adjustSelection(1)
+		pop.adjustSelectionWrap(1)
 	case controls.SkipUp:
 		pop.adjustSelection(-5)
 	case controls.SkipDown:
