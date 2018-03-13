@@ -7,28 +7,28 @@
     level: 1
     kind: weapon
 
+  - name: "Short Sword"
+    description: "A short blade, usually used for thrusting. Easier to handle than its larger counterpart."
+    glyph: ')'
+    color: [0, 0, 255]
+    power: 1d4+2 # 4.5 
+    level: 2
+    kind: weapon
+
   - name: "Rapier"
     description: "A slender weapon, perfect for thrusting."
     glyph: ')'
     color: [0, 255, 0]
-    power: 2d4 # 5
-    level: 2
+    power: 2d4+1 # 6
+    level: 3
     kind: weapon
 
   - name: "Warhammer"
     description: "A greusome warhammer. Few problems can't be solved by crushing"
     glyph: ')'
     color: [255, 255, 0]
-    power: 1d6+2 #5.5
-    level: 2
-    kind: weapon
-
-  - name: "Short Sword"
-    description: "A short blade, usually used for thrusting. Easier to handle than its larger counterpart."
-    glyph: ')'
-    color: [0, 0, 255]
-    power: 2d4+2 # 7.5
-    level: 3
+    power: 2d6 # 7
+    level: 4
     kind: weapon
 
   - name: "Long Sword"
@@ -36,7 +36,7 @@
     glyph: ')'
     color: [180, 230, 180]
     power: 2d6+2 # 9.5
-    level: 4
+    level: 6
     kind: weapon
 
   - name: "Maul"
@@ -44,7 +44,7 @@
     glyph: ')'
     color: [185, 45, 160]
     power: 3d6+2 # 12.5
-    level: 6
+    level: 7
     kind: weapon
   
   - name: "Battle Axe"

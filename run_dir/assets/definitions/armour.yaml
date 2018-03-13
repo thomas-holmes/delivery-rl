@@ -28,7 +28,7 @@
     glyph: "Ω"
     color: [98, 75, 56]
     level: 4
-    power: 2d3+1 # 6
+    power: 2d3+1 # 4
     kind: armour
 
   - name: "Tower Shield"
@@ -36,13 +36,13 @@
     glyph: "Θ"
     level: 5
     color: [68, 55, 36]
-    power: 1d12 # 6.5
+    power: 1d10 # 5.5
     kind: armour
 
   - name: "Breastplate"
     description: "A solid steel breastplate. You don't think you could get much more protected than this."
     glyph: "Ω"
     color: [68, 55, 36]
-    level: 7
+    level: 8
     power: 3d4+2 # 9.5
     kind: armour
