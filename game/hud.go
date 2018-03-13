@@ -41,11 +41,19 @@ func (hud *HUD) GetNextRow() int {
 func (hud *HUD) renderPlayerName(world *World) {
 	content := world.Player.Name
 	color := White
+
 	if world.Player.HP.Current <= 0 {
 		content += " *DEAD*"
 		color = Red
 	}
-	world.Window.PutString(hud.X+1, hud.GetNextRow(), content, color)
+	y := hud.GetNextRow()
+	world.Window.PutString(hud.X+1, y, content, color)
+	xOffset := len(content) + 1
+
+	if hud.Player.HasStatus(Slow) {
+		status := "(Slow)"
+		world.Window.PutString(hud.X+xOffset, y, status, GarlicGrease)
+	}
 }
 
 func (hud *HUD) renderPlayerPosition(world *World) {
