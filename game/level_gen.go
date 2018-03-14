@@ -293,6 +293,6 @@ var MaxArmourPlacement int = 4
 
 func init() {
 	flag.IntVar(&MaxWeaponPlacement, "weapon-density", 4, "Number of weapons to attempt to place per level")
-	flag.IntVar(&MaxConsumeablePlacement, "consumeable-density", 12, "Number of weapons to attempt to place per level")
-	flag.IntVar(&MaxArmourPlacement, "armour-density", 4, "Number of weapons to attempt to place per level")
+	flag.IntVar(&MaxConsumeablePlacement, "consumeable-density", 12, "Number of consumeables to attempt to place per level")
+	flag.IntVar(&MaxArmourPlacement, "armour-density", 4, "Number of armour pieces to attempt to place per level")
 }
