@@ -25,7 +25,7 @@ type IntroScreen struct {
 }
 
 func (intro *IntroScreen) adjustSelectionWrap(delta int) {
-	intro.timeFloor = sdl.GetTicks()
+	intro.timeFloor = sdl.GetTicks() - 4000
 	intro.activeChoice += delta
 	if intro.activeChoice < 0 {
 		intro.activeChoice = max(0, len(menuChoices)-1)
@@ -41,8 +41,6 @@ func (intro *IntroScreen) Update(action controls.Action) {
 	case controls.Down:
 		intro.adjustSelectionWrap(1)
 	case controls.Confirm:
-		fallthrough
-	case controls.Cancel:
 		intro.done = true
 	}
 }
@@ -79,6 +77,14 @@ func (intro *IntroScreen) drawSplash(window *gterm.Window) {
 		}
 		y++
 	}
+}
+
+func (intro *IntroScreen) StartGame() bool {
+	return intro.Done() && intro.activeChoice == 0
+}
+
+func (intro *IntroScreen) QuitGame() bool {
+	return intro.Done() && !intro.StartGame()
 }
 
 var menuChoices = []string{
@@ -141,4 +147,10 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	content = "A 2018 7DRL by Keipra"
 	x, y = (window.Columns-len(content))/2, y+1
 	window.PutString(x, y, content, LightGrey)
+}
+
+func (intro *IntroScreen) Reset() {
+	intro.done = false
+	intro.activeChoice = 0
+	intro.timeFloor = 0
 }

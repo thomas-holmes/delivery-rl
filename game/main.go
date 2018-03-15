@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
+	"github.com/thomas-holmes/delivery-rl/game/controls/scene"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 
@@ -123,8 +124,13 @@ func main() {
 
 	intro := IntroScreen{}
 
+	scene.AddScene(&IntroScene{intro: intro, quitGame: func() { quit = true }, window: window})
+	scene.AddScene(&GameScene{world: world, hud: hud})
+
+	scene.SetActiveScene(IntroSceneName)
+
 	gl.Append("Press ? for help!")
-	for !quit && !world.QuitGame {
+	for !quit {
 		var input controls.InputEvent
 		for {
 			event, mod := sdl.PollEvent(), sdl.GetModState()
@@ -134,22 +140,13 @@ func main() {
 			input = controls.InputEvent{Event: event, Keymod: mod}
 		}
 		handleInput(input)
-		if !intro.Done() {
-			intro.Update(input.Action())
-		} else {
-			world.Update(input.Action())
-		}
+
+		scene.UpdateActiveScene(input, sdl.GetTicks())
 
 		window.ClearWindow()
 
-		world.UpdateAnimations()
+		scene.RenderActiveScene(sdl.GetTicks())
 
-		if !intro.Done() {
-			intro.Render(window)
-		} else {
-			world.Render()
-			hud.Render(world)
-		}
 		window.Refresh()
 	}
 }
