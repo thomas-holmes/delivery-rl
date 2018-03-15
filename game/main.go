@@ -38,21 +38,6 @@ const (
 	DefaultSeq uint64 = iota * 1000
 )
 
-func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
-	world := NewWorld(window, true, rng)
-
-	// TODO: Roll this up into some kind of registering a system function on the world
-	NewCombatSystem(world)
-
-	player := NewPlayer()
-
-	player.Name = "Euclid"
-
-	world.AddEntityToCurrentLevel(player)
-
-	return world
-}
-
 // seedDice seeds the default dice roller with four random values from the world RNG
 func seedDice(pcgRng *pcg.PCG64) {
 	rng := pcg.NewPCG64()
@@ -111,24 +96,16 @@ func main() {
 	configureItemsRepository()
 	configureMonstersRepository()
 
-	pcgRng := pcg.NewPCG64()
-	seed := uint64(Seed)
-	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
-
-	seedDice(pcgRng)
-	world := MakeNewWorld(window, pcgRng)
-
-	hud := NewHud(world.Player, world, 65, 2)
-
 	sdl.SetEventFilter(KeyDownFilter{}, nil)
 
 	intro := IntroScreen{}
 
 	scene.AddScene(&IntroScene{intro: intro, quitGame: func() { quit = true }, window: window})
-	scene.AddScene(&GameScene{world: world, hud: hud})
+	scene.AddScene(NewGameScene(window))
 
 	scene.SetActiveScene(IntroSceneName)
 
+	lastTicks := sdl.GetTicks()
 	gl.Append("Press ? for help!")
 	for !quit {
 		var input controls.InputEvent
@@ -139,13 +116,16 @@ func main() {
 			}
 			input = controls.InputEvent{Event: event, Keymod: mod}
 		}
+		nowTicks := sdl.GetTicks()
+		delta := nowTicks - lastTicks
+		lastTicks = nowTicks
 		handleInput(input)
 
-		scene.UpdateActiveScene(input, sdl.GetTicks())
+		scene.UpdateActiveScene(input, delta)
 
 		window.ClearWindow()
 
-		scene.RenderActiveScene(sdl.GetTicks())
+		scene.RenderActiveScene(window, delta)
 
 		window.Refresh()
 	}

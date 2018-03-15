@@ -4,12 +4,13 @@ import (
 	"log"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
+	"github.com/thomas-holmes/gterm"
 )
 
 type Scene interface {
 	Name() string
 	Update(input controls.InputEvent, deltaT uint32)
-	Render(deltaT uint32)
+	Render(wwindow *gterm.Window, deltaT uint32)
 }
 
 type Manager struct {
@@ -57,11 +58,11 @@ func (m *Manager) UpdateActiveScene(input controls.InputEvent, deltaT uint32) {
 	}
 }
 
-func (m *Manager) RenderActiveScene(deltaT uint32) {
+func (m *Manager) RenderActiveScene(window *gterm.Window, deltaT uint32) {
 	if s, ok := m.scenes[m.activeScene]; !ok {
 		log.Panicf("Tried to render active scene %s but it does not exist", s)
 	} else {
-		s.Render(deltaT)
+		s.Render(window, deltaT)
 	}
 }
 
@@ -85,8 +86,8 @@ func SetActiveScene(name string) {
 	defaultManager.SetActiveScene(name)
 }
 
-func RenderActiveScene(deltaT uint32) {
-	defaultManager.RenderActiveScene(deltaT)
+func RenderActiveScene(window *gterm.Window, deltaT uint32) {
+	defaultManager.RenderActiveScene(window, deltaT)
 }
 
 func ClearScenes() {
