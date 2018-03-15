@@ -26,6 +26,22 @@ runv: build
 runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
 
+cleanzip:
+	rm *.zip | true
+
+prepdist:
+	mkdir -p $(BUILDPATH)
+	echo $(SHA) > $(BUILDPATH)/COMMIT
+	cp README.md $(BUILDPATH)
+	cp CHANGELOG.md $(BUILDPATH)
+	cp -r run_dir/* $(BUILDPATH)
+
+distmac: cleanzip distclean build prepdist
+	rm $(BUILDPATH)/*.dll | true
+	rm -rf $(BUILDPATH)/linux | true
+	rm $(BUILDPATH)/delivery-rl.sh
+	cd dist && zip -r ../deliveryrl-$(VERSION)-osx.zip deliveryrl-$(VERSION)
+
 binclean:
 	rm run_dir/$(BINARY) | true
 	rm run_dir/$(BINARY).exe | true
@@ -33,12 +49,7 @@ binclean:
 distclean:
 	rm -rf dist
 
-dist: binclean distclean test build buildwin
-	mkdir -p $(BUILDPATH)
-	echo $(SHA) > $(BUILDPATH)/COMMIT
-	cp README.md $(BUILDPATH)
-	cp CHANGELOG.md $(BUILDPATH)
-	cp -r run_dir/* $(BUILDPATH)
+dist: binclean distclean test build buildwin prepdist
 	cd dist && zip -r ../deliveryrl-$(VERSION).zip deliveryrl-$(VERSION)
 
 test:
