@@ -19,6 +19,13 @@ type EndGameMenu struct {
 
 func (pop *EndGameMenu) Update(action controls.Action) {
 	pop.CheckCancel(action)
+	switch action {
+	case controls.Quit:
+		fallthrough
+	case controls.Confirm:
+		pop.done = true
+	}
+
 	if pop.done {
 		pop.world.QuitGame = true
 	}
