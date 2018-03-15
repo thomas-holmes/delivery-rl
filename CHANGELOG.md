@@ -5,12 +5,15 @@ Changelog
 		* Fixed self branding.
 		* Fixed incorrect config flag descriptions.
 		* Added Start/Quit choices on main screen.
+		* Fix positioining of text in full message log.
 	* Engine
 		* Redid input handling.
+		* Change RNG. 1.X seeds are not compatible with 2.X.
+		* Assets are loaded relative to the executable instead of your working directory.
 	* Gameplay
 		* Can now restart from the title screen after losing or winning.
 		* Victory dialog shows turns and heat.
-* 1.0.5 (Latest 7DRL Version)
+* 1.0.5 (*Latest 7DRL Version*)
 	* Update version of gterm rendering library, reducing CPU usage by approximately half.
 * 1.0.4
 	* Balance
