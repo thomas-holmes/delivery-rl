@@ -26,8 +26,11 @@ runv: build
 runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
 
-distmac: build
-	zip -r delivery-rl-osx.zip run_dir
+cleanzip:
+	rm *.zip | true
+
+distmac: cleanzip build
+	zip -r deliveryrl-osx.zip run_dir
 
 binclean:
 	rm run_dir/$(BINARY) | true
