@@ -9,7 +9,6 @@ import (
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/delivery-rl/game/controls/scene"
 	"github.com/thomas-holmes/delivery-rl/game/dice"
-	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 
 	"github.com/MichaelTJones/pcg"
 
@@ -103,7 +102,6 @@ func main() {
 	scene.SetActiveScene(IntroSceneName)
 
 	lastTicks := sdl.GetTicks()
-	gl.Append("Press ? for help!")
 	for !quit {
 		var input controls.InputEvent
 		for {
