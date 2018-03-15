@@ -29,3 +29,4 @@ deploy:
   on:
     condition: $TRAVIS_OS_NAME = osx
     repo: thomas-holmes/delivery-rl
+    tags: true
