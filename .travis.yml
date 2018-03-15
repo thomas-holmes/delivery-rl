@@ -21,6 +21,7 @@ script:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make distmac ;fi
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: IULEDY8rPq67u77kqhjPND2NN+U7qUMyE/he7ejAI6tmwljwvCiAX4s1NAqORvdsIfO2WhF6AAv19l4QTcO8GmWW7fQhliOCAIglk8T5OxeMDZO8DLB4t3BpwlEZCcp5Fjqsk841Y+bc5/QfRHgcYCy71eltPLxMZQe+0yyQFbubjATDp8jW+2ALjDklfK8bD0PpyeiyOneh1nZbuTB++qLRIU5CHUESssWwK8CwykqEgwCPZyBbvZd8WMAKBVnoa6+So/fAjSZ2WBHGNIChm6AHWvBf42tHDhKM2QbbCbnjafaL21TyoN7lT0bC6aSSKPCy8+z22Oy8oyIORHzhU0iObLeUFI686pNJLMdfESoIZeRqoCEh/rQi2XOAA32zbaiPpXFDplGnZ7t5eHhzSTDlkLSzJHA5G0KNT1siOcMu99T2YYqb95twd7nNbgfl8j7k4AIrZYkE6HbLkfndTNWJ9rFRXRxElCPmdJcfOASJ/ui6vRs0bm+4KGyeM2tSwAF3Zw3LCrr/hLf2bRIZiWku3cLeahXbFsV5l8JuSmcDwKbOlIxnGT1QvycpFaG/+d5Xfo+EVcfvBlgjF9Lu/Ge7k5aSKReMmpoyLjQwCplKdxkUtM7+OanRddhkkFIrXzHJEEGz41YDnuq9+bGo5h1c8/LksudCXothcH2rURc=
   file: "deliveryrl-osx.zip"
