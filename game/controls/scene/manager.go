@@ -9,6 +9,7 @@ import (
 
 type Scene interface {
 	Name() string
+	OnActivate(previousScene string)
 	Update(input controls.InputEvent, deltaT uint32)
 	Render(wwindow *gterm.Window, deltaT uint32)
 }
@@ -44,10 +45,12 @@ func (m *Manager) RemoveScene(name string) {
 }
 
 func (m *Manager) SetActiveScene(name string) {
-	if _, ok := m.scenes[name]; !ok {
+	if s, ok := m.scenes[name]; !ok {
 		log.Panicf("Tried to change scenes to %s but it is not registered.", name)
+	} else {
+		s.OnActivate(m.activeScene)
+		m.activeScene = name
 	}
-	m.activeScene = name
 }
 
 func (m *Manager) UpdateActiveScene(input controls.InputEvent, deltaT uint32) {

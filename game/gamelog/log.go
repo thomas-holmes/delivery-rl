@@ -16,10 +16,18 @@ func (g *GameLog) Messages() []string {
 	return g.messages
 }
 
+func (g *GameLog) Clear() {
+	g.messages = nil
+}
+
 func Append(format string, args ...interface{}) {
 	defaultLog.Append(format, args...)
 }
 
 func Messages() []string {
 	return defaultLog.Messages()
+}
+
+func Clear() {
+	defaultLog.Clear()
 }

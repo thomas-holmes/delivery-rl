@@ -34,14 +34,11 @@ func handleInput(input controls.InputEvent) {
 	}
 }
 
-const (
-	DefaultSeq uint64 = iota * 1000
-)
-
 // seedDice seeds the default dice roller with four random values from the world RNG
-func seedDice(pcgRng *pcg.PCG64) {
+func seedDice(seed uint64) {
 	rng := pcg.NewPCG64()
 	rng.Seed(rng.Random(), rng.Random(), rng.Random(), rng.Random())
+	rng.Seed(seed, DiceSeq, seed*seed, DiceSeq+1)
 	dice.SetDefaultRandomness(rng)
 }
 
@@ -137,12 +134,19 @@ var Font string
 var FontW int
 var FontH int
 
+func GameSeed() int64 {
+	if Seed == -1 {
+		return time.Now().UnixNano()
+	} else {
+		return Seed
+	}
+}
+
 func init() {
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
-	flag.Int64Var(&Seed, "seed", time.Now().UnixNano(), "Provide a seed for launching the game")
+	flag.Int64Var(&Seed, "seed", -1, "Provide a seed for launching the game")
 	flag.StringVar(&Font, "font-path", "assets/font/cp437_16x16.png", "Set font relative file path")
 	flag.IntVar(&FontW, "font-width", 16, "pixel width per character")
 	flag.IntVar(&FontH, "font-height", 16, "pixel height per character")
 	flag.Parse()
-	log.Println("Starting game with seed", Seed)
 }

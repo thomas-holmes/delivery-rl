@@ -16,6 +16,8 @@ type Broker struct {
 
 type Unsubscribe func()
 
+// Change this to enforce a dispose function or something
+// so I can clean these up without leaking memory
 type Listener func(M)
 
 type subscription struct {
@@ -25,6 +27,8 @@ type subscription struct {
 
 // Subscribe to receive messages to the supplied listener callback. Call the returned
 // unsubscribe method to unregister your listener
+
+// Probably a gross memory leak
 func (b *Broker) Subscribe(listener Listener) Unsubscribe {
 	b.lastSubID++
 	id := b.lastSubID
@@ -49,6 +53,13 @@ func (b *Broker) Broadcast(m M) {
 	}
 }
 
+func (b *Broker) UnSubAll() {
+	for i, _ := range b.subscriptions {
+		b.subscriptions[i] = subscription{}
+	}
+	b.subscriptions = nil
+}
+
 // Broadcast sends a message on the default broker
 func Broadcast(m M) {
 	defaultBroker.Broadcast(m)
@@ -57,4 +68,8 @@ func Broadcast(m M) {
 // Subscribe to the default broker
 func Subscribe(listener Listener) Unsubscribe {
 	return defaultBroker.Subscribe(listener)
+}
+
+func UnSubAll() {
+	defaultBroker.UnSubAll()
 }

@@ -14,6 +14,8 @@ type CombatSystem struct {
 
 func NewCombatSystem(world *World) *CombatSystem {
 	c := &CombatSystem{World: world}
+
+	// Memory leak
 	m.Subscribe(c.Notify)
 	return c
 }
