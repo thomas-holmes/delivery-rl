@@ -56,10 +56,12 @@ binclean:
 	rm run_dir/$(BINARY).exe | true
 
 distclean:
-	rm -rf dist
+	rm -rf dist | true
 
 dist: binclean distclean test build buildwin prepdist
 	cd dist && zip -r ../deliveryrl-$(VERSION).zip deliveryrl-$(VERSION)
 
 test:
 	$(GO_BIN) test ./...
+
+clean: cleanzip cleandeps distclean
