@@ -27,7 +27,7 @@ runrv: build
 	cd ./run_dir && ./delivery-rl -no-vsync -seed 0xDEADBEEF
 
 distmac: build
-	zip -f deliveryi-rl-osx.zip run_dir
+	zip -r delivery-rl-osx.zip run_dir
 
 binclean:
 	rm run_dir/$(BINARY) | true
