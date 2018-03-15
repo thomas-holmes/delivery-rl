@@ -29,8 +29,17 @@ runrv: build
 cleanzip:
 	rm *.zip | true
 
-distmac: cleanzip build
-	zip -r deliveryrl-osx.zip run_dir
+prepdist:
+	mkdir -p $(BUILDPATH)
+	echo $(SHA) > $(BUILDPATH)/COMMIT
+	cp README.md $(BUILDPATH)
+	cp CHANGELOG.md $(BUILDPATH)
+	cp -r run_dir/* $(BUILDPATH)
+
+distmac: cleanzip distclean build prepdist
+	rm $(BUILDPATH)/*.dll | true
+	rm -rf $(BUILDPATH)/linux | true
+	cd dist && zip -r ../deliveryrl-$(VERSION)-osx.zip deliveryrl-$(VERSION)
 
 binclean:
 	rm run_dir/$(BINARY) | true
@@ -39,12 +48,7 @@ binclean:
 distclean:
 	rm -rf dist
 
-dist: binclean distclean test build buildwin
-	mkdir -p $(BUILDPATH)
-	echo $(SHA) > $(BUILDPATH)/COMMIT
-	cp README.md $(BUILDPATH)
-	cp CHANGELOG.md $(BUILDPATH)
-	cp -r run_dir/* $(BUILDPATH)
+dist: binclean distclean test build buildwin prepdist
 	cd dist && zip -r ../deliveryrl-$(VERSION).zip deliveryrl-$(VERSION)
 
 test:
