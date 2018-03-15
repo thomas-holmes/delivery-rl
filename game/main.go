@@ -159,9 +159,9 @@ var FontH int
 func init() {
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", time.Now().UnixNano(), "Provide a seed for launching the game")
-	flag.StringVar(&Font, "font-path", "assets/font/cp437_16x16.png", "Set font relative file path")
-	flag.IntVar(&FontW, "font-width", 16, "pixel width per character")
-	flag.IntVar(&FontH, "font-height", 16, "pixel height per character")
+	flag.StringVar(&Font, "font-path", "assets/font/cp437_12x12.png", "Set font relative file path")
+	flag.IntVar(&FontW, "font-width", 12, "pixel width per character")
+	flag.IntVar(&FontH, "font-height", 12, "pixel height per character")
 	flag.Parse()
 	log.Println("Starting game with seed", Seed)
 }
