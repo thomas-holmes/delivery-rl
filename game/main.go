@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
@@ -42,7 +44,7 @@ func seedDice(seed uint64) {
 }
 
 func configureItemsRepository() {
-	if err := items.Configure(path.Join("assets", "definitions")); err != nil {
+	if err := items.Configure(path.Join(AssetRoot, "assets", "definitions")); err != nil {
 		log.Fatalln("Could not configure items repository", err)
 	}
 
@@ -52,7 +54,7 @@ func configureItemsRepository() {
 }
 
 func configureMonstersRepository() {
-	if err := monsters.Configure(path.Join("assets", "definitions")); err != nil {
+	if err := monsters.Configure(path.Join(AssetRoot, "assets", "definitions")); err != nil {
 		log.Fatalln("Could not configure monsters repository", err)
 	}
 
@@ -126,6 +128,8 @@ func main() {
 	}
 }
 
+var AssetRoot string
+
 var NoVSync = true
 var Seed int64
 var Font string
@@ -141,9 +145,19 @@ func GameSeed() int64 {
 }
 
 func init() {
+	var err error
+	if AssetRoot, err = os.Executable(); err != nil {
+		log.Println("Failed to determine executable path, loading assets relative to working directory")
+		AssetRoot = ""
+	} else {
+		log.Printf("Got asset root of %s", AssetRoot)
+		AssetRoot = filepath.Dir(AssetRoot)
+		log.Printf("Cleaned asset root to %s", AssetRoot)
+	}
+
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", -1, "Provide a seed for launching the game")
-	flag.StringVar(&Font, "font-path", "assets/font/cp437_16x16.png", "Set font relative file path")
+	flag.StringVar(&Font, "font-path", path.Join(AssetRoot, "assets", "font", "cp437_16x16.png"), "Set font relative file path")
 	flag.IntVar(&FontW, "font-width", 16, "pixel width per character")
 	flag.IntVar(&FontH, "font-height", 16, "pixel height per character")
 	flag.Parse()

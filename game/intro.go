@@ -50,7 +50,7 @@ func (intro *IntroScreen) maybeLoadSplash() {
 		return
 	}
 
-	file, err := os.Open(path.Join("assets", "art", "splash.txt"))
+	file, err := os.Open(path.Join(AssetRoot, "assets", "art", "splash.txt"))
 	if err != nil {
 		log.Panicln("Could not load opening art", err)
 	}
