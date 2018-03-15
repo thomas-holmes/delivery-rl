@@ -75,9 +75,9 @@ func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
 	messagesToRender := len(messages) - pop.ScrollPosition
 
 	yPos := pop.Y
-	for i := messagesToRender - 1; i >= 0 && yPos+1 < pop.Y+pop.H; i-- {
+	for i := messagesToRender - 1; i >= 0 && yPos+2 < pop.Y+pop.H; i-- {
 		message := messages[i]
-		yPos += putWrappedText(window, message, pop.X+3, yPos+2, 0, 2, pop.W-4, White)
+		yPos += putWrappedText(window, message, pop.X+3, yPos+1, 0, 2, pop.W-4, White)
 	}
 
 }
