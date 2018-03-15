@@ -1,6 +1,8 @@
 Changelog
 ---------
-* 2.0.0 (Future *NOT 7DRL*)
+* 2.0.1
+	* Reduce default font size to 12 pixels. Should be a good size by default on most displays.
+* 2.0.0
 	* UI
 		* Fixed self branding.
 		* Fixed incorrect config flag descriptions.
@@ -13,7 +15,9 @@ Changelog
 	* Gameplay
 		* Can now restart from the title screen after losing or winning.
 		* Victory dialog shows turns and heat.
-* 1.0.5 (*Latest 7DRL Version*)
+* 1.0.6 (*Latest 7DRL Version*)
+	* Reduce default font size to 12 pixels. Should be a good size by default on most displays.
+* 1.0.5
 	* Update version of gterm rendering library, reducing CPU usage by approximately half.
 * 1.0.4
 	* Balance
