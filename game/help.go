@@ -73,7 +73,10 @@ func (pop HelpPop) Render(window *gterm.Window) {
 	y += 2
 	window.PutString(x, y, "You will find the dragon on the 10th floor.", Red)
 
-	content := "2018 7DRL by Keipra"
-	window.PutString(pop.X+pop.W-1-len(content), pop.Y+pop.H-2, content, Grey)
+	content := "2018 7DRL by"
+	name := "keipra"
+	x, y = pop.X+pop.W-2-len(content)-len(name), pop.Y+pop.H-2
+	window.PutString(x, y, content, Grey)
 
+	window.PutString(x+len(content)+1, y, name, KeipraPurple)
 }

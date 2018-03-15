@@ -503,7 +503,7 @@ func (world *World) ShowFoodSpoiledMenu() {
 
 func (world *World) ShowGameWonMenu() {
 	world.GameOver = true
-	pop := NewEndGameMenu(world, 5, 5, 50, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered with %v heat remaning", world.Player.HT.Current))
+	pop := NewEndGameMenu(world, 5, 5, 50, 6, LightBlue, "You won the game!", fmt.Sprintf("Delivered in %d turns with %d heat remaning.", world.turnCount, world.Player.HT.Current))
 	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: &pop}})
 }
 

@@ -1,6 +1,16 @@
 Changelog
 ---------
-* 1.0.5
+* 2.0.0 (Future *NOT 7DRL*)
+	* UI
+		* Fixed self branding.
+		* Fixed incorrect config flag descriptions.
+		* Added Start/Quit choices on main screen.
+	* Engine
+		* Redid input handling.
+	* Gameplay
+		* Can now restart from the title screen after losing or winning.
+		* Victory dialog shows turns and heat.
+* 1.0.5 (Latest 7DRL Version)
 	* Update version of gterm rendering library, reducing CPU usage by approximately half.
 * 1.0.4
 	* Balance

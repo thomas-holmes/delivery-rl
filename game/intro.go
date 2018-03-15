@@ -144,9 +144,12 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	x, y = (window.Columns-len(content))/2, y+1
 	window.PutString(x, y, content, LightGrey)
 
-	content = "A 2018 7DRL by Keipra"
-	x, y = (window.Columns-len(content))/2, y+1
+	content = "A 2018 7DRL by"
+	name := "keipra"
+	x, y = (window.Columns-(len(content)+len(name)))/2, y+1
 	window.PutString(x, y, content, LightGrey)
+
+	window.PutString(x+len(content)+1, y, name, KeipraPurple)
 }
 
 func (intro *IntroScreen) Reset() {
