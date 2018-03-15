@@ -1,5 +1,7 @@
 Changelog
 ---------
+* 1.0.6
+	* Reduce default font size to 12 pixels. Should be a good size by default on most displays.
 * 1.0.5
 	* Update version of gterm rendering library, reducing CPU usage by approximately half.
 * 1.0.4
