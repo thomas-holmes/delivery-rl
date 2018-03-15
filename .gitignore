@@ -11,3 +11,4 @@ deliveryrl*.tgz
 deliveryrl*.zip
 dist/
 sdl2/win
+*.dll
