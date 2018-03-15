@@ -7,7 +7,7 @@ type Actor interface {
 
 	// Update Should return false if we have not completed our turn and need
 	// another pass through the game loop
-	Update(turn uint64, input controls.InputEvent, world *World) bool
+	Update(turn uint64, action controls.Action, world *World) bool
 
 	StartTurn(world *World)
 	EndTurn()

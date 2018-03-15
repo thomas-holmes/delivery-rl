@@ -70,10 +70,9 @@ func (pop *ThrowPop) adjustTarget(dX, dY int) {
 	pop.TargetY = newY
 }
 
-func (pop *ThrowPop) Update(input controls.InputEvent) {
-	pop.CheckCancel(input)
-
-	switch input.Action() {
+func (pop *ThrowPop) Update(action controls.Action) {
+	pop.CheckCancel(action)
+	switch action {
 	case controls.Up:
 		pop.adjustTarget(0, -1)
 	case controls.UpRight:

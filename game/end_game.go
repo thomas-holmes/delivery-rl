@@ -17,8 +17,8 @@ type EndGameMenu struct {
 	PopMenu
 }
 
-func (pop *EndGameMenu) Update(input controls.InputEvent) {
-	pop.CheckCancel(input)
+func (pop *EndGameMenu) Update(action controls.Action) {
+	pop.CheckCancel(action)
 	if pop.done {
 		pop.world.QuitGame = true
 	}

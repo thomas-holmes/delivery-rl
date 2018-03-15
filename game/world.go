@@ -57,8 +57,6 @@ type World struct {
 
 	showScentOverlay bool
 
-	Input controls.InputEvent
-
 	MenuStack  []Menu
 	Animations []Animation
 
@@ -229,7 +227,7 @@ func (world *World) tidyMenus() bool {
 	return len(world.MenuStack) > 0
 }
 
-func (world *World) Update() {
+func (world *World) Update(action controls.Action) {
 	currentTicks := sdl.GetTicks()
 	world.CurrentTickDelta = currentTicks - world.CurrentUpdateTicks
 	world.CurrentUpdateTicks = currentTicks
@@ -238,7 +236,7 @@ func (world *World) Update() {
 	{
 		if world.tidyMenus() {
 			currentMenu := world.MenuStack[len(world.MenuStack)-1]
-			currentMenu.Update(world.Input)
+			currentMenu.Update(action)
 			return
 		}
 	}
@@ -279,7 +277,7 @@ func (world *World) Update() {
 				continue
 			}
 
-			acted := a.Update(world.turnCount, world.Input, world)
+			acted := a.Update(world.turnCount, action, world)
 
 			// bit of a hack, copied from below instead of rewritten
 			if world.LevelChanged {
@@ -305,7 +303,7 @@ func (world *World) Update() {
 			} else {
 				a.EndTurn()
 				world.CurrentLevel().NextEntity++
-				world.Input = controls.InputEvent{}
+				action = controls.None
 			}
 		}
 	}
@@ -327,6 +325,7 @@ func (world *World) UpdateCamera() {
 
 // Render redrwas everything!
 func (world *World) Render() {
+	world.UpdateAnimations()
 	world.UpdateCamera()
 	var minX, minY, maxX, maxY int
 	if world.CameraCentered {

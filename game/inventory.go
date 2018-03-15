@@ -148,9 +148,8 @@ func (pop *InventoryPop) tryDropItem() {
 	}
 }
 
-func (pop *InventoryPop) Update(input controls.InputEvent) {
-	pop.CheckCancel(input)
-	action := input.Action()
+func (pop *InventoryPop) Update(action controls.Action) {
+	pop.CheckCancel(action)
 	switch action {
 	case controls.Up:
 		pop.adjustSelectionWrap(-1)

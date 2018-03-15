@@ -23,8 +23,8 @@ func NewHelpPop(x, y, w, h int) *HelpPop {
 	}
 }
 
-func (pop *HelpPop) Update(input controls.InputEvent) {
-	pop.CheckCancel(input)
+func (pop *HelpPop) Update(action controls.Action) {
+	pop.CheckCancel(action)
 }
 
 func (pop HelpPop) Render(window *gterm.Window) {

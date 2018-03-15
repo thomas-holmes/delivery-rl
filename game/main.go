@@ -24,25 +24,11 @@ var quit = false
 
 var i = 0
 
-func filterActionableEvents(input controls.InputEvent) controls.InputEvent {
-	switch e := input.Event.(type) {
-	case *sdl.KeyDownEvent:
-		input.Event = *e
-		return input
-	case *sdl.QuitEvent:
-		input.Event = *e
-		return input
-	}
-	return controls.InputEvent{Event: nil}
-}
-
 var testMessageCount = 1
 
-func handleInput(input controls.InputEvent, world *World) {
+func handleInput(input controls.InputEvent) {
 	switch input.Event.(type) {
-	case sdl.KeyDownEvent:
-		world.Input = input
-	case sdl.QuitEvent:
+	case *sdl.QuitEvent:
 		quit = true
 	}
 }
@@ -93,12 +79,26 @@ func configureMonstersRepository() {
 	}
 }
 
+func BuildGameFromSeed() {
+
+}
+
+type KeyDownFilter struct{}
+
+func (f KeyDownFilter) FilterEvent(e sdl.Event, userdata interface{}) bool {
+
+	switch e.(type) {
+	case *sdl.KeyDownEvent:
+		return true
+	case *sdl.QuitEvent:
+		return true
+	default:
+		return false
+	}
+}
+
 func main() {
 	window := gterm.NewWindow(100, 60, Font, FontW, FontH, !NoVSync)
-
-	pcgRng := pcg.NewPCG64()
-	seed := uint64(Seed)
-	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
 
 	if err := window.Init(); err != nil {
 		log.Fatalln("Failed to Init() window", err)
@@ -110,35 +110,39 @@ func main() {
 	configureItemsRepository()
 	configureMonstersRepository()
 
+	pcgRng := pcg.NewPCG64()
+	seed := uint64(Seed)
+	pcgRng.Seed(seed, DefaultSeq, seed*seed, DefaultSeq+1)
+
 	seedDice(pcgRng)
 	world := MakeNewWorld(window, pcgRng)
 
 	hud := NewHud(world.Player, world, 65, 2)
 
+	sdl.SetEventFilter(KeyDownFilter{}, nil)
+
 	intro := IntroScreen{}
 
 	gl.Append("Press ? for help!")
 	for !quit && !world.QuitGame {
+		var input controls.InputEvent
 		for {
 			event, mod := sdl.PollEvent(), sdl.GetModState()
 			if event == nil {
 				break
 			}
-			inputEvent := controls.InputEvent{Event: event, Keymod: mod}
-			inputEvent = filterActionableEvents(inputEvent)
-			handleInput(inputEvent, world)
-			if !intro.Done() {
-				intro.Update(inputEvent)
-			}
+			input = controls.InputEvent{Event: event, Keymod: mod}
 		}
-		world.Update()
-		world.Input = controls.InputEvent{}
+		handleInput(input)
+		if !intro.Done() {
+			intro.Update(input.Action())
+		} else {
+			world.Update(input.Action())
+		}
 
 		window.ClearWindow()
 
-		if world.Animating() {
-			world.UpdateAnimations()
-		}
+		world.UpdateAnimations()
 
 		if !intro.Done() {
 			intro.Render(window)

@@ -10,7 +10,6 @@ import (
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	"github.com/thomas-holmes/gterm"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type IntroScreen struct {
@@ -19,9 +18,11 @@ type IntroScreen struct {
 	splash []string
 }
 
-func (intro *IntroScreen) Update(input controls.InputEvent) {
-	switch input.Event.(type) {
-	case sdl.KeyDownEvent:
+func (intro *IntroScreen) Update(action controls.Action) {
+	switch action {
+	case controls.Confirm:
+		fallthrough
+	case controls.Cancel:
 		intro.done = true
 	}
 }

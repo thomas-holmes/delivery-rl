@@ -39,14 +39,14 @@ func (pop PopMenu) DrawBox(window *gterm.Window, color sdl.Color) {
 	window.PutRune(pop.X+pop.W-1, pop.Y+pop.H-1, bottomRight, color, gterm.NoColor)
 }
 
-func (pop *PopMenu) CheckCancel(input controls.InputEvent) {
-	if input.Action() == controls.Cancel {
+func (pop *PopMenu) CheckCancel(action controls.Action) {
+	if action == controls.Cancel {
 		pop.done = true
 	}
 }
 
 type Menu interface {
-	Update(controls.InputEvent)
+	Update(controls.Action)
 	Render(window *gterm.Window)
 	Done() bool
 }

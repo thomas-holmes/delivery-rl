@@ -27,10 +27,10 @@ func (pop *FullGameLog) ScrollUp(distance int) {
 	pop.ScrollPosition = max(0, pop.ScrollPosition-distance)
 }
 
-func (pop *FullGameLog) Update(input controls.InputEvent) {
-	pop.CheckCancel(input)
+func (pop *FullGameLog) Update(action controls.Action) {
+	pop.CheckCancel(action)
 
-	switch input.Action() {
+	switch action {
 	case controls.Up:
 		pop.ScrollUp(1)
 	case controls.SkipUp:

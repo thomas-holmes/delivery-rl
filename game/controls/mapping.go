@@ -121,20 +121,28 @@ type InputEvent struct {
 	sdl.Keymod
 }
 
+func findAction(keyPressed sdl.Keycode, shiftPressed, controlPressed bool) Action {
+	for _, m := range AllMappings {
+		for _, mappedKey := range m.SdlKeys {
+			if mappedKey == keyPressed && shiftPressed == m.Shift && controlPressed == m.Control {
+				return m.Action
+			}
+		}
+	}
+
+	return None
+}
+
 func (i InputEvent) Action() Action {
 	shiftPressed := i.Keymod&sdl.KMOD_SHIFT > 0
 	controlPressed := i.Keymod&sdl.KMOD_CTRL > 0
 	switch e := i.Event.(type) {
+	case *sdl.KeyDownEvent:
+		keyPressed := e.Keysym.Sym
+		return findAction(keyPressed, shiftPressed, controlPressed)
 	case sdl.KeyDownEvent:
 		keyPressed := e.Keysym.Sym
-
-		for _, m := range AllMappings {
-			for _, mappedKey := range m.SdlKeys {
-				if mappedKey == keyPressed && shiftPressed == m.Shift && controlPressed == m.Control {
-					return m.Action
-				}
-			}
-		}
+		return findAction(keyPressed, shiftPressed, controlPressed)
 	}
 
 	return None
