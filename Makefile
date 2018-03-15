@@ -39,6 +39,7 @@ prepdist:
 distmac: cleanzip distclean build prepdist
 	rm $(BUILDPATH)/*.dll | true
 	rm -rf $(BUILDPATH)/linux | true
+	rm $(BUILDPATH)/delivery-rl.sh
 	cd dist && zip -r ../deliveryrl-$(VERSION)-osx.zip deliveryrl-$(VERSION)
 
 binclean:

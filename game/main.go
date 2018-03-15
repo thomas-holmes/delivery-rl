@@ -150,9 +150,8 @@ func init() {
 		log.Println("Failed to determine executable path, loading assets relative to working directory")
 		AssetRoot = ""
 	} else {
-		log.Printf("Got asset root of %s", AssetRoot)
 		AssetRoot = filepath.Dir(AssetRoot)
-		log.Printf("Cleaned asset root to %s", AssetRoot)
+		log.Printf("Loading assets from %s", AssetRoot)
 	}
 
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
