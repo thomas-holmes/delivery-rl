@@ -1,5 +1,8 @@
 Changelog
 ---------
+* 2.0.2
+	* Add the ability to cycle through font sizes on the intro screen.
+	* Window is resizeable at all times.
 * 2.0.1
 	* Reduce default font size to 12 pixels. Should be a good size by default on most displays.
 * 2.0.0
