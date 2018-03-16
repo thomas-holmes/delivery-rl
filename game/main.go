@@ -98,9 +98,7 @@ func main() {
 
 	sdl.SetEventFilter(KeyDownFilter{}, nil)
 
-	intro := IntroScreen{}
-
-	scene.AddScene(&IntroScene{intro: intro, quitGame: func() { quit = true }, window: window})
+	scene.AddScene(&IntroScene{intro: NewIntroScreen(window), quitGame: func() { quit = true }, window: window})
 	scene.AddScene(NewGameScene(window))
 
 	scene.SetActiveScene(IntroSceneName)
@@ -138,6 +136,8 @@ var Font string
 var FontW int
 var FontH int
 
+var DefaultFontPath string = path.Join(AssetRoot, "assets", "font", "cp437_12x12.png")
+
 func GameSeed() int64 {
 	if Seed == -1 {
 		return time.Now().UnixNano()
@@ -158,7 +158,7 @@ func init() {
 
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", -1, "Provide a seed for launching the game")
-	flag.StringVar(&Font, "font-path", path.Join(AssetRoot, "assets", "font", "cp437_12x12.png"), "Set font relative file path")
+	flag.StringVar(&Font, "font-path", DefaultFontPath, "Set font relative file path")
 	flag.IntVar(&FontW, "font-width", 12, "pixel width per character")
 	flag.IntVar(&FontH, "font-height", 12, "pixel height per character")
 	flag.Parse()

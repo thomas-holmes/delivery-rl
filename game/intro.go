@@ -2,11 +2,15 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math"
 	"os"
 	"path"
+	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -15,21 +19,67 @@ import (
 	"github.com/thomas-holmes/gterm"
 )
 
+var StartMenuChoice simpleMenu = simpleMenu("Start Game")
+var QuitMenuChoice simpleMenu = simpleMenu("End Game")
+
+func NewIntroScreen(window *gterm.Window) *IntroScreen {
+	i := &IntroScreen{window: window}
+
+	i.fonts = getAvailableFonts()
+
+	i.setInitialFont()
+
+	i.menuChoices = []menuChoice{
+		StartMenuChoice,
+		i.fonts,
+		QuitMenuChoice,
+	}
+
+	return i
+}
+
 type IntroScreen struct {
 	PopMenu
 
-	activeChoice int
-	timeFloor    uint32
+	window *gterm.Window
+
+	fonts *availableFonts
+
+	activeChoice    int
+	timeFloor       uint32
+	checkedForFonts bool
+
+	menuChoices []menuChoice
 
 	splash []string
+}
+
+func (intro *IntroScreen) setInitialFont() {
+	fonts := intro.fonts
+
+	configuredFontPath, err := filepath.Abs(path.Join(AssetRoot, Font))
+	if err != nil {
+		log.Panicln("Your file system is broken", err)
+	}
+
+	for i, f := range fonts.fonts {
+		thisPath, err := filepath.Abs(f.Path)
+		if err != nil {
+			log.Panicln("Your file system is broken", err)
+		}
+		if thisPath == configuredFontPath {
+			fonts.selectedFont = i
+			return
+		}
+	}
 }
 
 func (intro *IntroScreen) adjustSelectionWrap(delta int) {
 	intro.timeFloor = sdl.GetTicks() - 4000
 	intro.activeChoice += delta
 	if intro.activeChoice < 0 {
-		intro.activeChoice = max(0, len(menuChoices)-1)
-	} else if intro.activeChoice >= len(menuChoices) {
+		intro.activeChoice = max(0, len(intro.menuChoices)-1)
+	} else if intro.activeChoice >= len(intro.menuChoices) {
 		intro.activeChoice = 0
 	}
 }
@@ -40,8 +90,100 @@ func (intro *IntroScreen) Update(action controls.Action) {
 		intro.adjustSelectionWrap(-1)
 	case controls.Down:
 		intro.adjustSelectionWrap(1)
+	case controls.Left:
+		if a, ok := intro.menuChoices[intro.activeChoice].(*availableFonts); ok {
+			a.adjust(-1)
+			font := a.fonts[a.selectedFont]
+			log.Printf("selected new font at: %s", font.Path)
+			intro.window.ChangeFont(font.Path, font.W, font.H)
+		}
+	case controls.Right:
+		if a, ok := intro.menuChoices[intro.activeChoice].(*availableFonts); ok {
+			a.adjust(1)
+			font := a.fonts[a.selectedFont]
+			log.Printf("selected new font at: %s", font.Path)
+			intro.window.ChangeFont(font.Path, font.W, font.H)
+		}
 	case controls.Confirm:
-		intro.done = true
+		switch intro.menuChoices[intro.activeChoice] {
+		case StartMenuChoice:
+			fallthrough
+		case QuitMenuChoice:
+			intro.done = true
+		}
+	}
+}
+
+type font struct {
+	Name string
+	Path string
+	W    int
+	H    int
+}
+
+func (a availableFonts) Label() string {
+	return fmt.Sprintf("Font: %s", a.fonts[a.selectedFont].Name)
+}
+
+func (a *availableFonts) adjust(delta int) {
+	a.selectedFont += delta
+	if a.selectedFont < 0 {
+		a.selectedFont = max(0, len(a.fonts)-1)
+	} else if a.selectedFont >= len(a.fonts) {
+		a.selectedFont = 0
+	}
+}
+
+func getAvailableFonts() *availableFonts {
+	fontPath := path.Join(AssetRoot, "assets", "font")
+	files, err := ioutil.ReadDir(fontPath)
+	if err != nil {
+		log.Printf("Could not find any fonts at %s, %s", fontPath, err)
+	}
+
+	var fontNames []font
+	for _, f := range files {
+		var name string
+		var w, h int
+		_, err := fmt.Sscanf(f.Name(), "%5s_%2dx%2d.png", &name, &w, &h)
+		if err != nil {
+			log.Printf("Found incorrectly named file %s", f.Name())
+			continue
+		}
+
+		foundFont := font{
+			Name: fmt.Sprintf("%s_%dx%d", name, w, h),
+			Path: path.Join(fontPath, f.Name()),
+			W:    w,
+			H:    h,
+		}
+
+		fontNames = append(fontNames, foundFont)
+		sort.Slice(fontNames, func(i, j int) bool { return fontNames[i].W < fontNames[j].W })
+	}
+
+	dfp, err := filepath.Abs(DefaultFontPath)
+	if err != nil {
+		log.Panicln("Things have gone horribly wrong with your filesystem", err)
+	}
+	yfp, err := filepath.Abs(Font)
+	if err != nil {
+		log.Panicln("Things have gone horribly wrong with your filesystem", err)
+	}
+
+	if yfp != dfp {
+		fileName := filepath.Base(yfp)
+		customFont := font{
+			Name: fileName,
+			Path: yfp,
+			W:    FontH,
+			H:    FontW,
+		}
+		fontNames = append([]font{customFont}, fontNames...)
+	}
+
+	return &availableFonts{
+		fonts: fontNames,
 	}
 }
 
@@ -80,17 +222,25 @@ func (intro *IntroScreen) drawSplash(window *gterm.Window) {
 }
 
 func (intro *IntroScreen) StartGame() bool {
-	return intro.Done() && intro.activeChoice == 0
+	return intro.Done() && intro.menuChoices[intro.activeChoice] == StartMenuChoice
 }
 
 func (intro *IntroScreen) QuitGame() bool {
-	return intro.Done() && !intro.StartGame()
+	return intro.Done() && intro.menuChoices[intro.activeChoice] == QuitMenuChoice
 }
 
-var menuChoices = []string{
-	"Start Game",
-	"Quit Game",
+type availableFonts struct {
+	fonts        []font
+	selectedFont int
 }
+
+type menuChoice interface {
+	Label() string
+}
+
+type simpleMenu string
+
+func (s simpleMenu) Label() string { return string(s) }
 
 func (intro *IntroScreen) drawMenuItems(window *gterm.Window) {
 	ticks := sdl.GetTicks()
@@ -111,7 +261,7 @@ func (intro *IntroScreen) drawMenuItems(window *gterm.Window) {
 	inactiveBg := gterm.NoColor
 
 	y := window.Rows - 10
-	for i, content := range menuChoices {
+	for i, choice := range intro.menuChoices {
 		var bg sdl.Color
 		if i == intro.activeChoice {
 			bg = activeBg
@@ -119,9 +269,9 @@ func (intro *IntroScreen) drawMenuItems(window *gterm.Window) {
 			bg = inactiveBg
 		}
 
-		x := (window.Columns - len(content)) / 2
+		x := (window.Columns - len(choice.Label())) / 2
 
-		window.PutStringBg(x, y, content, White, bg)
+		window.PutStringBg(x, y, choice.Label(), White, bg)
 		y++
 	}
 
