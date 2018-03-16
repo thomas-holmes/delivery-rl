@@ -76,6 +76,8 @@ func (f KeyDownFilter) FilterEvent(e sdl.Event, userdata interface{}) bool {
 		return true
 	case *sdl.QuitEvent:
 		return true
+	case *sdl.WindowEvent:
+		return true
 	default:
 		return false
 	}
