@@ -65,6 +65,8 @@ type Creature struct {
 
 	State MonsterBehavior
 
+	Resting bool
+
 	X int
 	Y int
 
@@ -332,6 +334,10 @@ func (creature *Creature) EndGame() {
 	m.Broadcast(m.M{ID: FoodSpoiled})
 }
 
+func (player *Creature) Safe(world *World) bool {
+	return !world.CurrentLevel().CreatureInSight()
+}
+
 // Update returns true if an action that would constitute advancing the turn took place
 func (creature *Creature) Update(turn uint64, action controls.Action, world *World) bool {
 	success := false
@@ -340,8 +346,17 @@ func (creature *Creature) Update(turn uint64, action controls.Action, world *Wor
 		if creature.IsFoodRuined() {
 			creature.EndGame()
 			return true
+		} else if creature.Resting {
+			if creature.HP.Current >= creature.HP.Max {
+				creature.Resting = false
+			} else if !creature.Safe(world) {
+				creature.Resting = false
+			} else {
+				success = true
+			}
+		} else {
+			success = creature.HandleInput(action, world)
 		}
-		success = creature.HandleInput(action, world)
 	} else {
 		success = creature.Pursue(turn, world)
 	}
@@ -498,6 +513,10 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 			gl.Append("Costs at least 1 ST to Warp.")
 		}
 		return false
+	case controls.Rest:
+		if player.Safe(world) {
+			player.Resting = true
+		}
 	case controls.Messages:
 		m.Broadcast(m.M{ID: ShowFullGameLog})
 		return false
@@ -600,7 +619,6 @@ func (creature *Creature) Notify(message m.M) {
 		if d, ok := message.Data.(PlayerDropItemMessage); ok {
 			creature.DropItem(d.Item, d.World)
 		}
-
 	case PlayerWarp:
 		if d, ok := message.Data.(PlayerWarpMessage); ok {
 			creature.TryWarp(d.World, d.TargetX, d.TargetY, d.Cost)

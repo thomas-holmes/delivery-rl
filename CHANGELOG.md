@@ -1,8 +1,12 @@
 Changelog
 ---------
 * 2.0.2
-	* Add the ability to cycle through font sizes on the intro screen.
-	* Window is resizeable at all times.
+	* UI
+		* Add the ability to cycle through font sizes on the intro screen.
+		* Window is resizeable at all times.
+		* Add some additional keypad bindings
+	* Gameplay
+		* Can rest to full while monsters not in sight by pressing r or 5.
 * 2.0.1
 	* Reduce default font size to 12 pixels. Should be a good size by default on most displays.
 * 2.0.0

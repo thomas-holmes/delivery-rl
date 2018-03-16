@@ -22,7 +22,7 @@ var KeyDown = Mapping{Name: "Down", Action: Down, Keys: []string{"J", "KP_2", "D
 var KeyDownLeft = Mapping{Name: "DownLeft", Action: DownLeft, Keys: []string{"B", "KP_1"}, SdlKeys: []sdl.Keycode{sdl.K_b, sdl.K_KP_1}}
 var KeyLeft = Mapping{Name: "Left", Action: Left, Keys: []string{"H", "KP_4", "LEFT"}, SdlKeys: []sdl.Keycode{sdl.K_h, sdl.K_KP_4, sdl.K_LEFT}}
 var KeyUpLeft = Mapping{Name: "UpLeft", Action: UpLeft, Keys: []string{"Y", "KP_7"}, SdlKeys: []sdl.Keycode{sdl.K_y, sdl.K_KP_7}}
-var KeyFive = Mapping{Name: "Wait", Action: Wait, Keys: []string{".", "KP_.", "5"}, SdlKeys: []sdl.Keycode{sdl.K_PERIOD, sdl.K_5, sdl.K_KP_5, sdl.K_KP_PERIOD}}
+var KeyPeriod = Mapping{Name: "Wait", Action: Wait, Keys: []string{".", "KP_."}, SdlKeys: []sdl.Keycode{sdl.K_PERIOD, sdl.K_KP_PERIOD}}
 var KeyGreater = Mapping{Name: "Descend", Action: Descend, Keys: []string{">"}, SdlKeys: []sdl.Keycode{sdl.K_PERIOD}, Shift: true}
 var KeyLesser = Mapping{Name: "Ascend", Action: Ascend, Keys: []string{"<"}, SdlKeys: []sdl.Keycode{sdl.K_COMMA}, Shift: true}
 
@@ -30,14 +30,15 @@ var KeyQuestion = Mapping{Name: "Help", Action: Help, Keys: []string{"?"}, SdlKe
 
 var KeyM = Mapping{Name: "Messages", Action: Messages, Keys: []string{"M"}, SdlKeys: []sdl.Keycode{sdl.K_m}}
 var KeyE = Mapping{Name: "Equip", Action: Equip, Keys: []string{"E"}, SdlKeys: []sdl.Keycode{sdl.K_e}, HideHelp: true}
-var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I"}, SdlKeys: []sdl.Keycode{sdl.K_i}}
+var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I", "KP--"}, SdlKeys: []sdl.Keycode{sdl.K_i, sdl.K_KP_MINUS}}
 var KeyB = Mapping{Name: "Warp", Action: Warp, Keys: []string{"W", "KP_+"}, SdlKeys: []sdl.Keycode{sdl.K_w, sdl.K_KP_PLUS}}
 var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, HideHelp: true}
 var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}, HideHelp: true}
-var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X"}, SdlKeys: []sdl.Keycode{sdl.K_x}}
+var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X", "KP_*"}, SdlKeys: []sdl.Keycode{sdl.K_x, sdl.K_KP_MULTIPLY}}
 var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
 var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}, HideHelp: true}
 var KeyD = Mapping{Name: "Drop", Action: Drop, Keys: []string{"D"}, SdlKeys: []sdl.Keycode{sdl.K_d}, HideHelp: true}
+var KeyR = Mapping{Name: "Rest", Action: Rest, Keys: []string{"R", "KP_5", "5"}, SdlKeys: []sdl.Keycode{sdl.K_r, sdl.K_KP_5, sdl.K_5}}
 
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
@@ -59,7 +60,7 @@ var AllMappings = []*Mapping{
 	&KeyUpLeft,
 	&KeyGreater,
 	&KeyLesser,
-	&KeyFive,
+	&KeyPeriod,
 	&KeyEsc,
 	&KeyM,
 	&KeyE,
@@ -71,6 +72,7 @@ var AllMappings = []*Mapping{
 	&KeyG,
 	&KeyT,
 	&KeyD,
+	&KeyR,
 	&KeyEnter,
 	&KeyQuestion,
 	&KeyCQ,
@@ -105,6 +107,7 @@ const (
 	Throw
 	Drop
 	Examine
+	Rest
 	Get
 	Confirm
 	Help

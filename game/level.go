@@ -60,6 +60,18 @@ func (level *Level) GetCreatureAtTile(xPos int, yPos int) (*Creature, bool) {
 	return nil, false
 }
 
+func (level *Level) CreatureInSight() bool {
+	for _, t := range level.Tiles {
+		if level.VisionMap.VisibilityAt(t.X, t.Y) == Visible &&
+			t.Creature != nil &&
+			t.Creature.Team == MonsterTeam {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GetVisibleCreatures returns a slice of creatures sorted so that the first is the closest
 // based on euclidean distance.
 func (level *Level) GetVisibleCreatures(originX int, originY int) []*Creature {
