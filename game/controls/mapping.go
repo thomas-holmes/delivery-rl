@@ -42,7 +42,7 @@ var KeyR = Mapping{Name: "Rest", Action: Rest, Keys: []string{"R", "KP_5", "5"},
 var KeyCQ = Mapping{Name: "Quit", Action: Quit, Keys: []string{"CTRL-Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, Control: true}
 
 var KeyEnter = Mapping{Name: "Confirm", Action: Confirm, Keys: []string{"enter", "return"}, SdlKeys: []sdl.Keycode{sdl.K_RETURN, sdl.K_KP_ENTER}, HideHelp: true}
-var KeyEsc = Mapping{Name: "Cancel", Action: Cancel, Keys: []string{"ESC"}, SdlKeys: []sdl.Keycode{sdl.K_ESCAPE}, HideHelp: true}
+var KeyEsc = Mapping{Name: "Cancel", Action: Cancel, Keys: []string{"ESC"}, SdlKeys: []sdl.Keycode{sdl.K_ESCAPE}}
 var KeyPgUp = Mapping{Name: "Page Up", Action: SkipUp, Keys: []string{"PGUP"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEUP}, HideHelp: true}
 var KeyPgDown = Mapping{Name: "Page Down", Action: SkipDown, Keys: []string{"PGDN"}, SdlKeys: []sdl.Keycode{sdl.K_PAGEDOWN}, HideHelp: true}
 var KeyHome = Mapping{Name: "Home", Action: Top, Keys: []string{"HOME"}, SdlKeys: []sdl.Keycode{sdl.K_HOME}, HideHelp: true}
@@ -60,7 +60,6 @@ var AllMappings = []*Mapping{
 	&KeyGreater,
 	&KeyLesser,
 	&KeyPeriod,
-	&KeyEsc,
 	&KeyM,
 	&KeyE,
 	&KeyI,
@@ -72,6 +71,7 @@ var AllMappings = []*Mapping{
 	&KeyD,
 	&KeyR,
 	&KeyEnter,
+	&KeyEsc,
 	&KeyQuestion,
 	&KeyCQ,
 	&KeyPgUp,

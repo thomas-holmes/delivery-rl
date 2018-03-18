@@ -226,7 +226,7 @@ func (hud *HUD) renderEquippedArmour(world *World) {
 func (hud *HUD) renderItemDisplay(world *World) {
 	hud.nextFreeRow += 3
 	offsetY := hud.GetNextRow()
-	offsetX := hud.X + 2
+	offsetX := hud.X + 1
 
 	items := make([]Item, 0)
 	for y := 0; y < world.CurrentLevel().Rows; y++ {
@@ -241,7 +241,7 @@ func (hud *HUD) renderItemDisplay(world *World) {
 	}
 	for _, item := range items {
 		world.Window.PutRune(hud.X+1, offsetY, item.Symbol, item.Color, gterm.NoColor)
-		offsetX = hud.X + 2
+		offsetX = hud.X + 1
 		itemText := item.Name
 		if item.Count > 1 {
 			itemText = fmt.Sprintf("[%d] %s", item.Count, item.Name)

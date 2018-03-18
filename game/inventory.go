@@ -176,20 +176,23 @@ func (pop *InventoryPop) renderItem(index int, row int, window *gterm.Window) in
 
 	item := pop.Inventory[index]
 
-	prefix := ""
-	if item.Count > 1 {
-		prefix = fmt.Sprintf("[%d] ", item.Count)
-	}
-
 	color := Grey
 	if pop.selectedIndex == index {
 		color = White
 		window.PutRune(offsetX+2, offsetY, rightArrow, White, gterm.NoColor)
 	}
 
+	offsetX += 4
+	prefix := ""
+	window.PutRune(offsetX, offsetY, item.Symbol, item.Color, gterm.NoColor)
+
+	if item.Count > 1 {
+		prefix = fmt.Sprintf("[%d] ", item.Count)
+	}
+
 	name := item.Name
 
-	offsetY += putWrappedText(window, prefix+name, offsetX, offsetY, 4, 2, pop.W-offsetX+pop.X-1, color)
+	offsetY += putWrappedText(window, prefix+name, offsetX, offsetY, 2, 2, pop.W-offsetX+pop.X-1, color)
 	return offsetY
 }
 
