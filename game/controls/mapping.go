@@ -34,7 +34,6 @@ var KeyI = Mapping{Name: "Inventory", Action: Inventory, Keys: []string{"I", "KP
 var KeyB = Mapping{Name: "Warp", Action: Warp, Keys: []string{"W", "KP_+"}, SdlKeys: []sdl.Keycode{sdl.K_w, sdl.K_KP_PLUS}}
 var KeyQ = Mapping{Name: "Quaff", Action: Quaff, Keys: []string{"Q"}, SdlKeys: []sdl.Keycode{sdl.K_q}, HideHelp: true}
 var KeyA = Mapping{Name: "Activate", Action: Activate, Keys: []string{"A"}, SdlKeys: []sdl.Keycode{sdl.K_a}, HideHelp: true}
-var KeyX = Mapping{Name: "Examine", Action: Examine, Keys: []string{"X", "KP_*"}, SdlKeys: []sdl.Keycode{sdl.K_x, sdl.K_KP_MULTIPLY}}
 var KeyG = Mapping{Name: "Get", Action: Get, Keys: []string{"G"}, SdlKeys: []sdl.Keycode{sdl.K_g}}
 var KeyT = Mapping{Name: "Throw", Action: Throw, Keys: []string{"T"}, SdlKeys: []sdl.Keycode{sdl.K_t}, HideHelp: true}
 var KeyD = Mapping{Name: "Drop", Action: Drop, Keys: []string{"D"}, SdlKeys: []sdl.Keycode{sdl.K_d}, HideHelp: true}
@@ -68,7 +67,6 @@ var AllMappings = []*Mapping{
 	&KeyB,
 	&KeyQ,
 	&KeyA,
-	&KeyX,
 	&KeyG,
 	&KeyT,
 	&KeyD,
@@ -106,7 +104,6 @@ const (
 	Activate
 	Throw
 	Drop
-	Examine
 	Rest
 	Get
 	Confirm

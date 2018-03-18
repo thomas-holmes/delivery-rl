@@ -1,5 +1,12 @@
 Changelog
 ---------
+* 2.0.3 (**Unreleased**)
+	* UI
+		* Removed boxes around message log and HUD.
+		* Removed examine interface.
+		* Added monsters, their hp, and debuffs to the HUD at all times.
+		* Animate message log popup.
+		* Move throw/warp cast dialogs to center screen.
 * 2.0.2
 	* UI
 		* Add the ability to cycle through font sizes on the intro screen.

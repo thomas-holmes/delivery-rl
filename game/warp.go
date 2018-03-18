@@ -31,7 +31,7 @@ func NewWarpPop(world *World) Menu {
 		World:   world,
 		TargetX: world.Player.X,
 		TargetY: world.Player.Y,
-		PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 3},
+		PopMenu: PopMenu{X: 15, Y: 45, W: 35, H: 3},
 	}
 }
 

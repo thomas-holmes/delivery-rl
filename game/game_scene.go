@@ -30,7 +30,7 @@ func clearSystems() {
 
 func (scene *GameScene) OnActivate(previous string) {
 	clearSystems()
-	gamelog.Append("Press ? for help!")
+	gamelog.Append("Press ? for controls and more info!")
 	pcgRng := pcg.NewPCG64()
 	seed := uint64(GameSeed())
 	log.Printf("Starting game with seed %d", seed)
@@ -41,7 +41,7 @@ func (scene *GameScene) OnActivate(previous string) {
 	scene.world = MakeNewWorld(scene.window, pcgRng)
 	NewCombatSystem(scene.world)
 
-	scene.hud = NewHud(scene.world.Player, scene.world, 65, 2)
+	scene.hud = NewHud(scene.world.Player, scene.world, 65, 1)
 }
 
 func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
@@ -73,6 +73,7 @@ func (g *GameScene) Update(input controls.InputEvent, deltaT uint32) {
 }
 
 func (g *GameScene) Render(window *gterm.Window, deltaT uint32) {
+	// TODO: What is up with this comment?
 	//g.world.UpdateAnimations()
 	g.world.Render()
 	g.hud.Render(g.world)

@@ -1,93 +1,116 @@
 package main
 
 import (
-	"log"
 	"math"
 
 	"github.com/thomas-holmes/delivery-rl/game/controls"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	"github.com/thomas-holmes/gterm"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 type FullGameLog struct {
 	GameLog *GameLog
 
+	tranFinished bool
+	tranStart    uint32
+
+	closing bool
+
+	topPosition int
+
 	PopMenu
-
-	ScrollPosition int
 }
 
-func (pop *FullGameLog) ScrollDown(distance int) {
-	messages := gl.Messages()
-	maxScrollPosition := max(0, len(messages)-pop.H)
-	pop.ScrollPosition = min(maxScrollPosition, pop.ScrollPosition+distance)
-}
-
-func (pop *FullGameLog) ScrollUp(distance int) {
-	pop.ScrollPosition = max(0, pop.ScrollPosition-distance)
-}
+const TransitionDuration = 250
 
 func (pop *FullGameLog) Update(action controls.Action) {
-	pop.CheckCancel(action)
+	if action == controls.Cancel && !pop.closing {
+		pop.closing = true
 
-	switch action {
-	case controls.Up:
-		pop.ScrollUp(1)
-	case controls.SkipUp:
-		pop.ScrollUp(10)
-	case controls.Top:
-		pop.ScrollUp(len(gl.Messages()))
-	case controls.Down:
-		pop.ScrollDown(1)
-	case controls.SkipDown:
-		pop.ScrollDown(10)
-	case controls.Bottom:
-		pop.ScrollDown(len(gl.Messages()))
-	}
-}
+		start := pop.tranStart
+		now := sdl.GetTicks()
 
-func (pop *FullGameLog) RenderScrollBar(window *gterm.Window) {
-	messages := gl.Messages()
-	barSpace := float64(pop.H - 4)
+		// Using int64 so I can subtract uint32s
+		remainingAnimationTime := max64(0, int64(TransitionDuration)-(int64(now)-int64(start)))
+		pop.tranStart = now - uint32(remainingAnimationTime)
 
-	percentageShown := float64(min(pop.H, len(messages))) / float64(len(messages))
-	scrollBarWidth := int(math.Ceil(barSpace * percentageShown))
-
-	topOfBar := int(float64(barSpace) * float64(pop.ScrollPosition) / float64(len(messages)))
-
-	window.PutRune(pop.X+1, pop.Y+1, upArrow, Yellow, gterm.NoColor)
-
-	barRunesDrawn := 0
-	for row := pop.Y + 2; row < (pop.Y + 1 + pop.H - 3); row++ {
-		if (row >= topOfBar) && (barRunesDrawn <= scrollBarWidth) {
-			window.PutRune(pop.X+1, row, fullBlock, Yellow, gterm.NoColor)
-			barRunesDrawn++
-		} else {
-			window.PutRune(pop.X+1, row, vertical, Grey, gterm.NoColor)
-		}
+		pop.tranFinished = false
 	}
 
-	window.PutRune(pop.X+1, pop.Y+1+pop.H-3, downArrow, Yellow, gterm.NoColor)
+	if pop.tranFinished {
+		pop.done = true
+	}
 }
 
 func (pop *FullGameLog) RenderVisibleLines(window *gterm.Window) {
 	messages := gl.Messages()
-	messagesToRender := len(messages) - pop.ScrollPosition
 
-	yPos := pop.Y
-	for i := messagesToRender - 1; i >= 0 && yPos+2 < pop.Y+pop.H; i-- {
-		message := messages[i]
-		yPos += putWrappedText(window, message, pop.X+3, yPos+1, 0, 2, pop.W-4, White)
+	yOffset := 1
+	for i := 0; i < len(messages); i++ {
+		idx := len(messages) - 1 - i
+		if idx < 0 {
+			break
+		}
+
+		message := messages[idx]
+		lines := wrapText(message, 0, 2, pop.W)
+
+		yOffset += len(lines)
+
+		// Make sure we have enough headroom
+		if yOffset >= pop.H-pop.topPosition {
+			break
+		}
+
+		for j := 0; j < len(lines); j++ {
+			window.PutString(pop.X, pop.Y+pop.H-yOffset+j, lines[j], White)
+		}
+	}
+
+}
+
+func (pop *FullGameLog) DrawTransition(window *gterm.Window) {
+	now := sdl.GetTicks()
+	if pop.tranStart == 0 {
+		pop.tranStart = now
+	}
+
+	adjustment := pop.GameLog.H + 1
+	_ = adjustment
+
+	distance := pop.H - adjustment
+
+	elapsed := now - pop.tranStart
+
+	pctOpen := float64(elapsed) / TransitionDuration
+	if pop.closing {
+		pctOpen = 1 - pctOpen
+	}
+
+	pctOpen = math.Min(1, math.Max(0, pctOpen))
+
+	actualOpen := int(float64(distance) * pctOpen)
+
+	distance += adjustment
+	actualOpen += adjustment
+
+	if pop.closing && actualOpen == adjustment {
+		pop.tranFinished = true
+	}
+
+	y := pop.Y + pop.H - actualOpen
+	pop.topPosition = y
+	window.ClearRegion(pop.X, y, pop.W, actualOpen)
+
+	for x := pop.X; x < pop.X+pop.W; x++ {
+		window.PutRune(x, y, horizontal, White, gterm.NoColor)
 	}
 
 }
 
 func (pop *FullGameLog) Render(window *gterm.Window) {
-	if err := window.ClearRegion(pop.X, pop.Y, pop.W, pop.H); err != nil {
-		log.Println("Got an error clearing FullGameLog region", err)
-	}
-	pop.DrawBox(window, White)
-	pop.RenderScrollBar(window)
+	pop.DrawTransition(window)
 
 	pop.RenderVisibleLines(window)
 }

@@ -38,6 +38,14 @@ func (hud *HUD) GetNextRow() int {
 	return hud.nextFreeRow + hud.Y - 1
 }
 
+func (hud *HUD) drawDivider() {
+	x := hud.X
+	for y := 0; y < hud.World.Window.Rows; y++ {
+		hud.World.Window.PutRune(x, y, vertical, White, gterm.NoColor)
+
+	}
+}
+
 func (hud *HUD) renderPlayerName(world *World) {
 	content := world.Player.Name
 	color := White
@@ -247,8 +255,70 @@ func (hud *HUD) renderItemDisplay(world *World) {
 	offsetX = hud.X
 }
 
+func (hud *HUD) renderMonsterDisplay(world *World) {
+	hud.nextFreeRow += 3
+	offsetY := hud.GetNextRow()
+
+	monsters := make([]*Creature, 0)
+	for y := 0; y < world.CurrentLevel().Rows; y++ {
+		for x := 0; x < world.CurrentLevel().Columns; x++ {
+			if hud.Player.Y == y && hud.Player.X == x {
+				continue
+			}
+
+			if world.CurrentLevel().VisionMap.VisibilityAt(x, y) == Visible {
+				tile := world.CurrentLevel().GetTile(x, y)
+				if tile.Creature != nil {
+					monsters = append(monsters, tile.Creature)
+				}
+			}
+		}
+	}
+	for _, monster := range monsters {
+		offsetX := hud.X + 1
+		world.Window.PutRune(hud.X+1, offsetY, monster.RenderGlyph, monster.RenderColor, gterm.NoColor)
+
+		// Draw monster hp
+		offsetX += 2
+		barWidth := 3
+
+		hpColor := Red
+		pct := monster.HP.Percentage()
+		switch {
+		case pct >= 0.8:
+			hpColor = Green
+		case pct >= 0.6:
+			hpColor = Yellow
+		case pct >= 0.4:
+			hpColor = Orange
+		default:
+			hpColor = Red
+		}
+		drawBar(hud.World.Window, monster.HP.Percentage(), barWidth, offsetX, offsetY, hpColor)
+		offsetX += barWidth + 1
+
+		monsterText := monster.Name
+		world.Window.PutString(offsetX, offsetY, monsterText, White)
+
+		offsetX += len(monsterText) + 1
+
+		if monster.HasStatus(Confused) {
+			status := "(Conf)"
+			world.Window.PutString(offsetX, offsetY, status, Red)
+			offsetX += len(status)
+		}
+		if monster.HasStatus(Slow) {
+			status := "(Slow)"
+			world.Window.PutString(offsetX, offsetY, status, GarlicGrease)
+			offsetX += len(status) + 1
+		}
+		offsetY = hud.GetNextRow()
+	}
+}
+
 func (hud *HUD) Render(world *World) {
-	hud.DrawBox(world.Window, White)
+	// hud.DrawBox(world.Window, White)
+	hud.drawDivider()
 	hud.nextFreeRow = 1
 	hud.renderPlayerName(world)
 	hud.renderPlayerPosition(world)
@@ -259,4 +329,5 @@ func (hud *HUD) Render(world *World) {
 	hud.renderEquippedWeapon(world)
 	hud.renderEquippedArmour(world)
 	hud.renderItemDisplay(world)
+	hud.renderMonsterDisplay(world)
 }

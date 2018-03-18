@@ -501,10 +501,6 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 		menu := &InventoryPop{World: world, PopMenu: PopMenu{X: 2, Y: 2, W: 30, H: 30}, Inventory: player.Inventory}
 		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
 		return false
-	case controls.Examine:
-		menu := &InspectionPop{PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 26}, World: world, TargetX: player.X, TargetY: player.Y}
-		m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: menu}})
-		return false
 	case controls.Warp:
 		if player.ST.Current >= 1 {
 			menu := NewWarpPop(world)

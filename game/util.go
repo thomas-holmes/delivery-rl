@@ -15,6 +15,12 @@ func max(a int, b int) int {
 	}
 	return b
 }
+func maxu32(a uint32, b uint32) uint32 {
+	if a > b {
+		return a
+	}
+	return b
+}
 func max64(a int64, b int64) int64 {
 	if a > b {
 		return a
@@ -34,6 +40,12 @@ func maxf32(a float32, b float32) float32 {
 	return b
 }
 func min(a int, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+func minu32(a uint32, b uint32) uint32 {
 	if a < b {
 		return a
 	}
@@ -87,6 +99,34 @@ func distance(p1, p2 Position) int {
 	dY := p2.Y - p2.Y
 
 	return int(math.Sqrt(float64(dX*dX) + float64(dY*dY)))
+}
+
+func wrapText(content string, firstIndent, afterIndent, width int) []string {
+	offsetX := firstIndent
+
+	var wrappedText []string
+	for {
+		if len(content) == 0 {
+			break
+		}
+		maxLength := width - offsetX
+		cut := min(len(content), maxLength)
+		printable := content[:cut]
+		lastSpace := strings.LastIndexAny(printable, " ")
+		if printable != content && lastSpace > -1 {
+			printable = printable[:lastSpace]
+			content = strings.TrimSpace(content[lastSpace:])
+		} else {
+			content = strings.TrimSpace(content[cut:])
+		}
+
+		printable = strings.Repeat(" ", offsetX) + printable
+		wrappedText = append(wrappedText, printable)
+
+		offsetX = afterIndent
+	}
+
+	return wrappedText
 }
 
 func putWrappedText(window *gterm.Window, content string, x int, y int, firstIndent int, afterIndent int, width int, color sdl.Color) int {

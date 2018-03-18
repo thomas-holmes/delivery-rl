@@ -19,7 +19,7 @@ func NewThrowPop(item Item, world *World) Menu {
 		TargetX: world.Player.X,
 		TargetY: world.Player.Y,
 
-		PopMenu: PopMenu{X: 65, Y: 32, W: 34, H: 3},
+		PopMenu: PopMenu{X: 15, Y: 45, W: 35, H: 3},
 	}
 }
 
@@ -108,7 +108,7 @@ func (pop *ThrowPop) drawCursor(window *gterm.Window) {
 }
 
 func (pop *ThrowPop) RenderTooltip(window *gterm.Window) {
-	window.PutString(pop.X+1, pop.Y+1, fmt.Sprintf("Throwing %s...", pop.Item.Name), White)
+	window.PutString(pop.X+2, pop.Y+1, fmt.Sprintf("Throwing %s...", pop.Item.Name), White)
 }
 
 func (pop *ThrowPop) Render(window *gterm.Window) {

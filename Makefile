@@ -26,7 +26,7 @@ buildwin: unpackdeps
 	CGO_ENABLED="1" CC="/usr/bin/x86_64-w64-mingw32-gcc" GOOS="windows" CGO_LDFLAGS="-lmingw32 -lSDL2 -I $(ROOT)/sdl2/win/SDL2-2.0.8/x86_64-w64-mingw32/include -L $(ROOT)/sdl2/win/SDL2-2.0.8/x86_64-w64-mingw32/lib" CGO_CFLAGS="-D_REENTRANT -I $(ROOT)/sdl2/win/SDL2-2.0.8/x86_64-w64-mingw32/include -L $(ROOT)/sdl2/win/SDL2-2.0.8/x86_64-w64-mingw32/lib" $(GOBUILD) -o run_dir/$(BINARY).exe github.com/thomas-holmes/delivery-rl/game
 
 run: build
-	cd ./run_dir && ./delivery-rl
+	cd ./run_dir && ./delivery-rl -font-path=assets/font/cp437_16x16.png -font-width=16 -font-height=16
 
 runv: build
 	cd ./run_dir && ./delivery-rl -no-vsync
