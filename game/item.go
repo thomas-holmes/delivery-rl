@@ -87,7 +87,7 @@ func (pop *ItemDetails) renderLongDescription(row int, window *gterm.Window) int
 }
 
 func (pop *ItemDetails) renderPower(row int, window *gterm.Window) int {
-	if pop.Item.Power.Num == 0 {
+	if pop.Item.Kind == items.Food || pop.Item.Power.Num == 0 {
 		return row
 	}
 
