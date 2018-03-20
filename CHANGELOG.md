@@ -1,5 +1,14 @@
 Changelog
 ---------
+* 2.0.4
+	* UI
+		* Change the load screen
+		* Change walls to solid blocks
+		* Change floor to centered dots
+		* Change background color to a **very** deep purple
+		* Make the white text a little less bright, with a hint of color
+	* Gameplay
+		* FOV is now circular rather than square.
 * 2.0.3
 	* UI
 		* Removed boxes around message log and HUD.
