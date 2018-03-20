@@ -10,6 +10,8 @@ import (
 type GameLog struct {
 	world *World
 
+	FullLogShown bool
+
 	X int
 	Y int
 	W int
@@ -34,6 +36,9 @@ func (pop *GameLog) Render(window *gterm.Window) {
 	y := pop.Y
 	for x := pop.X; x < pop.X+pop.W; x++ {
 		window.PutRune(x, y, horizontal, White, gterm.NoColor)
+	}
+	if !pop.FullLogShown {
+		window.PutRune(pop.X+pop.W, y, vertLeftJoint, White, gterm.NoColor)
 	}
 	messages := gamelog.Messages()
 	var yOffset int

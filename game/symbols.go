@@ -1,11 +1,12 @@
 package main
 
-var topLeft = rune('┌')     // 0x250C
-var horizontal = rune('─')  // 0x2500
-var topRight = rune('┐')    // 0x2510
-var vertical = rune('│')    // 0x2502
-var bottomLeft = rune('└')  // 0x2514
-var bottomRight = rune('┘') // 0x2518
+var topLeft = rune('┌')       // 0x250C
+var horizontal = rune('─')    // 0x2500
+var topRight = rune('┐')      // 0x2510
+var vertical = rune('│')      // 0x2502
+var bottomLeft = rune('└')    // 0x2514
+var bottomRight = rune('┘')   // 0x2518
+var vertLeftJoint = rune('┤') //0x2524
 
 // gterm font stuff is still kinda janky so I need to do this
 var upArrow = rune(30)    // 0x25B2 ▲

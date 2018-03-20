@@ -25,6 +25,7 @@ type FullGameLog struct {
 const TransitionDuration = 250
 
 func (pop *FullGameLog) Update(action controls.Action) {
+	pop.GameLog.FullLogShown = true
 	if action == controls.Cancel && !pop.closing {
 		pop.closing = true
 
@@ -40,6 +41,7 @@ func (pop *FullGameLog) Update(action controls.Action) {
 
 	if pop.tranFinished {
 		pop.done = true
+		pop.GameLog.FullLogShown = false
 	}
 }
 
@@ -106,6 +108,7 @@ func (pop *FullGameLog) DrawTransition(window *gterm.Window) {
 	for x := pop.X; x < pop.X+pop.W; x++ {
 		window.PutRune(x, y, horizontal, White, gterm.NoColor)
 	}
+	window.PutRune(pop.X+pop.W, y, vertLeftJoint, White, gterm.NoColor)
 
 }
 
