@@ -57,7 +57,7 @@ type IntroScreen struct {
 func (intro *IntroScreen) setInitialFont() {
 	fonts := intro.fonts
 
-	configuredFontPath, err := filepath.Abs(path.Join(AssetRoot, Font))
+	configuredFontPath, err := filepath.Abs(Font)
 	if err != nil {
 		log.Panicln("Your file system is broken", err)
 	}
@@ -198,9 +198,11 @@ func getAvailableFonts() *availableFonts {
 		}
 	}
 
-	return &availableFonts{
+	available := &availableFonts{
 		fonts: fontNames,
 	}
+
+	return available
 }
 
 func (intro *IntroScreen) maybeLoadSplash() {

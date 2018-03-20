@@ -130,13 +130,13 @@ func main() {
 
 var AssetRoot string
 
+var DefaultFontPath string
+
 var NoVSync = true
 var Seed int64
 var Font string
 var FontW int
 var FontH int
-
-var DefaultFontPath string = path.Join(AssetRoot, "assets", "font", "cp437_12x12.png")
 
 func GameSeed() int64 {
 	if Seed == -1 {
@@ -153,13 +153,14 @@ func init() {
 		AssetRoot = ""
 	} else {
 		AssetRoot = filepath.Dir(AssetRoot)
-		log.Printf("Loading assets from %s", AssetRoot)
 	}
+	DefaultFontPath = path.Join(AssetRoot, "assets", "font", "cp437_12x12.png")
 
 	flag.BoolVar(&NoVSync, "no-vsync", false, "disable vsync")
 	flag.Int64Var(&Seed, "seed", -1, "Provide a seed for launching the game")
 	flag.StringVar(&Font, "font-path", DefaultFontPath, "Set font relative file path")
 	flag.IntVar(&FontW, "font-width", 12, "pixel width per character")
 	flag.IntVar(&FontH, "font-height", 12, "pixel height per character")
+	log.Println("DefaultFontPath", DefaultFontPath)
 	flag.Parse()
 }

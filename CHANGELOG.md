@@ -1,5 +1,7 @@
 Changelog
 ---------
+* 2.0.5
+	* Fix regression in loading assets relative to executable.
 * 2.0.4
 	* UI
 		* Change the load screen
