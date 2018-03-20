@@ -228,6 +228,7 @@ func (intro *IntroScreen) maybeLoadSplash() {
 }
 
 func (intro *IntroScreen) drawSplash(window *gterm.Window) {
+
 	x, y := 0, 0
 	for _, line := range intro.splash {
 		if err := window.PutString(x, y, line, White); err != nil {
