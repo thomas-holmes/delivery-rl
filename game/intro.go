@@ -151,9 +151,14 @@ func getAvailableFonts() *availableFonts {
 			continue
 		}
 
+		currentAbs, err := filepath.Abs(path.Join(fontPath, f.Name()))
+		if err != nil {
+			log.Panicln("Things have gone horribly wrong with your filesystem", err)
+		}
+
 		foundFont := font{
 			Name: fmt.Sprintf("%s_%dx%d", name, w, h),
-			Path: path.Join(fontPath, f.Name()),
+			Path: currentAbs,
 			W:    w,
 			H:    h,
 		}
@@ -172,14 +177,25 @@ func getAvailableFonts() *availableFonts {
 	}
 
 	if yfp != dfp {
-		fileName := filepath.Base(yfp)
-		customFont := font{
-			Name: fileName,
-			Path: yfp,
-			W:    FontH,
-			H:    FontW,
+
+		var yfpIsProvidedFont bool
+
+		for _, font := range fontNames {
+			if font.Path == yfp {
+				yfpIsProvidedFont = true
+			}
 		}
-		fontNames = append([]font{customFont}, fontNames...)
+
+		if !yfpIsProvidedFont {
+			fileName := filepath.Base(yfp)
+			customFont := font{
+				Name: fileName,
+				Path: yfp,
+				W:    FontH,
+				H:    FontW,
+			}
+			fontNames = append([]font{customFont}, fontNames...)
+		}
 	}
 
 	return &availableFonts{
