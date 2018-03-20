@@ -91,7 +91,7 @@ func main() {
 	}
 
 	window.SetTitle("DeliveryRL")
-	window.SetBackgroundColor(gterm.NoColor)
+	window.SetBackgroundColor(DeepPurple)
 
 	configureItemsRepository()
 	configureMonstersRepository()

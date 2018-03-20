@@ -23,8 +23,8 @@ const (
 )
 
 const (
-	WallGlyph      = '#'
-	FloorGlyph     = '.'
+	WallGlyph      = '█'
+	FloorGlyph     = '∙'
 	UpStairGlyph   = '<'
 	DownStairGlyph = '>'
 )

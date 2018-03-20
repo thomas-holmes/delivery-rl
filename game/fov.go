@@ -50,6 +50,11 @@ func (vision *VisionMap) UpdateVision(viewDistance int, world *World) {
 
 	for y := minY; y < maxY; y++ {
 		for x := minX; x < maxX; x++ {
+			var inCircularVision bool
+
+			if euclideanDistance(playerX, playerY, x, y) < float64(viewDistance) {
+				inCircularVision = true
+			}
 			previousVision := vision.lastSeenAt(x, y)
 
 			if previousVision == current {
@@ -58,8 +63,9 @@ func (vision *VisionMap) UpdateVision(viewDistance int, world *World) {
 
 			newVision := previousVision
 
-			if vision.CheckVision(playerX, playerY, x, y, world) ||
-				vision.CheckVision(x, y, playerX, playerY, world) {
+			if inCircularVision &&
+				(vision.CheckVision(playerX, playerY, x, y, world) ||
+					vision.CheckVision(x, y, playerX, playerY, world)) {
 				newVision = current
 
 				wallMinY, wallMaxY := max(0, y-1), min(y+1, vision.Rows-1)
