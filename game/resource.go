@@ -1,31 +1,37 @@
 package main
 
-import (
-	"math"
-)
-
 // Resource represents some character resource that hax a max and [re/de]generates over time
 type Resource struct {
-	RegenRate float64
+	RateTimes100 int
 
 	Current int
 	Max     int
 
-	regenPartial float64
+	regenPartial int
 }
 
 // Tick applies the regen rate to the resource
 func (resource *Resource) Tick() {
-	resource.regenPartial += resource.RegenRate
+	resource.regenPartial += resource.RateTimes100
 
-	if math.Abs(resource.regenPartial) >= 1 {
-		adjustment := math.Floor(resource.regenPartial)
-		newValue := resource.Current + int(math.Floor(resource.regenPartial))
-		newValue = min(newValue, resource.Max)
-		newValue = max(newValue, 0)
-		resource.Current = newValue
-		resource.regenPartial -= adjustment
+	sign := 1
+
+	partial := resource.regenPartial
+	if partial < 0 {
+		partial = -partial
+		sign = -1
 	}
+
+	actualRegen := partial / 100
+	if actualRegen > 0 {
+		adjustment := actualRegen * sign
+		resource.Current += adjustment
+		resource.regenPartial -= (adjustment * 100)
+	}
+
+	resource.Current = max(0, resource.Current)
+	resource.Current = min(resource.Max, resource.Current)
+
 }
 
 func (resource Resource) Percentage() float64 {

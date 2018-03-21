@@ -209,8 +209,8 @@ func NewCreature(level int, maxHP int) *Creature {
 			Current: 100,
 			Max:     100,
 		},
-		HP:            Resource{Current: maxHP, Max: maxHP, RegenRate: 0.05},
-		ST:            Resource{Current: 2, Max: 2, RegenRate: 0.15},
+		HP:            Resource{Current: maxHP, Max: maxHP, RateTimes100: 5},
+		ST:            Resource{Current: 2, Max: 2, RateTimes100: 15},
 		Effects:       make(map[StatusEffect]int),
 		BaseSpeed:     100,
 		SpeedModifier: 1,
@@ -261,9 +261,9 @@ func NewPlayer() *Creature {
 	player.RenderColor = Red
 	player.IsPlayer = true
 	player.VisionDistance = 12
-	player.HP.RegenRate = HPRegen
-	player.ST = Resource{Current: 4, Max: 4, RegenRate: STRegen}
-	player.HT = Resource{Current: 125, Max: 125, RegenRate: -HeatDecay}
+	player.HP.RateTimes100 = int(HPRegen * 100)
+	player.ST = Resource{Current: 4, Max: 4, RateTimes100: int(STRegen * 100)}
+	player.HT = Resource{Current: 125, Max: 125, RateTimes100: int(-HeatDecay * 100)}
 
 	player.Unsubscribe = m.Subscribe(player.Notify)
 
