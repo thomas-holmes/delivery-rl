@@ -1,6 +1,6 @@
 ---
   - name: "Hand Warmer"
-    description: "Activate this small warming pouch to restore a small amount of heat to the pizza"
+    description: "Activate this warming pouch to restore a small amount of heat to the pizza."
     glyph: "\u0015"
     color: [200, 40, 40]
     power: 2d10+10
@@ -35,7 +35,7 @@
     stacks: true
 
   - name: "Garlic Butter"
-    description: "A small tub of garlic butter. It would be hard to walk over this if it were spilled"
+    description: "A tub of garlic butter. It would be hard to walk over this if it were spilled."
     glyph: "\u0009"
     color: [250, 230, 150]
     kind: missile

@@ -309,10 +309,6 @@ func (intro *IntroScreen) Render(window *gterm.Window) {
 	x, y := (window.Columns-len(content))/2, window.Rows-5
 	window.PutString(x, y, content, LightBlue)
 
-	content = "Press any key to begin..."
-	x, y = (window.Columns-len(content))/2, y+1
-	window.PutString(x, y, content, LightGrey)
-
 	content = "A 2018 7DRL by"
 	name := "keipra"
 	x, y = (window.Columns-(len(content)+len(name)))/2, y+1
