@@ -48,7 +48,7 @@ func (creature *Creature) Regen() {
 }
 
 type Creature struct {
-	BasicEntity
+	// Probably add ID? Do I even need it?
 
 	CompletedExternalAction bool
 
@@ -171,12 +171,7 @@ func (c *Creature) TryMove(newX int, newY int, world *World) (MoveResult, interf
 		}
 		// Attack friendlies if confused
 		if confused || (c.Team != NeutralTeam) && (c.Team != defender.Team) {
-			// Check if I still need to get entity, I think this isn't necessary any more
-			a, aOk := world.GetEntity(c.ID)
-			d, dOk := world.GetEntity(defender.ID)
-			if aOk && dOk {
-				return MoveIsEnemy, MoveEnemy{Attacker: a, Defender: d}
-			}
+			return MoveIsEnemy, MoveEnemy{Attacker: c, Defender: defender}
 		}
 	}
 
@@ -195,7 +190,7 @@ func (player *Creature) TryWarp(world *World, newX, newY, cost int) bool {
 			player.X = newX
 			player.Y = newY
 			player.ST.Current -= cost
-			m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
+			m.Broadcast(m.M{ID: MoveCreature, Data: MoveCreatureMessage{Creature: player, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
 		case MoveIsEnemy:
 			return false
 		case MoveIsVictory:
@@ -526,6 +521,7 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 
 	if newX != player.X || newY != player.Y {
 		result, data := player.TryMove(newX, newY, world)
+		log.Printf("We tried to move, got %v, %+v", result, data)
 		switch result {
 		case MoveIsInvalid:
 			return false
@@ -534,10 +530,11 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 			oldY := player.Y
 			player.X = newX
 			player.Y = newY
-			m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{ID: player.ID, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
+			m.Broadcast(m.M{ID: MoveCreature, Data: MoveCreatureMessage{Creature: player, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
 		case MoveIsEnemy:
 			if data, ok := data.(MoveEnemy); ok {
-				m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
+				log.Printf("Broadcasting a move enemy event")
+				m.Broadcast(m.M{ID: AttackCreature, Data: AttackCreatureMessage{
 					Attacker: data.Attacker,
 					Defender: data.Defender,
 				}})
@@ -550,74 +547,67 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 	return true
 }
 
-func (creature *Creature) Notify(message m.M) {
+func (player *Creature) Notify(message m.M) {
 	switch message.ID {
-	case KillEntity:
-		if d, ok := message.Data.(KillEntityMessage); ok {
-			attacker, ok := d.Attacker.(*Creature)
-			if !ok {
-				return
-			}
-			defender, ok := d.Defender.(*Creature)
-			if !ok {
-				return
-			}
+	case KillCreature:
+		if d, ok := message.Data.(KillCreatureMessage); ok {
+			attacker, defender := d.Attacker, d.Defender
 
-			if defender.ID == creature.ID {
+			if defender == player {
 				m.Broadcast(m.M{ID: PlayerDead})
 				return
 			}
-			if attacker.ID != creature.ID {
+			if attacker != player {
 				return
 			}
 		}
 	case EquipItem:
 		if d, ok := message.Data.(EquipItemMessage); ok {
-			creature.CompletedExternalAction = true
+			player.CompletedExternalAction = true
 
 			switch d.Item.Kind {
 			case items.Weapon:
 				// Put it back in my inventory
-				creature.Inventory.RemoveItem(d.Item)
+				player.Inventory.RemoveItem(d.Item)
 
-				if creature.Equipment.Weapon.Name != "Bare Hands" {
-					if ok := creature.Inventory.Add(creature.Equipment.Weapon); !ok {
+				if player.Equipment.Weapon.Name != "Bare Hands" {
+					if ok := player.Inventory.Add(player.Equipment.Weapon); !ok {
 						// Shouldn't happen
 						log.Printf("Failed to add a weapon to inventory when equipping. There should have been space.")
 					}
 				}
 
-				creature.Equipment.Weapon = d.Item
-				gl.Append("%s equips %s", creature.Name, d.Item.Name)
+				player.Equipment.Weapon = d.Item
+				gl.Append("%s equips %s", player.Name, d.Item.Name)
 			case items.Armour:
-				creature.Inventory.RemoveItem(d.Item)
-				if ok := creature.Inventory.Add(creature.Equipment.Armour); !ok {
+				player.Inventory.RemoveItem(d.Item)
+				if ok := player.Inventory.Add(player.Equipment.Armour); !ok {
 					// Shouldn't happen
 					log.Printf("Failed to add an armour to inventory when equipping. There should have been space.")
 				}
-				creature.Equipment.Armour = d.Item
-				gl.Append("%s equips %s", creature.Name, d.Item.Name)
+				player.Equipment.Armour = d.Item
+				gl.Append("%s equips %s", player.Name, d.Item.Name)
 			}
 		}
 	case PlayerQuaffPotion:
 		if d, ok := message.Data.(PlayerQuaffPotionMessage); ok {
-			creature.Quaff(d.Potion)
+			player.Quaff(d.Potion)
 		}
 	case PlayerActivateItem:
 		if d, ok := message.Data.(PlayerActivateItemMessage); ok {
-			creature.ActivateItem(d.Item)
+			player.ActivateItem(d.Item)
 		}
 	case PlayerThrowItem:
 		if d, ok := message.Data.(PlayerThrowItemMessage); ok {
-			creature.ThrowItem(d)
+			player.ThrowItem(d)
 		}
 	case PlayerDropItem:
 		if d, ok := message.Data.(PlayerDropItemMessage); ok {
-			creature.DropItem(d.Item, d.World)
+			player.DropItem(d.Item, d.World)
 		}
 	case PlayerWarp:
 		if d, ok := message.Data.(PlayerWarpMessage); ok {
-			creature.TryWarp(d.World, d.TargetX, d.TargetY, d.Cost)
+			player.TryWarp(d.World, d.TargetX, d.TargetY, d.Cost)
 		}
 	}
 }
@@ -720,16 +710,16 @@ func (monster *Creature) Pursue(turn uint64, world *World) bool {
 				oldY := monster.Y
 				monster.X = choice.X
 				monster.Y = choice.Y
-				m.Broadcast(m.M{ID: MoveEntity, Data: MoveEntityMessage{
-					ID:   monster.ID,
-					OldX: oldX,
-					OldY: oldY,
-					NewX: choice.X,
-					NewY: choice.Y,
+				m.Broadcast(m.M{ID: MoveCreature, Data: MoveCreatureMessage{
+					Creature: monster,
+					OldX:     oldX,
+					OldY:     oldY,
+					NewX:     choice.X,
+					NewY:     choice.Y,
 				}})
 			case MoveIsEnemy:
 				if data, ok := data.(MoveEnemy); ok {
-					m.Broadcast(m.M{ID: AttackEntity, Data: AttackEntityMesasge{
+					m.Broadcast(m.M{ID: AttackCreature, Data: AttackCreatureMessage{
 						Attacker: data.Attacker,
 						Defender: data.Defender,
 					}})
@@ -754,8 +744,8 @@ const (
 )
 
 type MoveEnemy struct {
-	Attacker Entity
-	Defender Entity
+	Attacker *Creature
+	Defender *Creature
 }
 
 type StatusEffect int

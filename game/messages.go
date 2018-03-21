@@ -3,10 +3,10 @@ package main
 type Message int
 
 const (
-	MoveEntity Message = iota
-	AttackEntity
+	MoveCreature Message = iota
+	AttackCreature
 	PlayerDead
-	KillEntity
+	KillCreature
 	PlayerFloorChange
 	ShowMenu
 	EquipItem
@@ -22,22 +22,22 @@ const (
 	TryMoveCreature
 )
 
-type MoveEntityMessage struct {
-	ID   int
-	OldX int
-	OldY int
-	NewX int
-	NewY int
+type MoveCreatureMessage struct {
+	Creature *Creature
+	OldX     int
+	OldY     int
+	NewX     int
+	NewY     int
 }
 
-type AttackEntityMesasge struct {
-	Attacker Entity
-	Defender Entity
+type AttackCreatureMessage struct {
+	Attacker *Creature
+	Defender *Creature
 }
 
-type KillEntityMessage struct {
-	Attacker Entity
-	Defender Entity
+type KillCreatureMessage struct {
+	Attacker *Creature
+	Defender *Creature
 }
 
 type PlayerFloorChangeMessage struct {

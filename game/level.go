@@ -11,6 +11,35 @@ type DistanceCandidate struct {
 	Position
 }
 
+type Stair struct {
+	Down bool
+	X    int
+	Y    int
+
+	Connected   bool
+	DestX       int
+	DestY       int
+	DestLevelID int
+}
+
+type Level struct {
+	ID int
+
+	Columns   int
+	Rows      int
+	VisionMap *VisionMap
+	ScentMap  *ScentMap
+	Tiles     []Tile
+	Stairs    []Stair
+
+	MonsterDensity int
+
+	Depth int // One Indexed
+
+	NextCreature int
+	Creatures    []*Creature
+}
+
 func (level *Level) AddCreature(c *Creature) {
 	c.Depth = level.Depth
 
@@ -24,7 +53,7 @@ func (level *Level) AddCreature(c *Creature) {
 		}
 	}
 
-	level.Entities = append(level.Entities, c)
+	level.Creatures = append(level.Creatures, c)
 
 	level.GetTile(c.X, c.Y).Creature = c
 }
@@ -113,35 +142,6 @@ func (l *Level) ClampedXY(x, y, radius int) []Position {
 	}
 
 	return positions
-}
-
-type Stair struct {
-	Down bool
-	X    int
-	Y    int
-
-	Connected   bool
-	DestX       int
-	DestY       int
-	DestLevelID int
-}
-
-type Level struct {
-	ID int
-
-	Columns   int
-	Rows      int
-	VisionMap *VisionMap
-	ScentMap  *ScentMap
-	Tiles     []Tile
-	Stairs    []Stair
-
-	MonsterDensity int
-
-	Depth int // One Indexed
-
-	NextEntity int
-	Entities   []Entity
 }
 
 // connectTwoLevels connects multiple levels arbitrarily. If there is an uneven number

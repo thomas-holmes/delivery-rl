@@ -51,7 +51,7 @@ func MakeNewWorld(window *gterm.Window, rng *pcg.PCG64) *World {
 
 	player.Name = "Euclid"
 
-	world.AddEntityToCurrentLevel(player)
+	world.AddCreatureToCurrentLevel(player)
 
 	return world
 }

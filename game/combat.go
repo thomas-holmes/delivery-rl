@@ -20,36 +20,26 @@ func NewCombatSystem(world *World) *CombatSystem {
 	return c
 }
 
-func (combat CombatSystem) fight(a Entity, d Entity) {
-	attacker, ok := a.(*Creature)
-	if !ok {
-		log.Panicf("Got a non-creature %+v", a)
-		return
-	}
-	defender, ok := d.(*Creature)
-	if !ok {
-		log.Panicf("Got a non-creature %+v", d)
-		return
-	}
-
+func (combat CombatSystem) fight(attacker *Creature, defender *Creature) {
+	log.Printf("%s is attacking %s", attacker.Name, defender.Name)
 	damage := dice.Roll(attacker.Equipment.Weapon.Power)
 	reduction := dice.Roll(defender.Equipment.Armour.Power)
 	actual := max(0, damage-reduction)
 	defender.Damage(actual)
-	if defender.Identity() == attacker.Identity() {
+	if defender == attacker {
 		gl.Append("%s flails around and hurts itself!!", attacker.Name)
 	}
 	gl.Append("%v hits %v for %v damage but is reduced by (%v)!", attacker.Name, defender.Name, actual, reduction)
 
 	if defender.HP.Current == 0 {
-		m.Broadcast(m.M{ID: KillEntity, Data: KillEntityMessage{Attacker: a, Defender: d}})
+		m.Broadcast(m.M{ID: KillCreature, Data: KillCreatureMessage{Attacker: attacker, Defender: defender}})
 	}
 }
 
 func (combat CombatSystem) Notify(message m.M) {
 	switch message.ID {
-	case AttackEntity:
-		if d, ok := message.Data.(AttackEntityMesasge); ok {
+	case AttackCreature:
+		if d, ok := message.Data.(AttackCreatureMessage); ok {
 			combat.fight(d.Attacker, d.Defender)
 		}
 	}

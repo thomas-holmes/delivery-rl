@@ -52,7 +52,6 @@ type World struct {
 	CameraX        int
 	CameraY        int
 
-	nextID      int
 	nextLevelID int
 
 	showScentOverlay bool
@@ -72,12 +71,6 @@ func (world *World) CurrentLevel() *Level {
 		log.Panicf("Have level index out of bounds. Len (%v), index (%v)", len(world.Levels), world.CurrentLevelIndex)
 	}
 	return &world.Levels[world.CurrentLevelIndex]
-}
-
-// GetNextID Generates a monotonically increasing Entity ID
-func (world *World) GetNextID() int {
-	world.nextID++
-	return world.nextID
 }
 
 // SetCurrentLevel update the worlds inner CurrentLevel pointer
@@ -119,7 +112,7 @@ func (world *World) addInitialMonsters(level *Level) {
 			monster := buildMonsterFromDefinition(def)
 			monster.X = x
 			monster.Y = y
-			world.AddEntity(monster, level.ID)
+			world.AddCreature(monster, level.ID)
 		}
 	}
 }
@@ -129,7 +122,7 @@ func (world *World) addDragonToLevel(level *Level) {
 	dragon.Team = NeutralTeam
 	dragon.IsDragon = true
 
-	world.AddEntity(dragon, level.ID)
+	world.AddCreature(dragon, level.ID)
 }
 
 // AddLevelFromCandidate constructs a real level from an intermediate level representation
@@ -173,19 +166,14 @@ func (world *World) addCreature(creature *Creature, level *Level) {
 	}
 }
 
-func (world *World) AddEntityToCurrentLevel(e Entity) {
-	world.AddEntity(e, world.CurrentLevelID)
+func (world *World) AddCreatureToCurrentLevel(c *Creature) {
+	world.AddCreature(c, world.CurrentLevelID)
 }
 
-func (world *World) AddEntity(e Entity, levelID int) {
+func (world *World) AddCreature(c *Creature, levelID int) {
 	level := world.LevelByID(levelID)
-	if e.Identity() == 0 {
-		e.SetIdentity(world.GetNextID())
-	}
 
-	if c, ok := e.(*Creature); ok {
-		world.addCreature(c, level)
-	}
+	world.addCreature(c, level)
 }
 
 func (world *World) RenderRuneAt(x int, y int, out rune, fColor sdl.Color, bColor sdl.Color) {
@@ -257,52 +245,45 @@ func (world *World) Update(action controls.Action) {
 			if world.GameOver {
 				break
 			}
-			entities := world.CurrentLevel().Entities
-			if world.CurrentLevel().NextEntity >= len(entities) {
-				world.CurrentLevel().NextEntity = 0
+			creatures := world.CurrentLevel().Creatures
+			if world.CurrentLevel().NextCreature >= len(creatures) {
+				world.CurrentLevel().NextCreature = 0
 			}
-			currentEntity := world.CurrentLevel().NextEntity
-			e := entities[currentEntity]
+			currentCreature := world.CurrentLevel().NextCreature
+			creature := creatures[currentCreature]
 
-			a, ok := e.(Actor)
-			if !ok {
-				world.CurrentLevel().NextEntity++
-				continue
-			}
-			a.StartTurn(world)
+			creature.StartTurn(world)
 
-			if !a.CanAct() {
-				a.EndTurn()
-				world.CurrentLevel().NextEntity++
+			if !creature.CanAct() {
+				creature.EndTurn()
+				world.CurrentLevel().NextCreature++
 				continue
 			}
 
-			acted := a.Update(world.turnCount, action, world)
+			acted := creature.Update(world.turnCount, action, world)
 
 			// bit of a hack, copied from below instead of rewritten
 			if world.LevelChanged {
-				a.EndTurn()
+				creature.EndTurn()
 				world.LevelChanged = false
-				world.CurrentLevel().NextEntity = 0
+				world.CurrentLevel().NextCreature = 0
 				return // Is this the right thing to do? Or could we just break?
 			}
 
-			if c, ok := a.(*Creature); ok {
-				if c.IsPlayer {
-					if acted {
-						world.turnCount++
-					}
-					world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
-					world.CurrentLevel().ScentMap.UpdateScents(world)
+			if creature.IsPlayer {
+				if acted {
+					world.turnCount++
 				}
+				world.CurrentLevel().VisionMap.UpdateVision(world.Player.VisionDistance, world)
+				world.CurrentLevel().ScentMap.UpdateScents(world)
 			}
 
-			if a.CanAct() {
+			if creature.CanAct() {
 				// Needs more input
 				return
 			} else {
-				a.EndTurn()
-				world.CurrentLevel().NextEntity++
+				creature.EndTurn()
+				world.CurrentLevel().NextCreature++
 				action = controls.None
 			}
 		}
@@ -426,45 +407,30 @@ func (world *World) OverlayScentMap() {
 	}
 }
 
-func (world *World) RemoveEntity(entity Entity) {
+func (world *World) RemoveCreature(creature *Creature) {
 	foundIndex := -1
-	var foundEntity Entity
-	for i, e := range world.CurrentLevel().Entities {
-		if e.Identity() == entity.Identity() {
+	for i, c := range world.CurrentLevel().Creatures {
+		if c == creature {
 			foundIndex = i
-			foundEntity = e
 			break
 		}
 	}
 
 	if foundIndex > -1 {
-		world.CurrentLevel().Entities = append(world.CurrentLevel().Entities[:foundIndex], world.CurrentLevel().Entities[foundIndex+1:]...)
-		if foundIndex > world.CurrentLevel().NextEntity {
-			world.CurrentLevel().NextEntity--
+		world.CurrentLevel().Creatures = append(world.CurrentLevel().Creatures[:foundIndex], world.CurrentLevel().Creatures[foundIndex+1:]...)
+		if foundIndex > world.CurrentLevel().NextCreature {
+			world.CurrentLevel().NextCreature--
 		}
 	}
-	if creature, ok := foundEntity.(*Creature); ok {
-		world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
-	}
+
+	world.CurrentLevel().GetTile(creature.X, creature.Y).Creature = nil
 }
 
-func (world *World) MoveEntity(message MoveEntityMessage) {
+func (world *World) MoveCreature(message MoveCreatureMessage) {
 	oldTile := world.CurrentLevel().GetTile(message.OldX, message.OldY)
 	newTile := world.CurrentLevel().GetTile(message.NewX, message.NewY)
 	newTile.Creature = oldTile.Creature
 	oldTile.Creature = nil
-}
-
-// WARNING: This is has to perform a linear search which is less than ideal
-// but I wanted ordered traversal, which you don't get with maps in go.
-// Keep an eye on the performance of this.
-func (world *World) GetEntity(id int) (Entity, bool) {
-	for _, e := range world.CurrentLevel().Entities {
-		if e.Identity() == id {
-			return e, true
-		}
-	}
-	return nil, false
 }
 
 func (world *World) Animating() bool {
@@ -509,13 +475,13 @@ func (world *World) ShowGameWonMenu() {
 
 func (world *World) Notify(message m.M) {
 	switch message.ID {
-	case MoveEntity:
-		if d, ok := message.Data.(MoveEntityMessage); ok {
-			world.MoveEntity(d)
+	case MoveCreature:
+		if d, ok := message.Data.(MoveCreatureMessage); ok {
+			world.MoveCreature(d)
 		}
-	case KillEntity:
-		if d, ok := message.Data.(KillEntityMessage); ok {
-			world.RemoveEntity(d.Defender)
+	case KillCreature:
+		if d, ok := message.Data.(KillCreatureMessage); ok {
+			world.RemoveCreature(d.Defender)
 		}
 	case PlayerDead:
 		world.ShowEndGameMenu()
@@ -528,12 +494,13 @@ func (world *World) Notify(message m.M) {
 			if !d.Connected {
 				break
 			}
-			world.RemoveEntity(world.Player)
+
+			world.RemoveCreature(world.Player)
 			world.Player.X = d.DestX
 			world.Player.Y = d.DestY
 			world.LevelChanged = true
 			world.SetCurrentLevel(d.DestLevelID)
-			world.AddEntityToCurrentLevel(world.Player)
+			world.AddCreatureToCurrentLevel(world.Player)
 		}
 	case TryMoveCreature:
 		if d, ok := message.Data.(TryMoveCreatureMessage); ok {
