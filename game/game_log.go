@@ -48,16 +48,7 @@ func (pop *GameLog) Update(action controls.Action) {
 	pop.FullLogShown = true
 
 	if action == controls.Cancel && !pop.closing {
-		pop.closing = true
-
-		start := pop.tranStart
-		now := sdl.GetTicks()
-
-		// Using int64 so I can subtract uint32s
-		remainingAnimationTime := max64(0, int64(TransitionDuration)-(int64(now)-int64(start)))
-		pop.tranStart = now - uint32(remainingAnimationTime)
-
-		pop.tranFinished = false
+		pop.closePartWayOpen()
 	}
 
 	if pop.tranFinished {
@@ -138,6 +129,19 @@ func (pop *GameLog) Render(window *gterm.Window) {
 	pop.DrawTransition(window)
 
 	pop.RenderVisibleLines(window)
+}
+
+func (pop *GameLog) closePartWayOpen() {
+	pop.closing = true
+
+	start := pop.tranStart
+	now := sdl.GetTicks()
+
+	// Using int64 so I can subtract uint32s
+	remainingAnimationTime := max64(0, int64(TransitionDuration)-(int64(now)-int64(start)))
+	pop.tranStart = now - uint32(remainingAnimationTime)
+
+	pop.tranFinished = false
 }
 
 func (pop *GameLog) closeFullGameLog() {
