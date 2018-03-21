@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/thomas-holmes/delivery-rl/game/dice"
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
@@ -21,7 +19,6 @@ func NewCombatSystem(world *World) *CombatSystem {
 }
 
 func (combat CombatSystem) fight(attacker *Creature, defender *Creature) {
-	log.Printf("%s is attacking %s", attacker.Name, defender.Name)
 	damage := dice.Roll(attacker.Equipment.Weapon.Power)
 	reduction := dice.Roll(defender.Equipment.Armour.Power)
 	actual := max(0, damage-reduction)

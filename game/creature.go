@@ -521,7 +521,6 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 
 	if newX != player.X || newY != player.Y {
 		result, data := player.TryMove(newX, newY, world)
-		log.Printf("We tried to move, got %v, %+v", result, data)
 		switch result {
 		case MoveIsInvalid:
 			return false
@@ -533,7 +532,6 @@ func (player *Creature) HandleInput(action controls.Action, world *World) bool {
 			m.Broadcast(m.M{ID: MoveCreature, Data: MoveCreatureMessage{Creature: player, OldX: oldX, OldY: oldY, NewX: newX, NewY: newY}})
 		case MoveIsEnemy:
 			if data, ok := data.(MoveEnemy); ok {
-				log.Printf("Broadcasting a move enemy event")
 				m.Broadcast(m.M{ID: AttackCreature, Data: AttackCreatureMessage{
 					Attacker: data.Attacker,
 					Defender: data.Defender,
