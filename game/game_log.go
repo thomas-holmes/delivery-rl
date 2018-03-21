@@ -7,7 +7,6 @@ import (
 	gl "github.com/thomas-holmes/delivery-rl/game/gamelog"
 	m "github.com/thomas-holmes/delivery-rl/game/messages"
 	"github.com/thomas-holmes/gterm"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 // This is going to result in a lot of heap allocations
@@ -36,7 +35,7 @@ func NewGameLog(x int, y int, w int, h int, world *World) *GameLog {
 			H: h,
 		},
 		closing:   true,
-		tranStart: sdl.GetTicks() - TransitionDuration,
+		tranStart: world.CurrentUpdateTicks - TransitionDuration,
 	}
 
 	m.Subscribe(gameLog.Notify)
@@ -59,7 +58,7 @@ func (pop *GameLog) Update(action controls.Action) {
 const TransitionDuration = 200
 
 func (pop *GameLog) DrawTransition(window *gterm.Window) {
-	now := sdl.GetTicks()
+	now := pop.world.CurrentUpdateTicks
 	if pop.tranStart == 0 {
 		pop.tranStart = now
 	}
@@ -135,7 +134,7 @@ func (pop *GameLog) closePartWayOpen() {
 	pop.closing = true
 
 	start := pop.tranStart
-	now := sdl.GetTicks()
+	now := pop.world.CurrentUpdateTicks
 
 	// Using int64 so I can subtract uint32s
 	remainingAnimationTime := max64(0, int64(TransitionDuration)-(int64(now)-int64(start)))
@@ -155,7 +154,7 @@ func (pop *GameLog) openFullLog() {
 	pop.done = false
 	pop.closing = false
 	pop.tranFinished = false
-	pop.tranStart = sdl.GetTicks()
+	pop.tranStart = pop.world.CurrentUpdateTicks
 	m.Broadcast(m.M{ID: ShowMenu, Data: ShowMenuMessage{Menu: pop}})
 }
 
