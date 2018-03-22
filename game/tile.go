@@ -29,6 +29,17 @@ const (
 	DownStairGlyph = '>'
 )
 
+func TileKindToColor(kind TileKind) sdl.Color {
+	switch kind {
+	case UpStair:
+		fallthrough
+	case DownStair:
+		return Orange
+	default:
+		return White
+	}
+}
+
 func TileKindToGlyph(kind TileKind) rune {
 	switch kind {
 	case Wall:
@@ -108,12 +119,7 @@ func (tile Tile) RenderBackground(world *World, visibility Visibility) {
 		renderFloor = true
 	} else {
 		glyph = tile.TileGlyph
-		if tile.TileKind == UpStair || tile.TileKind == DownStair {
-			color = Orange
-		} else {
-			color = tile.Color
-		}
-
+		color = tile.Color
 	}
 
 	if visibility == Seen {

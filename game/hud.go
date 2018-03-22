@@ -255,6 +255,27 @@ func (hud *HUD) renderItemDisplay(world *World) {
 	offsetX = hud.X
 }
 
+func (hud *HUD) renderStairCases(world *World) {
+	hud.nextFreeRow += 1
+
+	for _, t := range world.CurrentLevel().Tiles {
+		if world.CurrentLevel().VisionMap.VisibilityAt(t.X, t.Y) != Visible {
+			continue
+		}
+		if t.TileKind == DownStair || t.TileKind == UpStairGlyph {
+			y := hud.GetNextRow()
+			world.Window.PutRune(hud.X+1, y, t.TileGlyph, t.Color, gterm.NoColor)
+			var description string
+			if t.TileKind == DownStair {
+				description = "Down Stairs"
+			} else {
+				description = "Up Stairs"
+			}
+			world.Window.PutString(hud.X+3, y, description, White)
+		}
+	}
+}
+
 func (hud *HUD) renderMonsterDisplay(world *World) {
 	hud.nextFreeRow += 3
 	offsetY := hud.GetNextRow()
@@ -329,5 +350,6 @@ func (hud *HUD) Render(world *World) {
 	hud.renderEquippedWeapon(world)
 	hud.renderEquippedArmour(world)
 	hud.renderItemDisplay(world)
+	hud.renderStairCases(world)
 	hud.renderMonsterDisplay(world)
 }

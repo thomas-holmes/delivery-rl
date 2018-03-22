@@ -183,6 +183,7 @@ func LoadCandidateLevel(id int, candidate *CandidateLevel) Level {
 		for x := 0; x < candidate.W; x++ {
 			tile, cTile := NewTile(x, y), candidate.tiles[y*candidate.W+x]
 			tile.TileKind = cTile.TileKind
+			tile.Color = TileKindToColor(cTile.TileKind)
 			tile.TileGlyph = TileKindToGlyph(cTile.TileKind)
 			tile.Item = cTile.Item
 
