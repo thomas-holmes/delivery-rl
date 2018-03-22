@@ -1,7 +1,10 @@
 Changelog
 ---------
 * 2.0.6 **(UNRELEASED)**
-	* Fix rounding bug causing regen to operate in alternating chunks in some cases
+	* UI
+		* Add up and down stairs to HUD
+	* Gameplay
+		* Fix rounding bug causing regen to operate in alternating chunks in some cases
 * 2.0.5
 	* Fix regression in loading assets relative to executable.
 * 2.0.4
